@@ -1,0 +1,435 @@
+:root {
+    --conf-purple: #9333ea;
+    --conf-purple-hover: #7e22ce;
+    --conf-purple-light: #f5f3ff;
+    --conf-text-main: #1f2937;
+    --conf-text-sub: #6b7280;
+    --conf-bg: #f9fafb;
+    --conf-border: #f3f4f6;
+}
+
+.conf-container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.conf-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+}
+
+.conf-title-group h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--conf-text-main);
+    margin: 0;
+}
+
+.conf-title-group p {
+    color: var(--conf-text-sub);
+    margin-top: 0.25rem;
+    font-weight: 500;
+}
+
+.conf-save-btn {
+    background-color: #a855f7;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 1rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+    border: none;
+    cursor: pointer;
+}
+
+.conf-save-btn:hover {
+    background-color: #9333ea;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(147, 51, 234, 0.2);
+}
+
+.conf-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 2rem;
+}
+
+/* Sidebar Estilo Imagen */
+.conf-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.conf-nav-item {
+    display: flex;
+    align-items: center;
+    padding: 1.25rem;
+    background: white;
+    border-radius: 1.5rem;
+    border: 1px solid var(--conf-border);
+    text-decoration: none;
+    transition: all 0.2s;
+    color: var(--conf-text-main);
+}
+
+.conf-nav-item--active {
+    background: #9333ea;
+    border-color: #9333ea;
+    color: white;
+}
+
+.conf-nav-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 1rem;
+    background: var(--conf-purple-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    color: var(--conf-purple);
+    font-size: 1.25rem;
+}
+
+.conf-nav-item--active .conf-nav-icon {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.conf-nav-text {
+    flex: 1;
+}
+
+.conf-nav-title {
+    font-weight: 700;
+    font-size: 1rem;
+    display: block;
+}
+
+.conf-nav-sub {
+    font-size: 0.85rem;
+    opacity: 0.7;
+    display: block;
+    margin-top: 2px;
+}
+
+/* Panel Central */
+.conf-main-card {
+    background: white;
+    border-radius: 2rem;
+    border: 1px solid var(--conf-border);
+    padding: 3rem;
+}
+
+.conf-section-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--conf-text-main);
+    margin-bottom: 0.5rem;
+}
+
+.conf-section-sub {
+    color: var(--conf-text-sub);
+    margin-bottom: 2.5rem;
+    font-weight: 500;
+}
+
+/* Logo Box Estilo Imagen */
+.conf-logo-box {
+    background: #fdfdfd;
+    border: 1px solid #f3f4f6;
+    border-radius: 1.5rem;
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 2.5rem;
+}
+
+.conf-logo-preview {
+    width: 110px;
+    height: 110px;
+    background: #fde047;
+    border-radius: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #9333ea;
+    font-size: 3rem;
+}
+
+.conf-logo-info h4 {
+    font-size: 1.1rem;
+    font-weight: 800;
+    margin: 0;
+    color: var(--conf-text-main);
+}
+
+.conf-logo-info p {
+    font-size: 0.9rem;
+    color: var(--conf-text-sub);
+    margin: 0.5rem 0 1rem;
+    font-weight: 500;
+}
+
+.conf-logo-btn {
+    background: white;
+    border: 1px solid #e5e7eb;
+    padding: 0.6rem 1.25rem;
+    border-radius: 0.85rem;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.conf-logo-btn:hover {
+    background: #f9fafb;
+}
+
+/* Formulario */
+.conf-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.conf-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.conf-field--full {
+    grid-column: span 2;
+}
+
+.conf-label {
+    font-weight: 700;
+    color: var(--conf-text-main);
+    font-size: 1rem;
+}
+
+.conf-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.conf-input-icon {
+    position: absolute;
+    left: 1.25rem;
+    color: var(--conf-text-sub);
+    font-size: 1.2rem;
+}
+
+.conf-input {
+    width: 100%;
+    background: #f9fafb;
+    border: 1px solid #f3f4f6;
+    border-radius: 1.25rem;
+    padding: 1rem 1.25rem;
+    font-size: 1rem;
+    color: var(--conf-text-main);
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.conf-input--has-icon {
+    padding-left: 3.5rem;
+}
+
+.conf-input:focus {
+    outline: none;
+    background: white;
+    border-color: #9333ea;
+    box-shadow: 0 0 0 4px rgba(147, 51, 234, 0.1);
+}
+
+ .conf-pane {
+     display: none;
+ }
+
+ .conf-pane--active {
+     display: block;
+ }
+
+ .conf-block-title {
+     margin-top: 0.5rem;
+     margin-bottom: 0.75rem;
+     font-weight: 800;
+     color: var(--conf-text-sub);
+     letter-spacing: 0.08em;
+     font-size: 0.85rem;
+ }
+
+ .conf-block-title--mt {
+     margin-top: 1.75rem;
+ }
+
+ .conf-switch-list {
+     display: flex;
+     flex-direction: column;
+     gap: 1rem;
+ }
+
+ .conf-switch-row {
+     border: 1px solid #e5e7eb;
+     border-radius: 1.5rem;
+     padding: 1.25rem 1.25rem;
+     display: flex;
+     align-items: center;
+     justify-content: space-between;
+     gap: 1rem;
+     background: #fff;
+ }
+
+ .conf-switch-text {
+     display: flex;
+     flex-direction: column;
+     gap: 0.25rem;
+ }
+
+ .conf-switch-title {
+     font-weight: 800;
+     color: var(--conf-text-main);
+     font-size: 1.05rem;
+ }
+
+ .conf-switch-sub {
+     color: var(--conf-text-sub);
+     font-weight: 500;
+     font-size: 0.95rem;
+ }
+
+ .conf-switch {
+     position: relative;
+     width: 64px;
+     height: 36px;
+     flex: 0 0 64px;
+ }
+
+ .conf-switch input {
+     opacity: 0;
+     width: 0;
+     height: 0;
+ }
+
+ .conf-slider {
+     position: absolute;
+     inset: 0;
+     background: #efeaf6;
+     border-radius: 999px;
+     cursor: pointer;
+     transition: background 0.2s ease;
+ }
+
+ .conf-slider:before {
+     content: "";
+     position: absolute;
+     width: 28px;
+     height: 28px;
+     left: 4px;
+     top: 4px;
+     background: #fff;
+     border-radius: 999px;
+     box-shadow: 0 10px 18px rgba(20, 16, 40, 0.12);
+     transition: transform 0.2s ease;
+ }
+
+ .conf-switch input:checked + .conf-slider {
+     background: #8b5cf6;
+ }
+
+ .conf-switch input:checked + .conf-slider:before {
+     transform: translateX(28px);
+ }
+
+ .conf-schedule {
+     display: flex;
+     flex-direction: column;
+     gap: 1.1rem;
+ }
+
+ .conf-day-row {
+     border: 1px solid #e5e7eb;
+     border-radius: 1.5rem;
+     padding: 1.2rem 1.25rem;
+     display: grid;
+     grid-template-columns: 76px 1fr 220px 40px 220px;
+     align-items: center;
+     gap: 0.75rem;
+     background: #fff;
+ }
+
+ .conf-day-row--off {
+     opacity: 0.55;
+ }
+
+ .conf-day-label {
+     font-weight: 800;
+     color: var(--conf-text-main);
+     font-size: 1.05rem;
+ }
+
+ .conf-time {
+     display: flex;
+     align-items: center;
+     gap: 0.6rem;
+     border: 1px solid #e5e7eb;
+     background: #fff;
+     border-radius: 1rem;
+     padding: 0.55rem 0.85rem;
+ }
+
+ .conf-time i {
+     color: var(--conf-text-sub);
+ }
+
+ .conf-time input {
+     border: 0;
+     outline: none;
+     font-weight: 700;
+     color: var(--conf-text-main);
+     background: transparent;
+ }
+
+ .conf-time input:disabled {
+     color: var(--conf-text-sub);
+ }
+
+ .conf-time-sep {
+     text-align: center;
+     color: var(--conf-text-sub);
+     font-weight: 700;
+ }
+
+ .conf-day-closed {
+     grid-column: 3 / -1;
+     color: var(--conf-text-sub);
+     font-weight: 700;
+ }
+
+ @media (max-width: 980px) {
+     .conf-layout {
+         grid-template-columns: 1fr;
+     }
+
+     .conf-day-row {
+         grid-template-columns: 76px 1fr;
+         grid-auto-rows: auto;
+     }
+
+     .conf-time,
+     .conf-time-sep {
+         grid-column: 1 / -1;
+     }
+ }

@@ -1,0 +1,552 @@
+:root {
+    --pg-surface: #ffffff;
+    --pg-text: #111111;
+    --pg-muted: rgba(17, 17, 17, 0.60);
+    --pg-border: rgba(15, 23, 42, 0.10);
+
+    --pg-blue: #3b82f6;
+    --pg-blue-700: #2563eb;
+
+    --pg-yellow: #f59e0b;
+    --pg-yellow-2: #fbbf24;
+
+    --pg-green: #22c55e;
+    --pg-green-2: #16a34a;
+
+    --pg-indigo: #5b8bd6;
+    --pg-indigo-2: #7aa2dc;
+
+    --pg-pill-amber-bg: rgba(245, 158, 11, 0.16);
+    --pg-pill-amber-text: #b45309;
+    --pg-pill-green-bg: rgba(34, 197, 94, 0.16);
+    --pg-pill-green-text: #15803d;
+}
+
+.pg-page {
+    padding-top: 6px;
+}
+
+.pg-head {
+    margin-bottom: 16px;
+}
+
+.pg-title {
+    font-family: "Lilita One", system-ui, sans-serif;
+    font-size: 34px;
+    line-height: 1.1;
+    margin: 0;
+    letter-spacing: 0.01em;
+}
+
+.pg-sub {
+    margin: 6px 0 0;
+    color: var(--pg-muted);
+    font-weight: 600;
+}
+
+.pg-stats {
+    margin-top: 18px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.pg-stat {
+    border-radius: 14px;
+    padding: 18px 18px 16px;
+    color: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 10px 22px rgba(15, 23, 42, 0.12);
+    position: relative;
+    overflow: hidden;
+}
+
+.pg-stat--yellow {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 75%);
+}
+
+.pg-stat--green {
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 75%);
+}
+
+.pg-stat--blue {
+    background: linear-gradient(135deg, #84a9df 0%, #6d96d4 70%);
+}
+
+.pg-stat-label {
+    font-size: 13px;
+    font-weight: 700;
+    opacity: 0.92;
+}
+
+.pg-stat-value {
+    margin-top: 8px;
+    font-weight: 900;
+    font-size: 28px;
+    letter-spacing: 0.01em;
+}
+
+.pg-stat-sub {
+    margin-top: 6px;
+    font-weight: 650;
+    font-size: 12.5px;
+    opacity: 0.92;
+}
+
+.pg-stat-icon {
+    position: absolute;
+    right: 18px;
+    top: 18px;
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+
+.pg-tabs {
+    margin-top: 18px;
+    display: flex;
+    gap: 24px;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.pg-tab {
+    position: relative;
+    padding: 12px 0;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    font-weight: 700;
+    color: rgba(17, 17, 17, 0.55);
+    font-size: 14px;
+}
+
+.pg-tab--active {
+    color: var(--pg-blue);
+}
+
+.pg-tab--active::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 2px;
+    background: var(--pg-blue);
+    border-radius: 999px;
+}
+
+.pg-controls {
+    margin-top: 16px;
+}
+
+.pg-filter {
+    display: grid;
+    grid-template-columns: 34px 180px;
+    gap: 10px;
+    align-items: center;
+    max-width: 260px;
+}
+
+.pg-filter i {
+    width: 34px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(15, 23, 42, 0.10);
+    background: rgba(255, 255, 255, 0.88);
+    color: rgba(17, 17, 17, 0.55);
+}
+
+.pg-filter select {
+    height: 44px;
+    border-radius: 12px;
+    border: 1px solid rgba(15, 23, 42, 0.10);
+    background: rgba(255, 255, 255, 0.88);
+    padding: 0 12px;
+    font-weight: 700;
+    outline: none;
+    color: rgba(17, 17, 17, 0.8);
+}
+
+.pg-list {
+    margin-top: 14px;
+    display: grid;
+    gap: 14px;
+}
+
+.pg-item {
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: 14px;
+    padding: 14px;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 14px;
+    align-items: center;
+}
+
+.pg-item--open {
+    border-color: rgba(59, 130, 246, 0.55);
+    box-shadow: 0 10px 26px rgba(59, 130, 246, 0.10);
+}
+
+.pg-item-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.pg-doc {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    background: rgba(59, 130, 246, 0.10);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--pg-blue-700);
+    flex: 0 0 44px;
+}
+
+.pg-main {
+    min-width: 0;
+}
+
+.pg-row-top {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.pg-code {
+    font-weight: 900;
+    color: rgba(17, 17, 17, 0.82);
+}
+
+.pg-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-weight: 800;
+    font-size: 12px;
+    border: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+.pg-pill--pending {
+    background: var(--pg-pill-amber-bg);
+    color: var(--pg-pill-amber-text);
+}
+
+.pg-pill--paid {
+    background: var(--pg-pill-green-bg);
+    color: var(--pg-pill-green-text);
+}
+
+.pg-desc {
+    margin-top: 6px;
+    color: rgba(17, 17, 17, 0.55);
+    font-weight: 700;
+    font-size: 13px;
+}
+
+.pg-item-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.pg-price {
+    text-align: right;
+}
+
+.pg-price-amount {
+    font-weight: 900;
+    color: rgba(17, 17, 17, 0.82);
+}
+
+.pg-price-sub {
+    margin-top: 4px;
+    color: rgba(17, 17, 17, 0.45);
+    font-weight: 700;
+    font-size: 12px;
+}
+
+.pg-chevron {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    background: rgba(255, 255, 255, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(17, 17, 17, 0.55);
+}
+
+.pg-chevron-btn {
+    cursor: pointer;
+    transition: transform 0.16s ease, background 0.16s ease;
+}
+
+.pg-item--open .pg-chevron-btn {
+    transform: rotate(180deg);
+}
+
+.pg-details {
+    grid-column: 1 / -1;
+    border-top: 1px solid rgba(15, 23, 42, 0.06);
+    padding-top: 14px;
+    display: grid;
+    gap: 14px;
+}
+
+.pg-details[hidden] {
+    display: none !important;
+}
+
+.pg-detail-cards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.pg-detail-card {
+    background: rgba(245, 247, 255, 0.55);
+    border: 1px solid rgba(15, 23, 42, 0.06);
+    border-radius: 16px;
+    padding: 14px 16px;
+}
+
+.pg-detail-label {
+    font-weight: 800;
+    font-size: 13px;
+    color: rgba(17, 17, 17, 0.55);
+}
+
+.pg-detail-value {
+    margin-top: 6px;
+    font-weight: 900;
+    font-size: 18px;
+    color: rgba(17, 17, 17, 0.82);
+}
+
+.pg-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 14px;
+    align-items: center;
+}
+
+.pg-action {
+    height: 52px;
+    border-radius: 16px;
+    border: 1px solid rgba(15, 23, 42, 0.06);
+    background: rgba(245, 247, 255, 0.55);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 0 16px;
+    font-weight: 900;
+    color: rgba(17, 17, 17, 0.78);
+    text-decoration: none;
+    user-select: none;
+}
+
+.pg-action--pay {
+    background: rgba(59, 130, 246, 0.78);
+    border-color: rgba(59, 130, 246, 0.25);
+    color: rgba(255, 255, 255, 0.95);
+    padding: 0 22px;
+    min-width: 190px;
+}
+
+.pg-action--pay:hover {
+    background: rgba(37, 99, 235, 0.86);
+}
+
+body.pg-lock {
+    overflow: hidden;
+}
+
+.pg-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1200;
+    display: none;
+}
+
+.pg-modal--open {
+    display: block;
+}
+
+.pg-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(17, 24, 39, 0.45);
+    backdrop-filter: blur(8px);
+}
+
+.pg-modal-card {
+    position: relative;
+    width: min(560px, calc(100% - 36px));
+    margin: 60px auto;
+    background: #ffffff;
+    border-radius: 22px;
+    border: 1px solid rgba(20, 16, 40, 0.10);
+    box-shadow: 0 24px 64px rgba(17, 24, 39, 0.22);
+    overflow: hidden;
+}
+
+.pg-modal-head {
+    padding: 22px 22px 16px;
+}
+
+.pg-modal-title {
+    font-size: 34px;
+    line-height: 1.1;
+    margin: 0;
+    font-weight: 900;
+    color: rgba(17, 17, 17, 0.86);
+}
+
+.pg-modal-sub {
+    margin-top: 6px;
+    font-weight: 800;
+    color: rgba(17, 17, 17, 0.55);
+}
+
+.pg-modal-divider {
+    height: 1px;
+    background: rgba(15, 23, 42, 0.06);
+}
+
+.pg-modal-body {
+    padding: 18px 22px 22px;
+}
+
+.pg-total {
+    background: rgba(219, 234, 254, 0.35);
+    border: 1px solid rgba(59, 130, 246, 0.10);
+    border-radius: 18px;
+    padding: 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pg-total-label {
+    font-weight: 900;
+    color: rgba(17, 17, 17, 0.6);
+    font-size: 22px;
+}
+
+.pg-total-value {
+    font-weight: 900;
+    font-size: 40px;
+    color: rgba(17, 17, 17, 0.82);
+}
+
+.pg-modal-section {
+    margin-top: 18px;
+    font-weight: 900;
+    color: rgba(17, 17, 17, 0.8);
+    font-size: 22px;
+}
+
+.pg-pay-methods {
+    margin-top: 12px;
+    display: grid;
+    gap: 12px;
+}
+
+.pg-radio {
+    border: 2px solid rgba(17, 17, 17, 0.12);
+    border-radius: 18px;
+    padding: 16px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+}
+
+.pg-radio input {
+    width: 22px;
+    height: 22px;
+}
+
+.pg-radio span {
+    font-weight: 900;
+    font-size: 22px;
+    color: rgba(17, 17, 17, 0.78);
+}
+
+.pg-modal-actions {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.pg-btn {
+    height: 62px;
+    border-radius: 18px;
+    font-weight: 900;
+    font-size: 22px;
+    border: 2px solid rgba(17, 17, 17, 0.12);
+    background: #ffffff;
+    cursor: pointer;
+}
+
+.pg-btn--primary {
+    background: rgba(59, 130, 246, 0.35);
+    border-color: rgba(59, 130, 246, 0.0);
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.pg-btn--primary:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+@media (max-width: 1100px) {
+    .pg-stats {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 780px) {
+    .pg-item {
+        grid-template-columns: 1fr;
+        align-items: start;
+    }
+
+    .pg-item-right {
+        justify-content: space-between;
+    }
+
+    .pg-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .pg-action--pay {
+        width: 100%;
+        min-width: 0;
+    }
+}
+
+@media (max-width: 520px) {
+    .pg-title {
+        font-size: 30px;
+    }
+}

@@ -1,0 +1,175 @@
+:root {
+    --ch-surface: #ffffff;
+    --ch-muted: rgba(17, 17, 17, 0.55);
+    --ch-border: rgba(15, 23, 42, 0.10);
+    --ch-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+    --ch-blue: #6f9dd7;
+}
+
+.ch-page {
+    padding-top: 6px;
+}
+
+.ch-head {
+    margin-bottom: 16px;
+}
+
+.ch-title {
+    font-family: "Lilita One", system-ui, sans-serif;
+    font-size: 34px;
+    line-height: 1.1;
+    margin: 0;
+    letter-spacing: 0.01em;
+}
+
+.ch-sub {
+    margin: 6px 0 0;
+    color: var(--ch-muted);
+    font-weight: 650;
+}
+
+.ch-card {
+    margin-top: 14px;
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: 14px;
+    box-shadow: var(--ch-shadow);
+    overflow: hidden;
+}
+
+.ch-top {
+    background: var(--ch-blue);
+    height: 52px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+}
+
+.ch-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.25);
+    color: rgba(255, 255, 255, 0.95);
+    font-weight: 900;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ch-trainer {
+    display: grid;
+    gap: 2px;
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.ch-trainer-name {
+    font-weight: 900;
+    font-size: 13px;
+}
+
+.ch-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 750;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.ch-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: #22c55e;
+}
+
+.ch-body {
+    padding: 14px;
+    background: rgba(248, 250, 252, 0.75);
+}
+
+.ch-messages {
+    height: 360px;
+    overflow: auto;
+    padding: 6px 4px;
+    display: grid;
+    gap: 18px;
+}
+
+.ch-msg {
+    max-width: 520px;
+    background: var(--ch-surface);
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: 12px;
+    padding: 10px 12px;
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+    color: rgba(17, 17, 17, 0.78);
+    font-weight: 650;
+    font-size: 12px;
+}
+
+.ch-msg-time {
+    margin-top: 6px;
+    color: rgba(17, 17, 17, 0.35);
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.ch-msg--me {
+    justify-self: end;
+    background: rgba(91, 139, 214, 0.92);
+    border-color: rgba(91, 139, 214, 0.40);
+    color: rgba(255, 255, 255, 0.94);
+}
+
+.ch-msg--me .ch-msg-time {
+    color: rgba(255, 255, 255, 0.70);
+}
+
+.ch-inputbar {
+    margin-top: 14px;
+    display: grid;
+    grid-template-columns: 1fr 42px;
+    gap: 12px;
+    align-items: center;
+}
+
+.ch-input {
+    height: 42px;
+    border-radius: 12px;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    background: rgba(255, 255, 255, 0.85);
+    padding: 0 14px;
+    outline: none;
+    font-weight: 650;
+}
+
+.ch-send {
+    height: 42px;
+    width: 42px;
+    border-radius: 14px;
+    border: 0;
+    cursor: pointer;
+    background: rgba(91, 139, 214, 0.92);
+    color: rgba(255, 255, 255, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media (max-width: 760px) {
+    .ch-title {
+        font-size: 30px;
+    }
+
+    .ch-messages {
+        height: 320px;
+    }
+
+    .ch-msg {
+        max-width: 88%;
+    }
+}

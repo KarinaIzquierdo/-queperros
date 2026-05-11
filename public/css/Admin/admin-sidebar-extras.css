@@ -1,0 +1,80 @@
+/* ================= SIDEBAR BASE ================= */
+
+.admin-sidebar{
+  position:relative;
+}
+
+/* ================= SIDEBAR FOOTER ================= */
+
+.admin-sidebar-footer{
+  margin-top:auto;
+  display:flex;
+  flex-direction:column;
+  gap:1rem;
+  padding-top:1.25rem;
+}
+
+.admin-sidebar-section-title{
+  font-size:.7rem;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  opacity:.8;
+  margin:0 .4rem;
+}
+
+/* ================= SUPPORT LINKS ================= */
+
+.admin-support-links{
+  display:flex;
+  flex-direction:column;
+  gap:.25rem;
+}
+
+.admin-support-link{
+  display:flex;
+  align-items:center;
+  gap:.75rem;
+  padding:.6rem .85rem;
+  border-radius:.7rem;
+  color:#f3eaff;
+  text-decoration:none;
+  font-size:.9rem;
+  opacity:.9;
+  transition:background .15s ease,opacity .15s ease;
+}
+
+.admin-support-link:hover{
+  background:#fff2;
+  opacity:1;
+}
+
+/* ================= LOGOUT ================= */
+
+.admin-logout{
+  margin-top:.25rem;
+}
+
+.admin-logout button{
+  width:100%;
+  display:flex;
+  align-items:center;
+  gap:.75rem;
+  padding:.6rem .85rem;
+  border-radius:.7rem;
+  border:none;
+  background:transparent;
+  color:#ffe4e6;
+  font-size:.9rem;
+  cursor:pointer;
+  opacity:.95;
+  transition:background .15s ease,opacity .15s ease;
+}
+
+.admin-logout button:hover{
+  background:#fff2;
+  opacity:1;
+}
+
+.admin-logout-icon{
+  font-size:1.05rem;
+}

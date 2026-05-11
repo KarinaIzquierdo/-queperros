@@ -1,0 +1,275 @@
+:root {
+    --pf-surface: #ffffff;
+    --pf-text: rgba(17, 17, 17, 0.88);
+    --pf-muted: rgba(17, 17, 17, 0.55);
+    --pf-border: rgba(15, 23, 42, 0.10);
+    --pf-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+
+    --pf-blue: #5b8bd6;
+    --pf-blue-700: #2563eb;
+    --pf-green: #22c55e;
+}
+
+.pf-page {
+    padding-top: 6px;
+}
+
+.pf-head {
+    margin-bottom: 16px;
+}
+
+.pf-title {
+    font-family: "Lilita One", system-ui, sans-serif;
+    font-size: 34px;
+    line-height: 1.1;
+    margin: 0;
+    letter-spacing: 0.01em;
+}
+
+.pf-sub {
+    margin: 6px 0 0;
+    color: var(--pf-muted);
+    font-weight: 650;
+}
+
+.pf-grid {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 18px;
+    align-items: start;
+    margin-top: 18px;
+}
+
+.pf-card {
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: 14px;
+    box-shadow: var(--pf-shadow);
+}
+
+.pf-left {
+    padding: 18px;
+}
+
+.pf-avatar-wrap {
+    display: flex;
+    justify-content: center;
+    margin-top: 8px;
+}
+
+.pf-avatar {
+    width: 108px;
+    height: 108px;
+    border-radius: 999px;
+    background: rgba(91, 139, 214, 0.90);
+    color: rgba(255, 255, 255, 0.95);
+    font-weight: 900;
+    font-size: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+}
+
+.pf-avatar-badge {
+    position: absolute;
+    right: 6px;
+    bottom: 6px;
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    background: #fbbf24;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(17, 17, 17, 0.85);
+    border: 2px solid rgba(255, 255, 255, 0.95);
+    font-size: 14px;
+}
+
+.pf-name {
+    margin: 14px 0 0;
+    text-align: center;
+    font-weight: 900;
+    color: rgba(17, 17, 17, 0.85);
+}
+
+.pf-email {
+    margin-top: 4px;
+    text-align: center;
+    color: rgba(17, 17, 17, 0.55);
+    font-weight: 650;
+    font-size: 13px;
+}
+
+.pf-stat {
+    margin-top: 16px;
+    background: rgba(91, 139, 214, 0.10);
+    border: 1px solid rgba(91, 139, 214, 0.12);
+    border-radius: 12px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-weight: 800;
+    color: rgba(37, 99, 235, 0.9);
+    font-size: 13px;
+}
+
+.pf-foot {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(15, 23, 42, 0.06);
+    text-align: center;
+    color: rgba(17, 17, 17, 0.45);
+    font-weight: 650;
+    font-size: 12px;
+}
+
+.pf-right {
+    padding: 0;
+}
+
+.pf-section {
+    padding: 16px 16px 18px;
+}
+
+.pf-sec-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: rgba(17, 17, 17, 0.78);
+    font-weight: 900;
+    padding-bottom: 12px;
+}
+
+.pf-sec-head i {
+    color: rgba(91, 139, 214, 0.95);
+}
+
+.pf-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 14px;
+}
+
+.pf-field {
+    display: grid;
+    gap: 6px;
+}
+
+.pf-field--full {
+    grid-column: 1 / -1;
+}
+
+.pf-label {
+    font-size: 12px;
+    font-weight: 850;
+    color: rgba(17, 17, 17, 0.55);
+}
+
+.pf-input {
+    height: 44px;
+    border-radius: 12px;
+    border: 1px solid rgba(15, 23, 42, 0.10);
+    background: rgba(255, 255, 255, 0.96);
+    padding: 0 12px;
+    outline: none;
+    font-weight: 700;
+    color: rgba(17, 17, 17, 0.78);
+}
+
+.pf-input-wrap {
+    position: relative;
+}
+
+.pf-input-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(17, 17, 17, 0.45);
+}
+
+.pf-input--icon {
+    padding-left: 36px;
+}
+
+.pf-actions {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 4px;
+}
+
+.pf-btn {
+    height: 42px;
+    border-radius: 12px;
+    border: 0;
+    padding: 0 18px;
+    cursor: pointer;
+    font-weight: 900;
+    background: rgba(91, 139, 214, 0.95);
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.pf-divider {
+    height: 1px;
+    background: rgba(15, 23, 42, 0.06);
+}
+
+.pf-security {
+    margin-top: 18px;
+}
+
+.pf-sec-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 14px;
+}
+
+.pf-eye {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    color: rgba(17, 17, 17, 0.45);
+}
+
+.pf-btn-wide {
+    grid-column: 1 / -1;
+    justify-self: start;
+    height: 46px;
+    min-width: 260px;
+    border-radius: 14px;
+}
+
+@media (max-width: 1100px) {
+    .pf-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 780px) {
+    .pf-form,
+    .pf-sec-form {
+        grid-template-columns: 1fr;
+    }
+
+    .pf-btn-wide {
+        width: 100%;
+        justify-self: stretch;
+        min-width: 0;
+    }
+}
+
+@media (max-width: 520px) {
+    .pf-title {
+        font-size: 30px;
+    }
+}

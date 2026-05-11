@@ -1,0 +1,323 @@
+/* ================= RESET & LAYOUT ================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  background: #f5f5fb;
+}
+
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+  font-family: 'Instrument Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  position: relative;
+  width: 100%;
+}
+
+.admin-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-left: 280px;
+  width: calc(100% - 280px);
+}
+
+.admin-main > :not(.mqx-topbar) {
+  width: 100%;
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+@media (max-width: 520px) {
+  .admin-main > :not(.mqx-topbar) {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+.admin-layout.is-sidebar-collapsed .admin-main {
+  margin-left: 80px;
+  width: calc(100% - 80px);
+}
+
+.mqx-topbar {
+  width: 127%;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-left: -25vh;
+}
+
+/* ================= SIDEBAR ================= */
+.admin-sidebar {
+  width: 280px;
+  min-width: 280px;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  background: linear-gradient(180deg, #8b3bbf, #b45ad9);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem 1rem;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.05);
+  z-index: 1010;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border: none;
+  margin: 0;
+}
+
+.admin-brand {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem;
+  margin-bottom: 2.5rem;
+  transition: all 0.4s ease;
+}
+
+.admin-logo {
+    width: 76px;
+    height: 73px;
+    min-width: 48px;
+    background: #fff;
+    border-radius: 86px;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.4s ease;
+}
+
+.admin-brand-text {
+  display: flex;
+  flex-direction: column;
+  transition: opacity 0.3s ease;
+  white-space: nowrap;
+}
+
+.admin-brand-title {
+  font-weight: 800;
+  font-size: 1.1rem;
+  letter-spacing: 0.5px;
+  line-height: 1.2;
+}
+
+.admin-brand-subtitle {
+  font-size: 0.75rem;
+  opacity: 0.85;
+  font-weight: 500;
+}
+
+.admin-sidebar-section {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  opacity: 0.6;
+  margin: 1.5rem 0.75rem 0.75rem;
+  transition: opacity 0.3s ease;
+  white-space: nowrap;
+}
+
+.admin-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.admin-menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 0.85rem;
+  border-radius: 14px;
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.admin-menu-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.admin-menu-icon-wrapper {
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  font-size: 1.1rem;
+}
+
+.admin-menu-icon-wrapper i,
+.admin-menu-icon-wrapper span,
+.admin-menu-icon-wrapper svg {
+    color: inherit !important;
+    transition: color 0.3s ease;
+}
+
+.admin-menu-item span:not(.admin-menu-left) {
+  transition: opacity 0.3s ease;
+}
+
+.admin-menu-item:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  transform: translateX(4px);
+}
+
+.admin-menu-item--active {
+  background: rgba(255, 255, 255, 0.22);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.admin-menu-item--active .admin-menu-icon-wrapper {
+  background: #fff;
+  color: #8b3bbf !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.admin-menu-item--active .admin-menu-icon-wrapper i {
+    color: #8b3bbf !important;
+}
+
+.admin-menu-right {
+  display: flex;
+  align-items: center;
+  transition: opacity 0.3s ease;
+}
+
+.admin-menu-badge {
+  background: #ff4d4d;
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 8px;
+}
+
+.admin-menu-chevron {
+  font-size: 1.2rem;
+  opacity: 0.5;
+  margin-left: 0.5rem;
+}
+
+.admin-logout {
+  margin-top: auto;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.admin-logout button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 0.85rem;
+  border-radius: 14px;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.admin-logout button:hover {
+  background: rgba(255, 77, 77, 0.15);
+  color: #ff8080;
+}
+
+/* ================= COLLAPSED STATE ================= */
+.admin-layout.is-sidebar-collapsed .admin-sidebar {
+  width: 80px;
+  min-width: 80px;
+  padding: 1.5rem 0.75rem;
+}
+
+.admin-layout.is-sidebar-collapsed .admin-brand {
+  justify-content: center;
+  padding: 0;
+}
+
+.admin-layout.is-sidebar-collapsed .admin-brand-text,
+.admin-layout.is-sidebar-collapsed .admin-sidebar-section,
+.admin-layout.is-sidebar-collapsed .admin-menu-item span:not(.admin-menu-left),
+.admin-layout.is-sidebar-collapsed .admin-menu-right,
+.admin-layout.is-sidebar-collapsed .admin-logout span {
+  display: none;
+}
+
+.admin-layout.is-sidebar-collapsed .admin-menu-item {
+  justify-content: center;
+  padding: 0.75rem 0;
+}
+
+.admin-layout.is-sidebar-collapsed .admin-menu-left {
+  gap: 0;
+}
+
+.admin-layout.is-sidebar-collapsed .admin-menu-icon-wrapper {
+  width: 44px;
+  height: 44px;
+  font-size: 1.25rem;
+}
+
+.admin-layout.is-sidebar-collapsed .admin-logout button {
+  justify-content: center;
+  padding: 0.75rem 0;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 992px) {
+  html, body {
+    overflow-x: hidden;
+  }
+
+  .admin-layout {
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  .admin-sidebar {
+    left: -280px;
+  }
+  .admin-layout.is-sidebar-collapsed .admin-sidebar {
+    left: 0;
+    width: 280px;
+  }
+  .admin-main {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+
+  .mqx-topbar {
+    width: 100% !important;
+    margin-left: 0 !important;
+  }
+}

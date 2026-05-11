@@ -1,0 +1,338 @@
+:root{
+    --hr-purple:#7c3aed;
+    --hr-border:rgba(15,23,42,.08);
+    --hr-shadow: 0 12px 28px rgba(15,23,42,.10);
+}
+
+.hr-head{
+    padding: 6px 2px 14px;
+}
+
+.hr-title{
+    margin:0;
+    font-size: 26px;
+    font-weight: 900;
+    color: var(--hr-purple);
+}
+
+.hr-subtitle{
+    margin: 6px 0 0;
+    font-size: 13px;
+    color: rgba(15,23,42,.55);
+}
+
+.hr-alert{
+    margin: 16px 24px 0;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.hr-alert--success{
+    background: rgba(34,197,94,.12);
+    color: #15803d;
+}
+
+.hr-alert--error{
+    background: rgba(239,68,68,.12);
+    color: #b91c1c;
+}
+
+.hr-grid{
+    display:grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 14px;
+    align-items: start;
+}
+
+.hr-col{
+    background: #fff;
+    border: 1px solid var(--hr-border);
+    border-radius: 14px;
+    box-shadow: var(--hr-shadow);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.hr-col--unavailable{
+    opacity: 0.6;
+}
+
+.hr-col-head{
+    background: linear-gradient(135deg, rgba(124,58,237,.9), rgba(147,51,234,.85));
+    color: rgba(255,255,255,.95);
+    font-weight: 900;
+    padding: 12px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+}
+
+.hr-col-date{
+    font-size: 11px;
+    opacity: 0.8;
+}
+
+.hr-col-info{
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    border-bottom: 1px solid var(--hr-border);
+}
+
+.hr-avail-badge{
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    width: fit-content;
+}
+
+.hr-avail--on{
+    background: rgba(34,197,94,.15);
+    color: #15803d;
+}
+
+.hr-avail--off{
+    background: rgba(239,68,68,.15);
+    color: #b91c1c;
+}
+
+.hr-avail-time{
+    font-size: 11px;
+    color: rgba(15,23,42,.6);
+    font-weight: 600;
+}
+
+.hr-edit-btn{
+    margin: 8px 12px;
+    padding: 6px 12px;
+    background: rgba(124,58,237,.1);
+    border: none;
+    border-radius: 8px;
+    color: var(--hr-purple);
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: background .15s ease;
+}
+
+.hr-edit-btn:hover{
+    background: rgba(124,58,237,.2);
+}
+
+.hr-col-body{
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+}
+
+.hr-block{
+    background: rgba(255,216,77,.55);
+    border-radius: 10px;
+    padding: 10px;
+    border: 1px solid rgba(255,216,77,.25);
+}
+
+.hr-block--confirmed{
+    background: rgba(34,197,94,.2);
+    border-color: rgba(34,197,94,.3);
+}
+
+.hr-time{
+    font-size: 10px;
+    color: rgba(15,23,42,.55);
+    font-weight: 800;
+}
+
+.hr-pet{
+    margin-top: 4px;
+    font-weight: 900;
+    font-size: 12px;
+    color: var(--hr-purple);
+}
+
+.hr-activity{
+    margin-top: 2px;
+    font-size: 10px;
+    color: rgba(15,23,42,.62);
+}
+
+.hr-status{
+    margin-top: 4px;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #15803d;
+}
+
+.hr-empty{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    color: rgba(15,23,42,.4);
+    font-size: 11px;
+    gap: 6px;
+}
+
+.hr-empty i{
+    font-size: 24px;
+}
+
+/* Modal styles */
+.hr-modal{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15,23,42,.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.hr-modal-content{
+    background: #fff;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 20px 40px rgba(15,23,42,.2);
+}
+
+.hr-modal-head{
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--hr-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.hr-modal-head h3{
+    margin: 0;
+    font-size: 18px;
+    font-weight: 900;
+    color: var(--hr-purple);
+}
+
+.hr-modal-close{
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: rgba(15,23,42,.4);
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+}
+
+.hr-modal-close:hover{
+    color: rgba(15,23,42,.7);
+}
+
+.hr-modal-body{
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.hr-field{
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.hr-field label{
+    font-size: 12px;
+    font-weight: 700;
+    color: rgba(15,23,42,.7);
+}
+
+.hr-field input,
+.hr-field select{
+    padding: 10px 12px;
+    border: 1px solid var(--hr-border);
+    border-radius: 10px;
+    font-size: 14px;
+    color: rgba(15,23,42,.9);
+    background: #fff;
+}
+
+.hr-field input:focus,
+.hr-field select:focus{
+    outline: none;
+    border-color: var(--hr-purple);
+    box-shadow: 0 0 0 3px rgba(124,58,237,.15);
+}
+
+.hr-modal-note{
+    font-size: 11px;
+    color: rgba(15,23,42,.5);
+    margin: 0;
+}
+
+.hr-modal-foot{
+    padding: 16px 20px;
+    border-top: 1px solid var(--hr-border);
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.hr-btn{
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: transform .15s ease, box-shadow .15s ease;
+}
+
+.hr-btn:hover{
+    transform: translateY(-1px);
+}
+
+.hr-btn--secondary{
+    background: rgba(15,23,42,.08);
+    color: rgba(15,23,42,.7);
+}
+
+.hr-btn--primary{
+    background: linear-gradient(135deg, var(--hr-purple), #9333ea);
+    color: #fff;
+}
+
+@media (max-width: 1400px){
+    .hr-grid{grid-template-columns: repeat(4, minmax(0, 1fr));}
+}
+
+@media (max-width: 1100px){
+    .hr-grid{grid-template-columns: repeat(3, minmax(0, 1fr));}
+}
+
+@media (max-width: 800px){
+    .hr-grid{grid-template-columns: repeat(2, minmax(0, 1fr));}
+}
+
+@media (max-width: 500px){
+    .hr-grid{grid-template-columns: 1fr;}
+}

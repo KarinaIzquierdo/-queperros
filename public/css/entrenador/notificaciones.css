@@ -1,0 +1,112 @@
+:root{
+    --nt-purple:#7c3aed;
+    --nt-border:rgba(15,23,42,.08);
+}
+
+.nt-head{
+    padding: 6px 2px 14px;
+}
+
+.nt-title{
+    margin:0;
+    font-size: 26px;
+    font-weight: 900;
+    color: var(--nt-purple);
+}
+
+.nt-list{
+    display: grid;
+    gap: 16px;
+    max-width: 980px;
+}
+
+.nt-item{
+    background: #fff;
+    border: 1px solid var(--nt-border);
+    border-radius: 12px;
+    box-shadow: 0 14px 34px rgba(15,23,42,.10);
+    padding: 16px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    position: relative;
+    overflow: hidden;
+}
+
+.nt-item::before{
+    content:'';
+    position:absolute;
+    left:0;
+    top:0;
+    bottom:0;
+    width: 4px;
+    background: #3b82f6;
+}
+
+.nt-item--red::before{background:#ef4444;}
+.nt-item--blue::before{background:#3b82f6;}
+.nt-item--green::before{background:#22c55e;}
+.nt-item--orange::before{background:#f59e0b;}
+
+.nt-left{
+    display:flex;
+    align-items:center;
+    gap: 14px;
+    min-width: 0;
+}
+
+.nt-ico{
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex:none;
+    background: rgba(59,130,246,.10);
+    color: #3b82f6;
+}
+
+.nt-ico--red{background: rgba(239,68,68,.10);color:#ef4444;}
+.nt-ico--blue{background: rgba(59,130,246,.10);color:#3b82f6;}
+.nt-ico--green{background: rgba(34,197,94,.10);color:#22c55e;}
+.nt-ico--orange{background: rgba(245,158,11,.12);color:#f59e0b;}
+
+.nt-ico i{font-size: 18px;}
+
+.nt-meta{min-width:0;}
+
+.nt-text{
+    font-weight: 900;
+    font-size: 13px;
+    color: rgba(124,58,237,.92);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 700px;
+}
+
+.nt-time{
+    margin-top: 4px;
+    font-size: 11px;
+    color: rgba(15,23,42,.45);
+    font-weight: 700;
+}
+
+.nt-btn{
+    height: 34px;
+    padding: 0 14px;
+    border-radius: 8px;
+    border: 0;
+    background: rgba(148,163,184,.35);
+    color: rgba(15,23,42,.70);
+    font-weight: 900;
+    cursor: pointer;
+    flex:none;
+}
+
+@media (max-width: 980px){
+    .nt-text{max-width: 320px;}
+    .nt-list{max-width: 100%;}
+}

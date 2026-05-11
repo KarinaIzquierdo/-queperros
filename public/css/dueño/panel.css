@@ -1,0 +1,371 @@
+:root {
+    --panel-bg: #f5f5f7;
+    --panel-text: #111111;
+    --panel-border: rgba(15, 23, 42, 0.10);
+
+    --panel-side-a: #8aa6c4;
+    --panel-side-b: #6fa5ea;
+    --panel-side-c: #5e94e2;
+
+    --panel-accent: #ffd84d;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: "Instrument Sans", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background: var(--panel-bg);
+    color: var(--panel-text);
+}
+
+@media (max-width: 768px) {
+    html, body {
+        overflow-x: hidden;
+    }
+}
+
+.mq-dashboard {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    min-height: 100vh;
+    background: var(--panel-bg);
+}
+
+@media (max-width: 768px) {
+    .mq-dashboard {
+        width: 100%;
+        overflow-x: hidden;
+    }
+
+    .mq-dashboard-main {
+        width: 100%;
+    }
+}
+
+.mq-dashboard-main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+    background: var(--panel-bg);
+}
+
+.mq-dashboard-content {
+    flex: 1;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 24px 40px;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+@media (max-width: 1400px) {
+    .mq-dashboard-content {
+        padding: 24px 30px;
+    }
+}
+
+@media (max-width: 900px) {
+    .mq-dashboard {
+        grid-template-columns: 1fr;
+    }
+    .mq-dashboard-content {
+        padding: 20px 15px;
+    }
+}
+
+.mq-dashboard-sidebar {
+    width: 260px;
+    background: linear-gradient(180deg, var(--panel-side-a) 0%, var(--panel-side-b) 55%, var(--panel-side-c) 100%);
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    flex-shrink: 0;
+    z-index: 100;
+}
+
+.mq-dashboard.is-sidebar-collapsed .mq-dashboard-sidebar {
+    width: 80px;
+    padding: 20px 12px;
+}
+
+.mq-side-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+    justify-content: flex-start;
+}
+
+.mq-dashboard.is-sidebar-collapsed .mq-side-brand {
+    justify-content: center;
+    padding: 10px 0;
+}
+
+.mq-side-badge {
+    width: 76px;
+    height: 73px;
+    border-radius: 999px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.mq-dashboard.is-sidebar-collapsed .mq-side-badge {
+    width: 48px;
+    height: 48px;
+    padding: 4px;
+}
+
+.mq-side-badge img {
+    width: 80%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.mq-side-brand-text {
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    color: #fff;
+}
+
+.mq-dashboard.is-sidebar-collapsed .mq-side-brand-text {
+    opacity: 0;
+    visibility: hidden;
+    width: 0;
+    margin: 0;
+    display: none;
+}
+
+.mq-side-user {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 15px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+}
+
+.mq-dashboard.is-sidebar-collapsed .mq-side-user {
+    padding: 10px 0;
+}
+
+.mq-side-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    color: var(--panel-side-c);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.mq-dashboard.is-sidebar-collapsed .mq-side-avatar {
+    width: 40px;
+    height: 40px;
+    font-size: 14px;
+}
+
+.mq-side-user-name, .mq-side-user-role {
+    transition: opacity 0.3s ease;
+}
+
+.mq-dashboard.is-sidebar-collapsed .mq-side-user-name,
+.mq-dashboard.is-sidebar-collapsed .mq-side-user-role {
+    display: none;
+}
+
+.mq-side-section {
+    font-size: 11px;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 10px 15px;
+    transition: opacity 0.3s ease;
+}
+
+.mq-dashboard.is-sidebar-collapsed .mq-side-section {
+    display: none;
+}
+
+.mq-side-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 15px;
+    border-radius: 12px;
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    margin-bottom: 4px;
+}
+
+.mq-side-item:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+}
+
+.mq-side-item--active {
+    background: rgba(255, 255, 255, 0.25);
+    color: #fff;
+}
+
+.mq-dashboard.is-sidebar-collapsed .mq-side-item {
+    justify-content: center;
+    padding: 12px;
+}
+
+.mq-side-item span:not(.mq-side-left) {
+    transition: opacity 0.3s ease;
+}
+
+.mq-dashboard.is-sidebar-collapsed .mq-side-item span:not(.mq-side-left) {
+    display: none;
+}
+
+.mq-side-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.mq-side-left i {
+    font-size: 20px;
+    width: 24px;
+    text-align: center;
+}
+
+.mq-side-active-dot {
+    width: 6px;
+    height: 6px;
+    background: #fff;
+    border-radius: 50%;
+}
+
+.mq-dashboard.is-sidebar-collapsed .mq-side-active-dot {
+    position: absolute;
+    right: 8px;
+}
+
+.mq-side-bubble {
+    background: var(--panel-accent);
+    color: #000;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 10px;
+}
+
+.mq-dashboard.is-sidebar-collapsed .mq-side-bubble {
+    display: none;
+}
+
+.mq-side-menu {
+    display: flex;
+    flex-direction: column;
+}
+
+.mq-side-menu:last-of-type {
+    flex-grow: 1;
+}
+
+.mq-side-footer {
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mq-dashboard.is-sidebar-collapsed .mq-side-footer {
+    padding: 20px 0;
+}
+
+.mq-dashboard.is-sidebar-collapsed .mq-side-logout {
+    justify-content: center;
+}
+
+.mq-dashboard-main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+    background: var(--panel-bg);
+    width: 100%;
+}
+
+.mq-dashboard.is-sidebar-collapsed {
+    grid-template-columns: 80px 1fr;
+}
+
+/* Header / Topbar Adjustments */
+.mqx-topbar {
+    width: 108%;
+    background: #fff;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--panel-border);
+    position: sticky;
+    top: 0;
+    z-index: 90;
+    transition: all 0.3s ease;
+}
+
+.mq-dashboard-hero {
+    padding: 30px 40px;
+}
+
+.mq-dashboard-hero-title {
+    font-size: 32px;
+    font-weight: 800;
+    color: #1a1a1a;
+    margin: 8px 0;
+}
+
+.mq-dashboard.is-sidebar-collapsed .mq-side-brand-mobile {
+    display: flex !important;
+}
+
+.mq-dashboard.is-sidebar-collapsed .mq-dashboard-main {
+    margin-left: 0;
+}
+
+@media (max-width: 768px) {
+    .mq-dashboard-sidebar {
+        position: fixed;
+        left: -260px;
+        height: 100vh;
+    }
+    
+    .mq-dashboard.is-sidebar-active .mq-dashboard-sidebar {
+        left: 0;
+    }
+
+    .mq-dashboard .mqx-topbar {
+        width: 100%;
+        margin-left: 0;
+    }
+}
