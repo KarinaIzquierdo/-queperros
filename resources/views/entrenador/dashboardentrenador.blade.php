@@ -99,7 +99,7 @@
                         </div>
 
                         <div class="et-reservas-list">
-                            @foreach (($pendingReservations ?? []) as $r)
+                            @forelse (($pendingReservations ?? []) as $r)
                                 <article class="et-reserva">
                                     <div class="et-reserva-top">
                                         <div class="et-reserva-avatar" aria-hidden="true">
@@ -128,17 +128,42 @@
                                     </div>
 
                                     <div class="et-reserva-actions">
-                                        <button class="et-action et-action--confirm" type="button">
-                                            <i class="bi bi-check2" aria-hidden="true"></i>
-                                            Confirmar
-                                        </button>
-                                        <button class="et-action et-action--edit" type="button">
-                                            <i class="bi bi-pencil" aria-hidden="true"></i>
-                                            Modificar
-                                        </button>
+                                        <form action="{{ route('entrenador.reservas.estado', $r['id'] ?? 0) }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="estado" value="Confirmada">
+                                            <button class="et-action et-action--confirm" type="submit">
+                                                <i class="bi bi-check2" aria-hidden="true"></i>
+                                                Confirmar
+                                            </button>
+                                        </form>
+                                        <form action="{{ route('entrenador.reservas.estado', $r['id'] ?? 0) }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="estado" value="Cancelada">
+                                            <button class="et-action et-action--edit" type="submit">
+                                                <i class="bi bi-x-lg" aria-hidden="true"></i>
+                                                Rechazar
+                                            </button>
+                                        </form>
+                                        <form action="{{ route('entrenador.reservas.estado', $r['id'] ?? 0) }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="estado" value="Pendiente">
+                                            <button class="et-action et-action--edit" type="submit">
+                                                <i class="bi bi-clock" aria-hidden="true"></i>
+                                                En espera
+                                            </button>
+                                        </form>
                                     </div>
                                 </article>
-                            @endforeach
+                            @empty
+                                <article class="et-reserva">
+                                    <div class="et-reserva-top">
+                                        <div class="et-reserva-main">
+                                            <div class="et-reserva-pet">No tienes reservas pendientes</div>
+                                            <div class="et-reserva-owner">Cuando recibas una reserva, aparecerá aquí.</div>
+                                        </div>
+                                    </div>
+                                </article>
+                            @endforelse
                         </div>
                     </div>
                 </section>

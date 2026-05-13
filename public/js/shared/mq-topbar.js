@@ -72,11 +72,19 @@
                                    document.getElementById('checkbox3');
         if (!topbarToggleCheckbox) return;
 
+        const isMobile = () => window.matchMedia('(max-width: 1024px)').matches;
+
         const setState = (next) => {
             if (scope === 'admin') {
                 adminLayout?.classList.toggle('is-sidebar-collapsed', next);
             } else {
-                mqDashboard?.classList.toggle('is-sidebar-collapsed', next);
+                if (isMobile()) {
+                    mqDashboard?.classList.toggle('is-sidebar-active', next);
+                    mqDashboard?.classList.remove('is-sidebar-collapsed');
+                } else {
+                    mqDashboard?.classList.toggle('is-sidebar-collapsed', next);
+                    mqDashboard?.classList.remove('is-sidebar-active');
+                }
             }
 
             const adminCheckbox = document.getElementById('adminSidebarCheckbox');
@@ -92,10 +100,12 @@
             if (newTrainerCheckbox) newTrainerCheckbox.checked = next;
             if (topbarToggleCheckbox) topbarToggleCheckbox.checked = next;
 
-            localStorage.setItem(storageKey, next ? '1' : '0');
+            if (!isMobile()) {
+                localStorage.setItem(storageKey, next ? '1' : '0');
+            }
         };
 
-        const initCollapsed = localStorage.getItem(storageKey) === '1';
+        const initCollapsed = !isMobile() && localStorage.getItem(storageKey) === '1';
         setState(initCollapsed);
 
         const adminCheckbox = document.getElementById('adminSidebarCheckbox');
@@ -116,6 +126,23 @@
             topbarToggleCheckbox !== newTrainerCheckbox) {
             topbarToggleCheckbox.addEventListener('change', () => setState(!!topbarToggleCheckbox.checked));
         }
+
+        mqDashboard?.addEventListener('click', (e) => {
+            if (!isMobile() || !mqDashboard.classList.contains('is-sidebar-active')) return;
+            if (e.target.closest('.mq-dashboard-sidebar') || e.target.closest('.mqx-sidebar-toggle-wrapper')) return;
+            setState(false);
+        });
+
+        window.addEventListener('resize', () => {
+            const checked = !!topbarToggleCheckbox.checked;
+            if (isMobile()) {
+                mqDashboard?.classList.remove('is-sidebar-collapsed');
+                if (!checked) mqDashboard?.classList.remove('is-sidebar-active');
+            } else {
+                mqDashboard?.classList.remove('is-sidebar-active');
+                mqDashboard?.classList.toggle('is-sidebar-collapsed', checked);
+            }
+        });
     };
 
     topbars.forEach(initPopovers);

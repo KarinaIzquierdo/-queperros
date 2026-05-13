@@ -71,7 +71,7 @@
                                 }
 
                                 $ageText = $pet->edad !== null ? ((int) $pet->edad . ' años') : '-';
-                                $pesoText = '-';
+                                $pesoText = $pet->peso !== null ? rtrim(rtrim(number_format((float) $pet->peso, 1, ',', '.'), '0'), ',') . ' kg' : '-';
                                 $tamText = trim((string) ($pet->tipo ?? '')) !== '' ? (string) $pet->tipo : '-';
 
                                 $lastDate = '';
@@ -660,54 +660,30 @@
                     }
 
                     // Tab Información
-                    document.getElementById('dtBirth').textContent = pet.created_at ? pet.created_at.split('T')[0] : '2023-03-15';
+                    document.getElementById('dtBirth').textContent = pet.created_at ? pet.created_at.split('T')[0] : '-';
                     document.getElementById('dtAge').textContent = pet.edad ? `${pet.edad} años` : '-';
+                    document.getElementById('dtWeight').textContent = pet.peso ? `${Number(pet.peso).toLocaleString('es-CO')} kg` : '-';
                     document.getElementById('dtNextAppt').textContent = pet.created_at ? `${pet.created_at.split('T')[0]} - ${pet.servicio_requerido || 'Consulta general'}` : '-';
 
-                    // Tab Vacunas (Simulado como en la imagen)
                     const vacunasList = document.getElementById('dtVacunasList');
                     vacunasList.innerHTML = `
                         <div class="dt-list-item">
-                            <div class="dt-item-icon dt-item-icon--vacuna"><i class="bi bi-check-lg"></i></div>
+                            <div class="dt-item-icon dt-item-icon--vacuna"><i class="bi bi-info-circle"></i></div>
                             <div class="dt-item-main">
-                                <div class="dt-item-title">Antirabica <span class="dt-item-date">Aplicada: 2025-08-10</span></div>
-                                <div class="dt-item-sub">Protección anual contra la rabia</div>
-                            </div>
-                            <div class="dt-item-next">
-                                <div class="dt-item-next-label">Proxima</div>
-                                <div class="dt-item-next-date">2026-08-10</div>
-                            </div>
-                        </div>
-                        <div class="dt-list-item">
-                            <div class="dt-item-icon dt-item-icon--vacuna"><i class="bi bi-check-lg"></i></div>
-                            <div class="dt-item-main">
-                                <div class="dt-item-title">Parvovirus <span class="dt-item-date">Aplicada: 2025-06-20</span></div>
-                                <div class="dt-item-sub">Refuerzo esquema cachorros</div>
-                            </div>
-                            <div class="dt-item-next">
-                                <div class="dt-item-next-label">Proxima</div>
-                                <div class="dt-item-next-date">2026-06-20</div>
+                                <div class="dt-item-title">Sin vacunas registradas</div>
+                                <div class="dt-item-sub">Cuando registres vacunas, aparecerán aquí.</div>
                             </div>
                         </div>
                     `;
 
-                    // Tab Historial (Simulado como en la imagen)
                     const historialList = document.getElementById('dtHistorialList');
                     historialList.innerHTML = `
                         <div class="dt-list-item">
-                            <div class="dt-item-icon dt-item-icon--entreno"><i class="bi bi-activity"></i></div>
-                            <div class="dt-item-main">
-                                <div class="dt-item-title">Entrenamiento <span class="dt-item-date">2026-03-10</span></div>
-                                <div class="dt-item-sub">Sesion de obediencia basica</div>
-                                <div class="dt-item-foot">Atendido por: Carlos Martinez</div>
-                            </div>
-                        </div>
-                        <div class="dt-list-item">
                             <div class="dt-item-icon dt-item-icon--historial"><i class="bi bi-file-earmark-text"></i></div>
                             <div class="dt-item-main">
-                                <div class="dt-item-title">Consulta <span class="dt-item-date">2026-02-15</span></div>
-                                <div class="dt-item-sub">Revision general - Todo en orden</div>
-                                <div class="dt-item-foot">Atendido por: Dra. Ana Lopez</div>
+                                <div class="dt-item-title">Sin historial registrado</div>
+                                <div class="dt-item-sub">Cuando exista historial, aparecerá aquí.</div>
+                                <div class="dt-item-foot"></div>
                             </div>
                         </div>
                     `;

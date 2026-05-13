@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class TrainerModulesController extends Controller
 {
@@ -11,44 +13,7 @@ class TrainerModulesController extends Controller
     {
         $user = Auth::user();
 
-        $tasks = [
-            [
-                'title' => 'Paseo matutino - Max',
-                'time' => '08:00 AM',
-                'status' => 'alta',
-                'done' => true,
-            ],
-            [
-                'title' => 'Entrenamiento obediencia - Luna',
-                'time' => '10:00 AM',
-                'status' => 'alta',
-                'done' => true,
-            ],
-            [
-                'title' => 'Alimentación - Rocky',
-                'time' => '12:00 PM',
-                'status' => 'media',
-                'done' => false,
-            ],
-            [
-                'title' => 'Sesión de socialización',
-                'time' => '02:00 PM',
-                'status' => 'media',
-                'done' => false,
-            ],
-            [
-                'title' => 'Paseo vespertino - Max',
-                'time' => '04:00 PM',
-                'status' => 'alta',
-                'done' => false,
-            ],
-            [
-                'title' => 'Revisión veterinaria - Bella',
-                'time' => '05:30 PM',
-                'status' => 'baja',
-                'done' => false,
-            ],
-        ];
+        $tasks = [];
 
         return view('entrenador.mistareas', [
             'user' => $user,
@@ -60,40 +25,51 @@ class TrainerModulesController extends Controller
     {
         $user = Auth::user();
 
-        $pets = [
-            [
-                'name' => 'Max',
-                'breed' => 'Golden Retriever',
-                'age' => '3 años',
-                'owner' => 'Carlos Rodriguez',
-                'phone' => '555-1234',
-                'tags' => ['Paseo', 'Entrenamiento'],
-            ],
-            [
-                'name' => 'Luna',
-                'breed' => 'Border Collie',
-                'age' => '2 años',
-                'owner' => 'Maria Garcia',
-                'phone' => '555-5678',
-                'tags' => ['Entrenamiento', 'Socializacion'],
-            ],
-            [
-                'name' => 'Rocky',
-                'breed' => 'Bulldog Frances',
-                'age' => '4 años',
-                'owner' => 'Ana Martinez',
-                'phone' => '555-9012',
-                'tags' => ['Cuidado diario', 'Paseo'],
-            ],
-            [
-                'name' => 'Bella',
-                'breed' => 'Labrador',
-                'age' => '1 año',
-                'owner' => 'Pedro Sanchez',
-                'phone' => '555-3456',
-                'tags' => ['Entrenamiento', 'Paseo'],
-            ],
-        ];
+        $pets = collect();
+
+        if (Schema::hasTable('reservas') && Schema::hasTable('mascotas')) {
+            $mascotaKey = Schema::hasColumn('mascotas', 'id_mascota') ? 'id_mascota' : 'id';
+            $hasUsers = Schema::hasTable('users') && Schema::hasColumn('mascotas', 'id_dueno');
+            $hasServicios = Schema::hasTable('servicios');
+            $hasActividades = !$hasServicios && Schema::hasTable('actividades');
+
+            $query = DB::table('reservas as r')
+                ->join('mascotas as m', "m.$mascotaKey", '=', 'r.id_mascota')
+                ->where('r.id_empleado', (int) $user->id);
+
+            if ($hasServicios) {
+                $query->join('servicios as s', 's.id', '=', 'r.id_actividad')
+                    ->whereIn('s.nombre', ['Entrenamiento Básico', 'Entrenamiento Avanzado']);
+            } elseif ($hasActividades) {
+                $query->join('actividades as a', 'a.id_actividad', '=', 'r.id_actividad')
+                    ->whereIn('a.tipo_actividad', ['Entrenamiento Básico', 'Entrenamiento Avanzado']);
+            }
+
+            if ($hasUsers) {
+                $query->leftJoin('users as u', 'u.id', '=', 'm.id_dueno');
+            }
+
+            $pets = $query
+                ->select([
+                    DB::raw("m.$mascotaKey as pet_id"),
+                    DB::raw('COALESCE(m.nombre, "") as name'),
+                    DB::raw('COALESCE(m.raza, "") as breed'),
+                    DB::raw('COALESCE(m.edad, "") as age'),
+                    DB::raw($hasUsers ? 'COALESCE(u.name, "") as owner' : '"" as owner'),
+                    DB::raw('COALESCE(m.telefono, "") as phone'),
+                ])
+                ->distinct()
+                ->orderBy('name')
+                ->get()
+                ->map(fn ($pet) => [
+                    'name' => $pet->name,
+                    'breed' => $pet->breed,
+                    'age' => $pet->age !== '' ? $pet->age . ' años' : '',
+                    'owner' => $pet->owner,
+                    'phone' => $pet->phone,
+                    'tags' => [],
+                ]);
+        }
 
         return view('entrenador.mascotas', [
             'user' => $user,
@@ -105,9 +81,128 @@ class TrainerModulesController extends Controller
     {
         $user = Auth::user();
 
+        $pets = collect();
+        $activities = collect();
+
+        if (Schema::hasTable('reservas') && Schema::hasTable('mascotas')) {
+            $mascotaKey = Schema::hasColumn('mascotas', 'id_mascota') ? 'id_mascota' : 'id';
+
+            $petsQuery = DB::table('reservas as r')
+                ->join('mascotas as m', "m.$mascotaKey", '=', 'r.id_mascota')
+                ->where('r.id_empleado', (int) $user->id)
+                ->whereIn('r.estado', ['Pendiente', 'Confirmada']);
+
+            if (Schema::hasTable('servicios')) {
+                $petsQuery->join('servicios as s', 's.id', '=', 'r.id_actividad')
+                    ->whereIn('s.nombre', ['Entrenamiento Básico', 'Entrenamiento Avanzado']);
+            } elseif (Schema::hasTable('actividades')) {
+                $petsQuery->join('actividades as a', 'a.id_actividad', '=', 'r.id_actividad')
+                    ->whereIn('a.tipo_actividad', ['Entrenamiento Básico', 'Entrenamiento Avanzado']);
+            }
+
+            $pets = $petsQuery
+                ->select([
+                    DB::raw("m.$mascotaKey as id"),
+                    DB::raw('COALESCE(m.nombre, "") as name'),
+                    DB::raw('COALESCE(m.raza, "") as breed'),
+                ])
+                ->distinct()
+                ->orderBy('name')
+                ->get();
+        }
+
+        if (Schema::hasTable('servicios')) {
+            $activities = DB::table('servicios')
+                ->when(Schema::hasColumn('servicios', 'activo'), fn ($query) => $query->where('activo', true))
+                ->whereIn('nombre', ['Entrenamiento Básico', 'Entrenamiento Avanzado'])
+                ->select([
+                    DB::raw('id as id'),
+                    DB::raw('COALESCE(nombre, "") as name'),
+                ])
+                ->orderBy('name')
+                ->get();
+        } elseif (Schema::hasTable('actividades')) {
+            $activities = DB::table('actividades')
+                ->whereIn('tipo_actividad', ['Entrenamiento Básico', 'Entrenamiento Avanzado'])
+                ->select([
+                    DB::raw('id_actividad as id'),
+                    DB::raw('COALESCE(tipo_actividad, "") as name'),
+                ])
+                ->orderBy('name')
+                ->get();
+        }
+
         return view('entrenador.seguimiento', [
             'user' => $user,
+            'pets' => $pets,
+            'activities' => $activities,
         ]);
+    }
+
+    public function storeSeguimiento(Request $request)
+    {
+        $user = Auth::user();
+
+        $validated = $request->validate([
+            'pet' => ['required', 'integer'],
+            'activity' => ['required', 'integer'],
+            'mood' => ['nullable', 'string', 'max:80'],
+            'duration' => ['nullable', 'integer', 'min:1', 'max:1440'],
+            'progress' => ['required', 'string', 'max:80'],
+            'notes' => ['nullable', 'string', 'max:3000'],
+            'message' => ['nullable', 'string', 'max:3000'],
+        ]);
+
+        if (!Schema::hasTable('seguimientos')) {
+            return redirect()->back()->withInput()->withErrors([
+                'error' => 'No existe la tabla seguimientos. Ejecuta las migraciones.',
+            ]);
+        }
+
+        $existsQuery = DB::table('reservas')
+            ->where('id_empleado', (int) $user->id)
+            ->where('id_mascota', (int) $validated['pet'])
+            ->where('id_actividad', (int) $validated['activity']);
+
+        if (Schema::hasTable('servicios')) {
+            $existsQuery->join('servicios as s', 's.id', '=', 'reservas.id_actividad')
+                ->whereIn('s.nombre', ['Entrenamiento Básico', 'Entrenamiento Avanzado']);
+        } elseif (Schema::hasTable('actividades')) {
+            $existsQuery->join('actividades as a', 'a.id_actividad', '=', 'reservas.id_actividad')
+                ->whereIn('a.tipo_actividad', ['Entrenamiento Básico', 'Entrenamiento Avanzado']);
+        }
+
+        $exists = $existsQuery->exists();
+
+        if (!$exists) {
+            return redirect()->back()->withInput()->withErrors([
+                'pet' => 'La mascota seleccionada no está asignada a este entrenador para entrenamiento básico o avanzado.',
+            ]);
+        }
+
+        $payload = [
+            'id_mascota' => (int) $validated['pet'],
+            'id_entrenador' => (int) $user->id,
+            'id_actividad' => (int) $validated['activity'],
+            'estado_animo' => $validated['mood'] ?? null,
+            'duracion' => $validated['duration'] ?? null,
+            'nivel_progreso' => $validated['progress'],
+            'notas' => $validated['notes'] ?? null,
+            'mensaje_dueno' => $validated['message'] ?? null,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ];
+
+        $columns = Schema::getColumnListing('seguimientos');
+        $payload = array_filter(
+            $payload,
+            fn ($_, $key) => in_array($key, $columns, true),
+            ARRAY_FILTER_USE_BOTH
+        );
+
+        DB::table('seguimientos')->insert($payload);
+
+        return redirect()->route('entrenador.seguimiento')->with('success', 'Registro de seguimiento guardado correctamente.');
     }
 
     public function horario()
@@ -139,21 +234,19 @@ class TrainerModulesController extends Controller
             $endTime = $dayAvail->end_time ?? '22:00:00';
             $isAvailable = $dayAvail->is_available ?? true;
 
-            // Get reservations for this day between 8am-10pm
+            // Get reservations for this day
             $reservations = DB::table('reservas')
-                ->where('entrenador_id', $user->id)
+                ->where('id_empleado', $user->id)
                 ->where('fecha', $date->format('Y-m-d'))
-                ->whereTime('hora', '>=', '08:00:00')
-                ->whereTime('hora', '<=', '22:00:00')
-                ->orderBy('hora')
+                ->orderBy('id')
                 ->get();
 
             $items = [];
             foreach ($reservations as $r) {
                 $items[] = [
-                    'time' => substr($r->hora, 0, 5),
-                    'pet' => $r->mascota_id ?? 'Mascota',
-                    'activity' => $r->servicio ?? 'Servicio',
+                    'time' => '00:00',
+                    'pet' => $r->id_mascota ?? 'Mascota',
+                    'activity' => $r->id_actividad ?? 'Servicio',
                     'status' => $r->estado ?? 'pendiente',
                 ];
             }
@@ -213,43 +306,47 @@ class TrainerModulesController extends Controller
     {
         $user = Auth::user();
 
-        $records = [
-            [
-                'date' => '18/03/2026',
-                'pet' => 'Max',
-                'service' => 'Paseo matutino',
-                'duration' => '45 min',
-                'notes' => 'Excelente comportamiento',
-            ],
-            [
-                'date' => '18/03/2026',
-                'pet' => 'Luna',
-                'service' => 'Entrenamiento',
-                'duration' => '60 min',
-                'notes' => 'Progreso en comandos básicos',
-            ],
-            [
-                'date' => '17/03/2026',
-                'pet' => 'Rocky',
-                'service' => 'Cuidado diario',
-                'duration' => '8 hrs',
-                'notes' => 'Día tranquilo',
-            ],
-            [
-                'date' => '17/03/2026',
-                'pet' => 'Max',
-                'service' => 'Paseo vespertino',
-                'duration' => '30 min',
-                'notes' => 'Socialización con otros perros',
-            ],
-            [
-                'date' => '16/03/2026',
-                'pet' => 'Bella',
-                'service' => 'Entrenamiento',
-                'duration' => '45 min',
-                'notes' => 'Primera sesión completada',
-            ],
-        ];
+        $records = collect();
+
+        if (Schema::hasTable('reservas')) {
+            $hasMascotas = Schema::hasTable('mascotas');
+            $mascotaKey = $hasMascotas && Schema::hasColumn('mascotas', 'id_mascota') ? 'id_mascota' : 'id';
+            $hasServicios = Schema::hasTable('servicios');
+            $hasActividades = !$hasServicios && Schema::hasTable('actividades');
+
+            $query = DB::table('reservas as r')
+                ->where('r.id_empleado', (int) $user->id)
+                ->where('r.estado', 'Finalizada');
+
+            if ($hasMascotas) {
+                $query->leftJoin('mascotas as m', "m.$mascotaKey", '=', 'r.id_mascota');
+            }
+            if ($hasServicios) {
+                $query->leftJoin('servicios as s', 's.id', '=', 'r.id_actividad');
+            } elseif ($hasActividades) {
+                $query->leftJoin('actividades as a', 'a.id_actividad', '=', 'r.id_actividad');
+            }
+
+            $records = $query
+                ->when($hasServicios, fn ($query) => $query->whereIn('s.nombre', ['Entrenamiento Básico', 'Entrenamiento Avanzado']))
+                ->when($hasActividades, fn ($query) => $query->whereIn('a.tipo_actividad', ['Entrenamiento Básico', 'Entrenamiento Avanzado']))
+                ->orderByDesc('r.fecha')
+                ->select([
+                    DB::raw('COALESCE(r.fecha, "") as date'),
+                    DB::raw($hasMascotas ? 'COALESCE(m.nombre, "") as pet' : '"" as pet'),
+                    DB::raw($hasServicios ? 'COALESCE(s.nombre, "") as service' : ($hasActividades ? 'COALESCE(a.tipo_actividad, "") as service' : '"" as service')),
+                    DB::raw($hasServicios ? 'COALESCE(s.duracion, "") as duration' : '"" as duration'),
+                    DB::raw('COALESCE(r.comentarios, "") as notes'),
+                ])
+                ->get()
+                ->map(fn ($row) => [
+                    'date' => $row->date,
+                    'pet' => $row->pet,
+                    'service' => $row->service,
+                    'duration' => $row->duration,
+                    'notes' => $row->notes,
+                ]);
+        }
 
         return view('entrenador.historial', [
             'user' => $user,
@@ -261,58 +358,82 @@ class TrainerModulesController extends Controller
     {
         $user = Auth::user();
 
-        $reservas = [
-            [
-                'id' => 1,
-                'pet' => 'Max',
-                'owner' => 'Carlos Rodriguez',
-                'service' => 'Paseo matutino',
-                'date' => '2026-03-24',
-                'time' => '08:00',
-                'price' => 15000,
-                'status' => 'pendiente',
-                'comments' => 'Perro muy activo',
-            ],
-            [
-                'id' => 2,
-                'pet' => 'Luna',
-                'owner' => 'Maria Garcia',
-                'service' => 'Entrenamiento avanzado',
-                'date' => '2026-03-24',
-                'time' => '10:00',
-                'price' => 50000,
-                'status' => 'pendiente',
-                'comments' => 'Trabajar obediencia',
-            ],
-            [
-                'id' => 3,
-                'pet' => 'Rocky',
-                'owner' => 'Ana Martinez',
-                'service' => 'Cuidado diario',
-                'date' => '2026-03-25',
-                'time' => '09:00',
-                'price' => 45000,
-                'status' => 'pendiente',
-                'comments' => '',
-            ],
-            [
-                'id' => 4,
-                'pet' => 'Bella',
-                'owner' => 'Pedro Sanchez',
-                'service' => 'Entrenamiento básico',
-                'date' => '2026-03-26',
-                'time' => '14:00',
-                'price' => 35000,
-                'status' => 'confirmado',
-                'comments' => 'Primera sesión',
-            ],
+        $reservas = collect();
+        $counts = [
+            'pendientes' => 0,
+            'confirmadas' => 0,
+            'canceladas' => 0,
+            'total' => 0,
         ];
 
-        $counts = [
-            'pendientes' => 3,
-            'confirmadas' => 1,
-            'total' => 4,
-        ];
+        if (Schema::hasTable('reservas')) {
+            $reservaKey = Schema::hasColumn('reservas', 'id_reserva') ? 'id_reserva' : 'id';
+            $hasMascotas = Schema::hasTable('mascotas');
+            $mascotaKey = $hasMascotas && Schema::hasColumn('mascotas', 'id_mascota') ? 'id_mascota' : 'id';
+            $hasServicios = Schema::hasTable('servicios');
+            $hasActividades = !$hasServicios && Schema::hasTable('actividades');
+            $hasUsers = Schema::hasTable('users');
+            $hasHora = Schema::hasColumn('reservas', 'hora');
+            $hasComentarios = Schema::hasColumn('reservas', 'comentarios');
+
+            $base = DB::table('reservas as r')->where('r.id_empleado', (int) $user->id);
+            if ($hasServicios) {
+                $base->join('servicios as sf', 'sf.id', '=', 'r.id_actividad')
+                    ->whereIn('sf.nombre', ['Entrenamiento Básico', 'Entrenamiento Avanzado']);
+            } elseif ($hasActividades) {
+                $base->join('actividades as af', 'af.id_actividad', '=', 'r.id_actividad')
+                    ->whereIn('af.tipo_actividad', ['Entrenamiento Básico', 'Entrenamiento Avanzado']);
+            }
+
+            $counts = [
+                'pendientes' => (clone $base)->where('r.estado', 'Pendiente')->count(),
+                'confirmadas' => (clone $base)->where('r.estado', 'Confirmada')->count(),
+                'canceladas' => (clone $base)->where('r.estado', 'Cancelada')->count(),
+                'total' => (clone $base)->count(),
+            ];
+
+            $query = DB::table('reservas as r')->where('r.id_empleado', (int) $user->id);
+
+            if ($hasMascotas) {
+                $query->leftJoin('mascotas as m', "m.$mascotaKey", '=', 'r.id_mascota');
+            }
+            if ($hasServicios) {
+                $query->leftJoin('servicios as s', 's.id', '=', 'r.id_actividad');
+            } elseif ($hasActividades) {
+                $query->leftJoin('actividades as a', 'a.id_actividad', '=', 'r.id_actividad');
+            }
+            if ($hasMascotas && $hasUsers && Schema::hasColumn('mascotas', 'id_dueno')) {
+                $query->leftJoin('users as u', 'u.id', '=', 'm.id_dueno');
+            }
+
+            $reservas = $query
+                ->when($hasServicios, fn ($query) => $query->whereIn('s.nombre', ['Entrenamiento Básico', 'Entrenamiento Avanzado']))
+                ->when($hasActividades, fn ($query) => $query->whereIn('a.tipo_actividad', ['Entrenamiento Básico', 'Entrenamiento Avanzado']))
+                ->orderByDesc("r.$reservaKey")
+                ->select([
+                    DB::raw("r.$reservaKey as id"),
+                    DB::raw($hasMascotas ? 'COALESCE(m.nombre, "") as pet' : '"" as pet'),
+                    DB::raw($hasUsers ? 'COALESCE(u.name, "") as owner' : '"" as owner'),
+                    DB::raw($hasServicios ? 'COALESCE(s.nombre, "") as service' : ($hasActividades ? 'COALESCE(a.tipo_actividad, "") as service' : '"" as service')),
+                    DB::raw('COALESCE(r.fecha, "") as date'),
+                    DB::raw($hasHora ? 'COALESCE(r.hora, "") as time' : '"" as time'),
+                    DB::raw($hasServicios ? 'COALESCE(s.precio, 0) as price' : '0 as price'),
+                    DB::raw('COALESCE(r.estado, "") as status'),
+                    DB::raw($hasComentarios ? 'COALESCE(r.comentarios, "") as comments' : '"" as comments'),
+                ])
+                ->get()
+                ->map(fn ($r) => [
+                    'id' => $r->id,
+                    'pet' => $r->pet,
+                    'owner' => $r->owner,
+                    'service' => $r->service,
+                    'date' => $r->date,
+                    'time' => $r->time,
+                    'price' => $r->price,
+                    'status' => mb_strtolower((string) $r->status),
+                    'comments' => $r->comments,
+                ]);
+        }
 
         return view('entrenador.reservas', [
             'user' => $user,
@@ -321,38 +442,101 @@ class TrainerModulesController extends Controller
         ]);
     }
 
+    public function updateReservaEstado(Request $request, $reserva)
+    {
+        $user = Auth::user();
+
+        $validated = $request->validate([
+            'estado' => ['required', 'string', 'in:Pendiente,Confirmada,Cancelada'],
+        ]);
+
+        if (!Schema::hasTable('reservas')) {
+            return redirect()->back()->withErrors([
+                'error' => 'No existe la tabla reservas.',
+            ]);
+        }
+
+        $reservaKey = Schema::hasColumn('reservas', 'id_reserva') ? 'id_reserva' : 'id';
+
+        $row = DB::table('reservas')
+            ->where($reservaKey, (int) $reserva)
+            ->first();
+
+        if (!$row) {
+            return redirect()->back()->withErrors([
+                'error' => 'La reserva no existe.',
+            ]);
+        }
+
+        $payload = [
+            'estado' => $validated['estado'],
+            'updated_at' => now(),
+        ];
+
+        $columns = Schema::getColumnListing('reservas');
+        $payload = array_filter(
+            $payload,
+            fn ($_, $key) => in_array($key, $columns, true),
+            ARRAY_FILTER_USE_BOTH
+        );
+
+        DB::table('reservas')->where($reservaKey, (int) $reserva)->update($payload);
+
+        if ($validated['estado'] === 'Confirmada' && Schema::hasTable('notificaciones') && Schema::hasTable('mascotas')) {
+            $mascotaKey = Schema::hasColumn('mascotas', 'id_mascota') ? 'id_mascota' : 'id';
+            $mascota = DB::table('mascotas')
+                ->where($mascotaKey, (int) $row->id_mascota)
+                ->first();
+
+            if ($mascota && isset($mascota->id_dueno)) {
+                $serviceName = 'servicio';
+
+                if (Schema::hasTable('servicios')) {
+                    $serviceName = (string) (DB::table('servicios')
+                        ->where('id', (int) $row->id_actividad)
+                        ->value('nombre') ?? $serviceName);
+                } elseif (Schema::hasTable('actividades')) {
+                    $serviceName = (string) (DB::table('actividades')
+                        ->where('id_actividad', (int) $row->id_actividad)
+                        ->value('tipo_actividad') ?? $serviceName);
+                }
+
+                $petName = $mascota->nombre ?? 'tu mascota';
+                $date = $row->fecha ?? '';
+                $now = now();
+
+                DB::table('notificaciones')->insert([
+                    [
+                        'user_id' => (int) $mascota->id_dueno,
+                        'tipo' => 'cita',
+                        'titulo' => 'Tu cita fue aceptada',
+                        'mensaje' => "El entrenador aceptó la cita de {$petName} para {$serviceName}" . ($date ? " el {$date}." : '.'),
+                        'url' => route('owner.seguimiento'),
+                        'created_at' => $now,
+                        'updated_at' => $now,
+                    ],
+                    [
+                        'user_id' => (int) $mascota->id_dueno,
+                        'tipo' => 'pago',
+                        'titulo' => 'Pago pendiente',
+                        'mensaje' => "Debes realizar el pago de la reserva confirmada de {$petName}.",
+                        'url' => route('owner.pagos'),
+                        'created_at' => $now,
+                        'updated_at' => $now,
+                    ],
+                ]);
+            }
+        }
+
+        return redirect()->back()->with('success', 'Estado de la reserva actualizado correctamente.');
+    }
+
     public function chat()
     {
         $user = Auth::user();
 
-        $conversations = [
-            [
-                'initial' => 'C',
-                'name' => 'Carlos Rodriguez',
-                'subtitle' => 'Dueño de Max',
-                'active' => true,
-            ],
-            [
-                'initial' => 'M',
-                'name' => 'Maria Garcia',
-                'subtitle' => 'Dueño de Luna',
-                'active' => false,
-            ],
-            [
-                'initial' => 'A',
-                'name' => 'Ana Martinez',
-                'subtitle' => 'Dueño de Rocky',
-                'active' => false,
-            ],
-            [
-                'initial' => 'P',
-                'name' => 'Pedro Sanchez',
-                'subtitle' => 'Dueño de Bella',
-                'active' => false,
-            ],
-        ];
-
-        $active = collect($conversations)->firstWhere('active', true) ?? $conversations[0];
+        $conversations = [];
+        $active = null;
 
         // Cargar mensajes desde la base de datos
         $dbMessages = \App\Models\ChatMessage::orderBy('created_at', 'asc')->get();
@@ -362,28 +546,6 @@ class TrainerModulesController extends Controller
                 'text' => $msg->message,
             ];
         })->toArray();
-
-        // Si no hay mensajes, usar mensajes de ejemplo
-        if (empty($messages)) {
-            $messages = [
-                [
-                    'from' => 'owner',
-                    'text' => 'Hola Juan, como estuvo Max hoy en el paseo?',
-                ],
-                [
-                    'from' => 'trainer',
-                    'text' => 'Hola Carlos! Max estuvo excelente, muy energico y obediente.',
-                ],
-                [
-                    'from' => 'owner',
-                    'text' => 'Que bueno escuchar eso! Ha mejorado mucho con el entrenamiento.',
-                ],
-                [
-                    'from' => 'trainer',
-                    'text' => 'Si, su progreso es muy notable. Mañana trabajaremos en comandos avanzados.',
-                ],
-            ];
-        }
 
         return view('entrenador.chat', [
             'user' => $user,
@@ -414,36 +576,7 @@ class TrainerModulesController extends Controller
     {
         $user = Auth::user();
 
-        $notifications = [
-            [
-                'color' => 'red',
-                'icon' => 'bell',
-                'title' => 'Nueva cita asignada: Bella - Viernes 10:00 AM',
-                'time' => 'Hace 5 min',
-                'unread' => true,
-            ],
-            [
-                'color' => 'blue',
-                'icon' => 'bell',
-                'title' => 'Carlos Rodriguez dejo un mensaje sobre Max',
-                'time' => 'Hace 30 min',
-                'unread' => true,
-            ],
-            [
-                'color' => 'green',
-                'icon' => 'bell',
-                'title' => 'Pago recibido por servicios de marzo',
-                'time' => 'Hace 2 horas',
-                'unread' => false,
-            ],
-            [
-                'color' => 'orange',
-                'icon' => 'bell',
-                'title' => 'Recordatorio: Vacuna de Luna vence en 5 dias',
-                'time' => 'Hace 1 dia',
-                'unread' => false,
-            ],
-        ];
+        $notifications = [];
 
         return view('entrenador.notificaciones', [
             'user' => $user,
@@ -463,9 +596,9 @@ class TrainerModulesController extends Controller
         $profile = [
             'first_name' => $firstName,
             'last_name' => $lastName,
-            'phone' => '+52 555 123 4567',
-            'specialty' => 'Entrenamiento de obediencia, Socializacion',
-            'title' => 'Entrenador Senior',
+            'phone' => '',
+            'specialty' => '',
+            'title' => '',
         ];
 
         return view('entrenador.perfil', [
@@ -476,51 +609,55 @@ class TrainerModulesController extends Controller
 
     public function updatePerfil(Request $request)
     {
-        $user = Auth::user();
+        try {
+            $user = Auth::user();
 
-        $validated = $request->validate([
-            'nombre' => ['required', 'string', 'max:255'],
-            'apellido' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255'],
-            'telefono' => ['nullable', 'string', 'max:60'],
-            'especialidad' => ['nullable', 'string', 'max:255'],
-        ]);
+            $validated = $request->validate([
+                'nombre' => ['required', 'string', 'max:255'],
+                'apellido' => ['required', 'string', 'max:255'],
+                'email' => ['required', 'email', 'max:255'],
+                'telefono' => ['nullable', 'string', 'max:60'],
+                'especialidad' => ['nullable', 'string', 'max:255'],
+            ]);
 
-        $fullName = trim($validated['nombre'] . ' ' . $validated['apellido']);
+            $fullName = trim($validated['nombre'] . ' ' . $validated['apellido']);
 
-        $user->name = $fullName;
-        $user->email = $validated['email'];
-        $user->save();
+            $user->name = $fullName;
+            $user->email = $validated['email'];
+            $user->save();
 
-        if (Schema::hasTable('entrenadores')) {
-            $cols = Schema::getColumnListing('entrenadores');
+            if (Schema::hasTable('entrenadores')) {
+                $cols = Schema::getColumnListing('entrenadores');
 
-            $payload = [];
-            if (in_array('nombre', $cols, true)) {
-                $payload['nombre'] = $fullName;
-            }
-            if (in_array('telefono', $cols, true)) {
-                $payload['telefono'] = $validated['telefono'] ?? null;
-            }
-            if (in_array('especialidad', $cols, true)) {
-                $payload['especialidad'] = $validated['especialidad'] ?? null;
-            }
+                $payload = [];
+                if (in_array('nombre', $cols, true)) {
+                    $payload['nombre'] = $fullName;
+                }
+                if (in_array('telefono', $cols, true)) {
+                    $payload['telefono'] = $validated['telefono'] ?? null;
+                }
+                if (in_array('especialidad', $cols, true)) {
+                    $payload['especialidad'] = $validated['especialidad'] ?? null;
+                }
 
-            if (!empty($payload)) {
-                $exists = DB::table('entrenadores')->where('id_entrenador', (int) $user->id)->exists();
+                if (!empty($payload)) {
+                    $exists = DB::table('entrenadores')->where('id_entrenador', (int) $user->id)->exists();
 
-                if ($exists) {
-                    DB::table('entrenadores')->where('id_entrenador', (int) $user->id)->update($payload);
-                } else {
-                    DB::table('entrenadores')->insert(array_merge($payload, [
-                        'id_entrenador' => $user->id,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]));
+                    if ($exists) {
+                        DB::table('entrenadores')->where('id_entrenador', (int) $user->id)->update($payload);
+                    } else {
+                        DB::table('entrenadores')->insert(array_merge($payload, [
+                            'id_entrenador' => $user->id,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]));
+                    }
                 }
             }
-        }
 
-        return redirect()->route('entrenador.perfil')->with('success', 'Perfil actualizado correctamente');
+            return redirect()->route('entrenador.perfil')->with('success', 'Perfil actualizado correctamente');
+        } catch (\Exception $e) {
+            return redirect()->route('entrenador.perfil')->with('error', 'Error al actualizar el perfil: ' . $e->getMessage());
+        }
     }
 }

@@ -54,8 +54,8 @@
                         </div>
 
                         <div class="pp-tabs" role="tablist" aria-label="Plan Padrino">
-                            <button class="pp-tab pp-tab--active" type="button" role="tab" aria-selected="true" data-pp-tab="dogs">Perros Disponibles (2)</button>
-                            <button class="pp-tab" type="button" role="tab" aria-selected="false" data-pp-tab="mine">Mis Padrinazgos (1)</button>
+                            <button class="pp-tab pp-tab--active" type="button" role="tab" aria-selected="true" data-pp-tab="dogs">Perros Disponibles (0)</button>
+                            <button class="pp-tab" type="button" role="tab" aria-selected="false" data-pp-tab="mine">Mis Padrinazgos (0)</button>
                         </div>
                     </div>
 
@@ -63,84 +63,12 @@
                         <div data-pp-panel="dogs">
                             <div class="pp-grid">
                                 <article class="pp-card">
-                                    <div class="pp-card-media">
-                                        <img src="https://images.unsplash.com/photo-1525253086316-d0c936c814f8?auto=format&fit=crop&w=1000&q=80" alt="Canela">
-                                    </div>
                                     <div class="pp-card-body">
-                                        <h3 class="pp-dog-name">Canela</h3>
-                                        <div class="pp-dog-meta">Mestizo - 4 anos</div>
+                                        <h3 class="pp-dog-name">No hay perros disponibles</h3>
+                                        <div class="pp-dog-meta"></div>
                                         <p class="pp-dog-desc">
-                                            Canela fue rescatada de las calles hace 2 anos. Es una perrita muy carinosa que busca un padrino que le ayude con su alimentacion y cuidados medicos.
+                                            Cuando exista un perro disponible para apadrinar, aparecerá aquí.
                                         </p>
-                                        <div class="pp-needs">
-                                            <div class="pp-needs-label">Necesidades:</div>
-                                            <div class="pp-needs-row">
-                                                <span class="pp-pill">Alimentacion mensual</span>
-                                                <span class="pp-pill">Vacunas anuales</span>
-                                                <span class="pp-pill pp-pill--more">+1 mas</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="pp-card-actions">
-                                        <button class="pp-btn pp-btn--primary" type="button" data-pp-sponsor data-pp-name="Canela" data-pp-meta="Mestizo - 4 anos" data-pp-img="https://images.unsplash.com/photo-1525253086316-d0c936c814f8?auto=format&fit=crop&w=1200&q=80">
-                                            <i class="bi bi-heart" aria-hidden="true"></i>
-                                            <span>Quiero ser padrino</span>
-                                        </button>
-                                    </div>
-                                </article>
-
-                                <article class="pp-card">
-                                    <div class="pp-card-media">
-                                        <img src="https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?auto=format&fit=crop&w=1000&q=80" alt="Toby">
-                                    </div>
-                                    <div class="pp-card-body">
-                                        <h3 class="pp-dog-name">Toby</h3>
-                                        <div class="pp-dog-meta">Labrador Mestizo - 6 anos</div>
-                                        <p class="pp-dog-desc">
-                                            Toby llego al refugio despues de ser abandonado. Es un perro muy tranquilo y obediente que necesita apoyo para sus tratamientos medicos.
-                                        </p>
-                                        <div class="pp-needs">
-                                            <div class="pp-needs-label">Necesidades:</div>
-                                            <div class="pp-needs-row">
-                                                <span class="pp-pill">Tratamiento de artritis</span>
-                                                <span class="pp-pill">Alimentacion especial</span>
-                                                <span class="pp-pill pp-pill--more">+1 mas</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="pp-card-actions">
-                                        <button class="pp-btn pp-btn--primary" type="button" data-pp-sponsor data-pp-name="Toby" data-pp-meta="Labrador Mestizo - 6 anos" data-pp-img="https://images.unsplash.com/photo-1587300003388-59208cc962cb?auto=format&fit=crop&w=1200&q=80" data-pp-story="Toby llego al refugio despues de ser abandonado. Es un perro muy tranquilo y obediente que necesita apoyo para sus tratamientos medicos.">
-                                            <i class="bi bi-heart" aria-hidden="true"></i>
-                                            <span>Quiero ser padrino</span>
-                                        </button>
-                                    </div>
-                                </article>
-
-                                <article class="pp-card">
-                                    <div class="pp-card-media" style="opacity: 0.6;">
-                                        <img src="https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?auto=format&fit=crop&w=1000&q=80" alt="Nina">
-                                        <span class="pp-chip"><i class="bi bi-heart-fill" aria-hidden="true"></i>Apadrinado</span>
-                                    </div>
-                                    <div class="pp-card-body">
-                                        <h3 class="pp-dog-name">Nina</h3>
-                                        <div class="pp-dog-meta">Pitbull - 2 anos</div>
-                                        <p class="pp-dog-desc">
-                                            Nina fue victima de maltrato animal. Ahora esta en rehabilitacion y necesita mucho amor y cuidados especiales.
-                                        </p>
-                                        <div class="pp-needs">
-                                            <div class="pp-needs-label">Necesidades:</div>
-                                            <div class="pp-needs-row">
-                                                <span class="pp-pill">Terapia de comportamiento</span>
-                                                <span class="pp-pill">Alimentacion premium</span>
-                                                <span class="pp-pill pp-pill--more">+1 mas</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="pp-card-actions">
-                                        <button class="pp-btn pp-btn--ghost" type="button" disabled>
-                                            <i class="bi bi-heart" aria-hidden="true"></i>
-                                            <span>Ya tiene padrino</span>
-                                        </button>
                                     </div>
                                 </article>
                             </div>
@@ -149,23 +77,14 @@
                         <div data-pp-panel="mine" hidden>
                             <div class="pp-spon-card">
                                 <div class="pp-spon-row">
-                                    <div class="pp-spon-avatar">
-                                        <img src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=600&q=80" alt="Coco">
-                                    </div>
                                     <div>
                                         <div class="pp-spon-top">
-                                            <h3 class="pp-spon-name">Coco</h3>
-                                            <span class="pp-status">Activo</span>
+                                            <h3 class="pp-spon-name">No tienes padrinazgos</h3>
                                         </div>
                                         <div class="pp-spon-meta">
-                                            <span><i class="bi bi-calendar3" aria-hidden="true"></i> Padrino desde: 2025-06-15</span>
-                                            <span><i class="bi bi-gift" aria-hidden="true"></i> Aporte: $50.000</span>
+                                            <span><i class="bi bi-heart" aria-hidden="true"></i>Cuando tengas un padrinazgo, aparecerá aquí.</span>
                                         </div>
                                     </div>
-                                </div>
-
-                                <div class="pp-report">
-                                    Ultimo reporte: Coco esta muy feliz y saludable. Ha ganado 2kg y su pelaje brilla.
                                 </div>
                             </div>
                         </div>
@@ -180,15 +99,14 @@
                                     <i class="bi bi-x-lg" aria-hidden="true"></i>
                                 </button>
                                 <div class="pp-modal-hero-text">
-                                    <h3 class="pp-modal-dog" data-pp-modal-name>Toby</h3>
-                                    <div class="pp-modal-meta" data-pp-modal-meta>Labrador Mestizo - 6 anos</div>
+                                    <h3 class="pp-modal-dog" data-pp-modal-name></h3>
+                                    <div class="pp-modal-meta" data-pp-modal-meta></div>
                                 </div>
                             </div>
 
                             <div class="pp-modal-body">
                                 <div class="pp-modal-h">Su historia</div>
                                 <p class="pp-modal-p" data-pp-modal-story>
-                                    Toby llego al refugio despues de ser abandonado. Es un perro muy tranquilo y obediente que necesita apoyo para sus tratamientos medicos.
                                 </p>
 
                                 <div class="pp-modal-title2">Elige tu plan de apadrinamiento</div>
@@ -257,7 +175,7 @@
                             <div class="pp-thanks-icon" aria-hidden="true"><i class="bi bi-heart-fill"></i></div>
                             <h3 class="pp-thanks-title">Gracias por tu generosidad</h3>
                             <div class="pp-thanks-text" data-pp-thanks-text>
-                                Ahora eres padrino de Toby. Te enviaremos actualizaciones mensuales.
+                                Te enviaremos actualizaciones mensuales.
                             </div>
                         </div>
                     </div>
@@ -354,7 +272,7 @@
                             name: btn.getAttribute('data-pp-name') || '',
                             meta: btn.getAttribute('data-pp-meta') || '',
                             img: btn.getAttribute('data-pp-img') || '',
-                            story: btn.getAttribute('data-pp-story') || 'Toby llego al refugio despues de ser abandonado. Es un perro muy tranquilo y obediente que necesita apoyo para sus tratamientos medicos.'
+                            story: btn.getAttribute('data-pp-story') || ''
                         };
                         openSponsor(data);
                     });

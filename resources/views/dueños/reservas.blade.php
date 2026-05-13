@@ -101,17 +101,6 @@
                     </div>
 
                     <div class="rs-list" aria-label="Lista de reservas">
-                        @if(isset($debug))
-                            <pre style="background: #f0f0f0; padding: 10px; margin: 10px 0; border-radius: 5px;">
-                                DEBUG DATA:
-                                Pendientes count: {{ $debug['pendientes_count'] ?? 0 }}
-                                Confirmadas count: {{ $debug['confirmadas_count'] ?? 0 }}
-                                Pendientes data: {{ json_encode($debug['pendientes_data'] ?? []) }}
-                                Confirmadas data: {{ json_encode($debug['confirmadas_data'] ?? []) }}
-                            </pre>
-                        @endif
-
-                        <!-- Mostrar datos directamente -->
                         <div style="background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
                             <h2>Reservas Pendientes ({{ $pendientes->count() ?? 0 }})</h2>
                             @if(($pendientes ?? collect())->isNotEmpty())

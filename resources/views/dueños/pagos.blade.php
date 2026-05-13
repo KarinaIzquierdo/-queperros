@@ -21,6 +21,7 @@
         @include('partials.page-loader')
         @php
             use Illuminate\Support\Str;
+            $money = fn ($value) => '$' . number_format((float) $value, 0, ',', '.');
         @endphp
 
         <div class="mq-dashboard">
@@ -45,24 +46,17 @@
 
                         <div class="pg-stats">
                             <div class="pg-stat pg-stat--yellow">
-                                <div class="pg-stat-label">Pendiente por Pagar</div>
-                                <div class="pg-stat-value">$450,000</div>
-                                <div class="pg-stat-sub">2 facturas pendientes</div>
+                                <div class="pg-stat-label">Total a Pagar</div>
+                                <div class="pg-stat-value">{{ $money($pendienteTotal ?? 0) }}</div>
+                                <div class="pg-stat-sub">{{ (int) ($pendienteCount ?? 0) }} facturas pendientes</div>
                                 <div class="pg-stat-icon" aria-hidden="true"><i class="bi bi-clock"></i></div>
                             </div>
 
                             <div class="pg-stat pg-stat--green">
                                 <div class="pg-stat-label">Total Pagado (2026)</div>
-                                <div class="pg-stat-value">$330,000</div>
-                                <div class="pg-stat-sub">3 facturas pagadas</div>
+                                <div class="pg-stat-value">{{ $money($pagadoTotal ?? 0) }}</div>
+                                <div class="pg-stat-sub">{{ (int) ($pagadoCount ?? 0) }} facturas pagadas</div>
                                 <div class="pg-stat-icon" aria-hidden="true"><i class="bi bi-check-lg"></i></div>
-                            </div>
-
-                            <div class="pg-stat pg-stat--blue">
-                                <div class="pg-stat-label">Ultimo Pago</div>
-                                <div class="pg-stat-value">$150.000</div>
-                                <div class="pg-stat-sub">2026-02-20</div>
-                                <div class="pg-stat-icon" aria-hidden="true"><i class="bi bi-receipt"></i></div>
                             </div>
                         </div>
 
@@ -84,264 +78,83 @@
                     </div>
 
                     <div class="pg-list" aria-label="Lista de facturas">
-                        <article class="pg-item" data-pg-item>
-                            <div class="pg-item-left" data-pg-toggle>
-                                <div class="pg-doc" aria-hidden="true"><i class="bi bi-file-earmark-text"></i></div>
-                                <div class="pg-main">
-                                    <div class="pg-row-top">
-                                        <div class="pg-code" data-pg-code>FAC-2026-001</div>
-                                        <span class="pg-pill pg-pill--pending">Pendiente</span>
-                                    </div>
-                                    <div class="pg-desc">Entrenamiento Basico - Marzo - Max</div>
-                                </div>
-                            </div>
-                            <div class="pg-item-right">
-                                <div class="pg-price">
-                                    <div class="pg-price-amount" data-pg-amount="$150.000">$150.000</div>
-                                    <div class="pg-price-sub">Vence: 2026-03-15</div>
-                                </div>
-                                <button class="pg-chevron pg-chevron-btn" type="button" data-pg-btn aria-expanded="false" aria-label="Ver detalle">
-                                    <i class="bi bi-chevron-down" aria-hidden="true"></i>
-                                </button>
-                            </div>
-
-                            <div class="pg-details" hidden>
-                                <div class="pg-detail-cards">
-                                    <div class="pg-detail-card">
-                                        <div class="pg-detail-label">Fecha Emision</div>
-                                        <div class="pg-detail-value">2026-03-01</div>
-                                    </div>
-                                    <div class="pg-detail-card">
-                                        <div class="pg-detail-label">Vencimiento</div>
-                                        <div class="pg-detail-value">2026-03-15</div>
+                        @forelse(($facturas ?? collect()) as $factura)
+                            <article class="pg-item" data-pg-item>
+                                <div class="pg-item-left" data-pg-toggle>
+                                    <div class="pg-doc" aria-hidden="true"><i class="bi bi-file-earmark-text"></i></div>
+                                    <div class="pg-main">
+                                        <div class="pg-row-top">
+                                            <div class="pg-code" data-pg-code>{{ $factura->codigo }}</div>
+                                            <span class="pg-pill {{ $factura->pagada ? 'pg-pill--paid' : 'pg-pill--pending' }}">{{ $factura->estado }}</span>
+                                        </div>
+                                        <div class="pg-desc">{{ $factura->descripcion }}</div>
                                     </div>
                                 </div>
-                                <div class="pg-actions">
-                                    <a class="pg-action" href="#">
-                                        <i class="bi bi-eye" aria-hidden="true"></i>
-                                        <span>Ver Factura</span>
-                                    </a>
-                                    <a class="pg-action" href="#">
-                                        <i class="bi bi-download" aria-hidden="true"></i>
-                                        <span>Descargar PDF</span>
-                                    </a>
-                                    <button class="pg-action pg-action--pay" type="button" data-pg-pay>
-                                        <i class="bi bi-credit-card" aria-hidden="true"></i>
-                                        <span>Pagar Ahora</span>
+                                <div class="pg-item-right">
+                                    <div class="pg-price">
+                                        <div class="pg-price-amount" data-pg-amount="{{ $money($factura->precio) }}">{{ $money($factura->precio) }}</div>
+                                        <div class="pg-price-sub">{{ $factura->fecha ? 'Fecha: ' . $factura->fecha : '' }}</div>
+                                    </div>
+                                    <button class="pg-chevron pg-chevron-btn" type="button" data-pg-btn aria-expanded="false" aria-label="Ver detalle">
+                                        <i class="bi bi-chevron-down" aria-hidden="true"></i>
                                     </button>
                                 </div>
-                            </div>
-                        </article>
 
-                        <article class="pg-item" data-pg-item>
-                            <div class="pg-item-left" data-pg-toggle>
-                                <div class="pg-doc" aria-hidden="true"><i class="bi bi-file-earmark-text"></i></div>
-                                <div class="pg-main">
-                                    <div class="pg-row-top">
-                                        <div class="pg-code" data-pg-code>FAC-2026-002</div>
-                                        <span class="pg-pill pg-pill--pending">Pendiente</span>
+                                <div class="pg-details" hidden>
+                                    <div class="pg-detail-cards">
+                                        <div class="pg-detail-card">
+                                            <div class="pg-detail-label">Reserva</div>
+                                            <div class="pg-detail-value">{{ $factura->codigo }}</div>
+                                        </div>
+                                        <div class="pg-detail-card">
+                                            <div class="pg-detail-label">Fecha</div>
+                                            <div class="pg-detail-value">{{ $factura->fecha ?? 'Sin fecha' }}</div>
+                                        </div>
                                     </div>
-                                    <div class="pg-desc">Hotel Canino (5 noches) - Luna</div>
+                                    @if(!$factura->pagada)
+                                        <div class="pg-actions">
+                                            <button class="pg-action pg-action--pay" type="button" data-pg-pay data-pg-action="{{ route('owner.pagos.reservas.pagar', $factura->id) }}">
+                                                <i class="bi bi-credit-card" aria-hidden="true"></i>
+                                                <span>Pagar Ahora</span>
+                                            </button>
+                                        </div>
+                                    @endif
                                 </div>
-                            </div>
-                            <div class="pg-item-right">
-                                <div class="pg-price">
-                                    <div class="pg-price-amount" data-pg-amount="$300.000">$300.000</div>
-                                    <div class="pg-price-sub">Vence: 2026-03-25</div>
-                                </div>
-                                <button class="pg-chevron pg-chevron-btn" type="button" data-pg-btn aria-expanded="false" aria-label="Ver detalle">
-                                    <i class="bi bi-chevron-down" aria-hidden="true"></i>
-                                </button>
-                            </div>
-
-                            <div class="pg-details" hidden>
-                                <div class="pg-detail-cards">
-                                    <div class="pg-detail-card">
-                                        <div class="pg-detail-label">Fecha Emision</div>
-                                        <div class="pg-detail-value">2026-03-10</div>
-                                    </div>
-                                    <div class="pg-detail-card">
-                                        <div class="pg-detail-label">Vencimiento</div>
-                                        <div class="pg-detail-value">2026-03-25</div>
-                                    </div>
-                                </div>
-                                <div class="pg-actions">
-                                    <a class="pg-action" href="#">
-                                        <i class="bi bi-eye" aria-hidden="true"></i>
-                                        <span>Ver Factura</span>
-                                    </a>
-                                    <a class="pg-action" href="#">
-                                        <i class="bi bi-download" aria-hidden="true"></i>
-                                        <span>Descargar PDF</span>
-                                    </a>
-                                    <button class="pg-action pg-action--pay" type="button" data-pg-pay>
-                                        <i class="bi bi-credit-card" aria-hidden="true"></i>
-                                        <span>Pagar Ahora</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </article>
-
-                        <article class="pg-item" data-pg-item>
-                            <div class="pg-item-left" data-pg-toggle>
-                                <div class="pg-doc" aria-hidden="true"><i class="bi bi-file-earmark-text"></i></div>
-                                <div class="pg-main">
-                                    <div class="pg-row-top">
-                                        <div class="pg-code" data-pg-code>FAC-2026-003</div>
-                                        <span class="pg-pill pg-pill--paid">Pagada</span>
-                                    </div>
-                                    <div class="pg-desc">Entrenamiento Basico - Febrero - Max</div>
-                                </div>
-                            </div>
-                            <div class="pg-item-right">
-                                <div class="pg-price">
-                                    <div class="pg-price-amount" data-pg-amount="$150.000">$150.000</div>
-                                    <div class="pg-price-sub">Vence: 2026-02-28</div>
-                                </div>
-                                <button class="pg-chevron pg-chevron-btn" type="button" data-pg-btn aria-expanded="false" aria-label="Ver detalle">
-                                    <i class="bi bi-chevron-down" aria-hidden="true"></i>
-                                </button>
-                            </div>
-
-                            <div class="pg-details" hidden>
-                                <div class="pg-detail-cards">
-                                    <div class="pg-detail-card">
-                                        <div class="pg-detail-label">Fecha Emision</div>
-                                        <div class="pg-detail-value">2026-02-10</div>
-                                    </div>
-                                    <div class="pg-detail-card">
-                                        <div class="pg-detail-label">Vencimiento</div>
-                                        <div class="pg-detail-value">2026-02-28</div>
+                            </article>
+                        @empty
+                            <article class="pg-item" data-pg-item>
+                                <div class="pg-item-left" data-pg-toggle>
+                                    <div class="pg-doc" aria-hidden="true"><i class="bi bi-file-earmark-text"></i></div>
+                                    <div class="pg-main">
+                                        <div class="pg-row-top">
+                                            <div class="pg-code" data-pg-code>Sin facturas registradas</div>
+                                        </div>
+                                        <div class="pg-desc">Cuando apartes un servicio, aparecerá aquí para pagarlo.</div>
                                     </div>
                                 </div>
-                                <div class="pg-actions">
-                                    <a class="pg-action" href="#">
-                                        <i class="bi bi-eye" aria-hidden="true"></i>
-                                        <span>Ver Factura</span>
-                                    </a>
-                                    <a class="pg-action" href="#">
-                                        <i class="bi bi-download" aria-hidden="true"></i>
-                                        <span>Descargar PDF</span>
-                                    </a>
-                                    <button class="pg-action pg-action--pay" type="button" data-pg-pay>
-                                        <i class="bi bi-credit-card" aria-hidden="true"></i>
-                                        <span>Pagar Ahora</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </article>
-
-                        <article class="pg-item" data-pg-item>
-                            <div class="pg-item-left" data-pg-toggle>
-                                <div class="pg-doc" aria-hidden="true"><i class="bi bi-file-earmark-text"></i></div>
-                                <div class="pg-main">
-                                    <div class="pg-row-top">
-                                        <div class="pg-code" data-pg-code>FAC-2026-004</div>
-                                        <span class="pg-pill pg-pill--paid">Pagada</span>
-                                    </div>
-                                    <div class="pg-desc">Guarderia (2 dias) - Rocky</div>
-                                </div>
-                            </div>
-                            <div class="pg-item-right">
-                                <div class="pg-price">
-                                    <div class="pg-price-amount" data-pg-amount="$100.000">$100.000</div>
-                                    <div class="pg-price-sub">Vence: 2026-02-15</div>
-                                </div>
-                                <button class="pg-chevron pg-chevron-btn" type="button" data-pg-btn aria-expanded="false" aria-label="Ver detalle">
-                                    <i class="bi bi-chevron-down" aria-hidden="true"></i>
-                                </button>
-                            </div>
-
-                            <div class="pg-details" hidden>
-                                <div class="pg-detail-cards">
-                                    <div class="pg-detail-card">
-                                        <div class="pg-detail-label">Fecha Emision</div>
-                                        <div class="pg-detail-value">2026-02-01</div>
-                                    </div>
-                                    <div class="pg-detail-card">
-                                        <div class="pg-detail-label">Vencimiento</div>
-                                        <div class="pg-detail-value">2026-02-15</div>
+                                <div class="pg-item-right">
+                                    <div class="pg-price">
+                                        <div class="pg-price-amount" data-pg-amount="$0">$0</div>
+                                        <div class="pg-price-sub"></div>
                                     </div>
                                 </div>
-                                <div class="pg-actions">
-                                    <a class="pg-action" href="#">
-                                        <i class="bi bi-eye" aria-hidden="true"></i>
-                                        <span>Ver Factura</span>
-                                    </a>
-                                    <a class="pg-action" href="#">
-                                        <i class="bi bi-download" aria-hidden="true"></i>
-                                        <span>Descargar PDF</span>
-                                    </a>
-                                    <button class="pg-action pg-action--pay" type="button" data-pg-pay>
-                                        <i class="bi bi-credit-card" aria-hidden="true"></i>
-                                        <span>Pagar Ahora</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </article>
-
-                        <article class="pg-item" data-pg-item>
-                            <div class="pg-item-left" data-pg-toggle>
-                                <div class="pg-doc" aria-hidden="true"><i class="bi bi-file-earmark-text"></i></div>
-                                <div class="pg-main">
-                                    <div class="pg-row-top">
-                                        <div class="pg-code" data-pg-code>FAC-2026-005</div>
-                                        <span class="pg-pill pg-pill--paid">Pagada</span>
-                                    </div>
-                                    <div class="pg-desc">Dia de Diversion - Max</div>
-                                </div>
-                            </div>
-                            <div class="pg-item-right">
-                                <div class="pg-price">
-                                    <div class="pg-price-amount" data-pg-amount="$80.000">$80.000</div>
-                                    <div class="pg-price-sub">Vence: 2026-01-30</div>
-                                </div>
-                                <button class="pg-chevron pg-chevron-btn" type="button" data-pg-btn aria-expanded="false" aria-label="Ver detalle">
-                                    <i class="bi bi-chevron-down" aria-hidden="true"></i>
-                                </button>
-                            </div>
-
-                            <div class="pg-details" hidden>
-                                <div class="pg-detail-cards">
-                                    <div class="pg-detail-card">
-                                        <div class="pg-detail-label">Fecha Emision</div>
-                                        <div class="pg-detail-value">2026-01-20</div>
-                                    </div>
-                                    <div class="pg-detail-card">
-                                        <div class="pg-detail-label">Vencimiento</div>
-                                        <div class="pg-detail-value">2026-01-30</div>
-                                    </div>
-                                </div>
-                                <div class="pg-actions">
-                                    <a class="pg-action" href="#">
-                                        <i class="bi bi-eye" aria-hidden="true"></i>
-                                        <span>Ver Factura</span>
-                                    </a>
-                                    <a class="pg-action" href="#">
-                                        <i class="bi bi-download" aria-hidden="true"></i>
-                                        <span>Descargar PDF</span>
-                                    </a>
-                                    <button class="pg-action pg-action--pay" type="button" data-pg-pay>
-                                        <i class="bi bi-credit-card" aria-hidden="true"></i>
-                                        <span>Pagar Ahora</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </article>
+                            </article>
+                        @endforelse
                     </div>
 
-                    <div class="pg-modal" id="pgPayModal" aria-hidden="true">
+                    <form class="pg-modal" id="pgPayModal" aria-hidden="true" method="POST" action="">
+                        @csrf
                         <div class="pg-modal-backdrop" data-pg-modal-close></div>
                         <div class="pg-modal-card" role="dialog" aria-modal="true" aria-label="Realizar Pago">
                             <div class="pg-modal-head">
                                 <h2 class="pg-modal-title">Realizar Pago</h2>
-                                <div class="pg-modal-sub" data-pg-modal-code>FAC-2026-001</div>
+                                <div class="pg-modal-sub" data-pg-modal-code></div>
                             </div>
                             <div class="pg-modal-divider" aria-hidden="true"></div>
                             <div class="pg-modal-body">
                                 <div class="pg-total">
                                     <div class="pg-total-label">Total a Pagar</div>
-                                    <div class="pg-total-value" data-pg-modal-total>$150.000</div>
+                                    <div class="pg-total-value" data-pg-modal-total>$0</div>
                                 </div>
 
                                 <div class="pg-modal-section">Metodo de Pago</div>
@@ -367,11 +180,11 @@
 
                                 <div class="pg-modal-actions">
                                     <button class="pg-btn" type="button" data-pg-modal-close>Cancelar</button>
-                                    <button class="pg-btn pg-btn--primary" type="button" data-pg-confirm disabled>Confirmar Pago</button>
+                                    <button class="pg-btn pg-btn--primary" type="submit" data-pg-confirm>Confirmar Pago</button>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </form>
                 </section>
                 </div>
             </main>
@@ -425,12 +238,14 @@
                             if (!modal) return;
                             const code = item.querySelector('[data-pg-code]')?.textContent?.trim() || '';
                             const amount = item.querySelector('[data-pg-amount]')?.getAttribute('data-pg-amount') || '';
+                            const action = payBtn.getAttribute('data-pg-action') || '';
                             if (modalCode) modalCode.textContent = code;
                             if (modalTotal) modalTotal.textContent = amount;
+                            modal.setAttribute('action', action);
 
                             const radios = Array.from(modal.querySelectorAll('input[name="pgMethod"]'));
                             radios.forEach((r) => (r.checked = false));
-                            if (confirmBtn) confirmBtn.disabled = true;
+                            if (confirmBtn) confirmBtn.disabled = false;
 
                             document.body.classList.add('pg-lock');
                             modal.classList.add('pg-modal--open');

@@ -36,6 +36,28 @@
                 ])
 
                 <section class="pf-card" aria-label="Perfil entrenador">
+                    @if(session('success'))
+                        <div class="alert alert-success" style="background-color: #d4edda; color: #155724; padding: 15px; margin-bottom: 20px; border-radius: 5px; border: 1px solid #c3e6cb;">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+
+                    @if(session('error'))
+                        <div class="alert alert-danger" style="background-color: #f8d7da; color: #721c24; padding: 15px; margin-bottom: 20px; border-radius: 5px; border: 1px solid #f5c6cb;">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+
+                    @if($errors->any())
+                        <div class="alert alert-danger" style="background-color: #f8d7da; color: #721c24; padding: 15px; margin-bottom: 20px; border-radius: 5px; border: 1px solid #f5c6cb;">
+                            <ul>
+                                @foreach($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
                     <div class="pf-top">
                         <div class="pf-avatar" aria-hidden="true">
                             {{ strtoupper(mb_substr($profile['first_name'] ?? 'J', 0, 1)) }}{{ strtoupper(mb_substr($profile['last_name'] ?? 'M', 0, 1)) }}

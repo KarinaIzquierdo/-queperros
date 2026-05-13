@@ -40,7 +40,7 @@
                         <div class="ch-left-head">Conversaciones</div>
 
                         <div class="ch-conv-list">
-                            @foreach (($conversations ?? []) as $conv)
+                            @forelse (($conversations ?? []) as $conv)
                                 <button type="button" class="ch-conv {{ !empty($conv['active']) ? 'ch-conv--active' : '' }}">
                                     <div class="ch-avatar" aria-hidden="true">{{ $conv['initial'] ?? 'C' }}</div>
                                     <div class="ch-conv-meta">
@@ -48,7 +48,12 @@
                                         <div class="ch-conv-sub">{{ $conv['subtitle'] ?? '' }}</div>
                                     </div>
                                 </button>
-                            @endforeach
+                            @empty
+                                <div class="ch-conv-meta">
+                                    <div class="ch-conv-name">No hay conversaciones</div>
+                                    <div class="ch-conv-sub">Cuando recibas mensajes, aparecerán aquí.</div>
+                                </div>
+                            @endforelse
                         </div>
                     </aside>
 
@@ -66,13 +71,17 @@
                         </div>
 
                         <div class="ch-chat-body">
-                            @foreach (($messages ?? []) as $msg)
+                            @forelse (($messages ?? []) as $msg)
                                 <div class="ch-msg-row {{ ($msg['from'] ?? '') === 'trainer' ? 'ch-msg-row--me' : '' }}">
                                     <div class="ch-msg {{ ($msg['from'] ?? '') === 'trainer' ? 'ch-msg--me' : 'ch-msg--them' }}">
                                         {{ $msg['text'] ?? '' }}
                                     </div>
                                 </div>
-                            @endforeach
+                            @empty
+                                <div class="ch-msg-row">
+                                    <div class="ch-msg ch-msg--them">No hay mensajes registrados.</div>
+                                </div>
+                            @endforelse
                         </div>
 
                         <form class="ch-chat-input" id="chatForm">

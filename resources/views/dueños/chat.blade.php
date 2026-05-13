@@ -46,9 +46,9 @@
 
                     <div class="ch-card">
                         <div class="ch-top">
-                            <div class="ch-avatar">CM</div>
+                            <div class="ch-avatar">MQ</div>
                             <div class="ch-trainer">
-                                <div class="ch-trainer-name">Carlos Martinez</div>
+                                <div class="ch-trainer-name">Equipo Mas que Perros</div>
                                 <div class="ch-status">
                                     <span class="ch-dot" aria-hidden="true"></span>
                                     <span>En linea</span>
@@ -60,23 +60,8 @@
                             <div class="ch-messages" aria-label="Mensajes">
                                 @if (empty($messages))
                                     <div class="ch-msg">
-                                        <div>Hola! Como estas? Te cuento que Max tuvo una excelente sesion hoy.</div>
-                                        <div class="ch-msg-time">10:30 am</div>
-                                    </div>
-
-                                    <div class="ch-msg ch-msg--me">
-                                        <div>Que bueno! Como le fue con los comandos nuevos?</div>
-                                        <div class="ch-msg-time">10:35 am ✓</div>
-                                    </div>
-
-                                    <div class="ch-msg">
-                                        <div>Muy bien! Ya domina el 'quieto' por 30 segundos. Recomiendo practicarlo en casa 10 minutos diarios.</div>
-                                        <div class="ch-msg-time">10:38 am</div>
-                                    </div>
-
-                                    <div class="ch-msg">
-                                        <div>Te envie algunas fotos de la sesion en la galeria.</div>
-                                        <div class="ch-msg-time">10:40 am</div>
+                                        <div>No hay mensajes todavía.</div>
+                                        <div class="ch-msg-time"></div>
                                     </div>
                                 @else
                                     @foreach ($messages as $msg)

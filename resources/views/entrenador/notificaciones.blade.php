@@ -36,7 +36,7 @@
                 ])
 
                 <section class="nt-list" aria-label="Notificaciones">
-                    @foreach (($notifications ?? []) as $n)
+                    @forelse (($notifications ?? []) as $n)
                         @php
                             $color = (string) ($n['color'] ?? 'blue');
                             $unread = (bool) ($n['unread'] ?? false);
@@ -55,7 +55,16 @@
                                 <button class="nt-btn" type="button">Marcar leída</button>
                             @endif
                         </article>
-                    @endforeach
+                    @empty
+                        <article class="nt-item">
+                            <div class="nt-left">
+                                <div class="nt-meta">
+                                    <div class="nt-text">No tienes notificaciones</div>
+                                    <div class="nt-time">Cuando recibas una notificación, aparecerá aquí.</div>
+                                </div>
+                            </div>
+                        </article>
+                    @endforelse
                 </section>
             </main>
         </div>

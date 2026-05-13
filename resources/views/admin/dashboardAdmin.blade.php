@@ -50,7 +50,7 @@
 
                     <div class="ad2-metrics" aria-label="Métricas">
                         <div class="ad2-metric">
-                            <div class="ad2-metric-value">14</div>
+                            <div class="ad2-metric-value">{{ $stats['today_appointments'] ?? 0 }}</div>
                             <div class="ad2-metric-label">CITAS HOY</div>
                         </div>
                         <div class="ad2-metric ad2-metric--gold">
@@ -168,38 +168,38 @@
                         </div>
                     </div>
 
-                    <div class="ad2-activity-item">
-                        <div class="ad2-activity-dot ad2-activity-dot--purple"><i class="bi bi-wrench" aria-hidden="true"></i></div>
-                        <div class="ad2-activity-text">
-                            <div class="ad2-activity-main">Servicio 'Guardería Premium' fue activado</div>
-                            <div class="ad2-activity-sub"><i class="bi bi-clock" aria-hidden="true"></i> Hace 1 hora</div>
+                    @forelse (($recentReservations ?? collect()) as $reservation)
+                        @php
+                            $status = mb_strtolower((string) ($reservation->status ?? ''));
+                            $dotColor = match($status) {
+                                'confirmada' => 'blue',
+                                'cancelada' => 'red',
+                                'finalizada' => 'purple',
+                                default => 'yellow',
+                            };
+                        @endphp
+                        <div class="ad2-activity-item">
+                            <div class="ad2-activity-dot ad2-activity-dot--{{ $dotColor }}"><i class="bi bi-calendar-event" aria-hidden="true"></i></div>
+                            <div class="ad2-activity-text">
+                                <div class="ad2-activity-main">
+                                    Reserva #{{ $reservation->id }}: {{ $reservation->pet }} - {{ $reservation->service }} ({{ $reservation->status ?: 'Pendiente' }})
+                                </div>
+                                <div class="ad2-activity-sub">
+                                    <i class="bi bi-clock" aria-hidden="true"></i>
+                                    {{ optional($reservation->created_at ? \Carbon\Carbon::parse($reservation->created_at) : null)->diffForHumans() }}
+                                    · Entrenador: {{ $reservation->trainer }}
+                                </div>
+                            </div>
                         </div>
-                    </div>
-
-                    <div class="ad2-activity-item">
-                        <div class="ad2-activity-dot ad2-activity-dot--yellow"><i class="bi bi-shield" aria-hidden="true"></i></div>
-                        <div class="ad2-activity-text">
-                            <div class="ad2-activity-main">Rol de Dr. Pedro Ruiz actualizado a Veterinario Senior</div>
-                            <div class="ad2-activity-sub"><i class="bi bi-clock" aria-hidden="true"></i> Hace 2 horas</div>
+                    @empty
+                        <div class="ad2-activity-item">
+                            <div class="ad2-activity-dot ad2-activity-dot--yellow"><i class="bi bi-calendar-event" aria-hidden="true"></i></div>
+                            <div class="ad2-activity-text">
+                                <div class="ad2-activity-main">No hay reservas registradas</div>
+                                <div class="ad2-activity-sub"><i class="bi bi-clock" aria-hidden="true"></i> Cuando se cree una reserva, aparecerá aquí.</div>
+                            </div>
                         </div>
-                    </div>
-
-                    <div class="ad2-activity-item ad2-activity-item--arrow">
-                        <div class="ad2-activity-dot ad2-activity-dot--blue"><i class="bi bi-check2-circle" aria-hidden="true"></i></div>
-                        <div class="ad2-activity-text">
-                            <div class="ad2-activity-main">Backup automatico completado exitosamente</div>
-                            <div class="ad2-activity-sub"><i class="bi bi-clock" aria-hidden="true"></i> Hace 3 horas</div>
-                        </div>
-                        <div class="ad2-activity-arrow">›</div>
-                    </div>
-
-                    <div class="ad2-activity-item">
-                        <div class="ad2-activity-dot ad2-activity-dot--red"><i class="bi bi-calendar-event" aria-hidden="true"></i></div>
-                        <div class="ad2-activity-text">
-                            <div class="ad2-activity-main">Cita cancelada: Luna - Vacunacion</div>
-                            <div class="ad2-activity-sub"><i class="bi bi-clock" aria-hidden="true"></i> Hace 4 horas</div>
-                        </div>
-                    </div>
+                    @endforelse
 
                         <a href="#" class="ad2-activity-footer">Ver todo el historial</a>
                     </section>

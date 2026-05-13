@@ -63,10 +63,17 @@
                                 <div class="tr-stat-label">Total</div>
                             </div>
                         </div>
+                        <div class="tr-stat tr-stat--pending">
+                            <div class="tr-stat-icon"><i class="bi bi-x-circle"></i></div>
+                            <div class="tr-stat-body">
+                                <div class="tr-stat-value">{{ $counts['canceladas'] ?? 0 }}</div>
+                                <div class="tr-stat-label">Rechazadas</div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="tr-list">
-                        @foreach (($reservas ?? []) as $r)
+                        @forelse (($reservas ?? []) as $r)
                             <article class="tr-card {{ $r['status'] === 'pendiente' ? 'tr-card--pending' : 'tr-card--confirmed' }}">
                                 <div class="tr-card-header">
                                     <div class="tr-card-pet">
@@ -108,32 +115,53 @@
                                 @endif
 
                                 <div class="tr-card-actions">
-                                    @if($r['status'] === 'pendiente')
-                                        <button class="tr-btn tr-btn--confirm" data-id="{{ $r['id'] }}">
-                                            <i class="bi bi-check-lg"></i> Confirmar
-                                        </button>
+                                    @if($r['status'] !== 'confirmada')
+                                        <form action="{{ route('entrenador.reservas.estado', $r['id']) }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="estado" value="Confirmada">
+                                            <button class="tr-btn tr-btn--confirm" type="submit">
+                                                <i class="bi bi-check-lg"></i> Confirmar
+                                            </button>
+                                        </form>
                                     @endif
-                                    <button class="tr-btn tr-btn--view" data-id="{{ $r['id'] }}">
+                                    @if($r['status'] !== 'cancelada')
+                                        <form action="{{ route('entrenador.reservas.estado', $r['id']) }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="estado" value="Cancelada">
+                                            <button class="tr-btn tr-btn--view" type="submit">
+                                                <i class="bi bi-x-lg"></i> Rechazar
+                                            </button>
+                                        </form>
+                                    @endif
+                                    @if($r['status'] !== 'pendiente')
+                                        <form action="{{ route('entrenador.reservas.estado', $r['id']) }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="estado" value="Pendiente">
+                                            <button class="tr-btn tr-btn--view" type="submit">
+                                                <i class="bi bi-clock"></i> En espera
+                                            </button>
+                                        </form>
+                                    @endif
+                                    <button class="tr-btn tr-btn--view" type="button" data-id="{{ $r['id'] }}">
                                         <i class="bi bi-eye"></i> Ver detalles
                                     </button>
                                 </div>
                             </article>
-                        @endforeach
+                        @empty
+                            <article class="tr-card">
+                                <div class="tr-card-header">
+                                    <div class="tr-card-pet">
+                                        <div>
+                                            <div class="tr-card-pet-name">No tienes reservas asignadas</div>
+                                            <div class="tr-card-owner">Cuando un dueño reserve contigo, aparecerá aquí.</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </article>
+                        @endforelse
                     </div>
                 </section>
             </main>
         </div>
-
-        <script>
-            document.querySelectorAll('.tr-btn--confirm').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const id = this.dataset.id;
-                    if (confirm('¿Confirmar esta reserva?')) {
-                        console.log('Confirmar reserva:', id);
-                        // TODO: Implement confirm reservation via AJAX
-                    }
-                });
-            });
-        </script>
     </body>
 </html>

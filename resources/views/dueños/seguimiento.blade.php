@@ -44,259 +44,85 @@
                         <p class="sg-sub">Reportes del entrenador, fotos y evaluaciones de comportamiento</p>
 
                         <div class="sg-pets" aria-label="Mascotas">
-                            <div class="sg-pet">
-                                <div class="sg-pet-row">
-                                    <div class="sg-avatar" aria-hidden="true">M</div>
-                                    <div class="sg-pet-main">
-                                        <div class="sg-pet-name"><i class="bi bi-paw" aria-hidden="true"></i><span>Max</span></div>
-                                        <div class="sg-pet-sub">En entrenamiento</div>
-                                        <div class="sg-progress">
-                                            <div class="sg-progress-head">
-                                                <span>Progreso</span>
-                                                <span>75%</span>
-                                            </div>
-                                            <div class="sg-progress-bar"><div class="sg-progress-fill" style="width: 75%"></div></div>
+                            @forelse (($pets ?? []) as $pet)
+                                <div class="sg-pet">
+                                    <div class="sg-pet-row">
+                                        <div class="sg-avatar" aria-hidden="true">{{ mb_strtoupper(mb_substr($pet->name ?? 'M', 0, 1)) }}</div>
+                                        <div class="sg-pet-main">
+                                            <div class="sg-pet-name"><i class="bi bi-paw" aria-hidden="true"></i><span>{{ $pet->name }}</span></div>
+                                            <div class="sg-pet-sub">{{ $pet->breed }}</div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-
-                            <div class="sg-pet">
-                                <div class="sg-pet-row">
-                                    <div class="sg-avatar" aria-hidden="true">L</div>
-                                    <div class="sg-pet-main">
-                                        <div class="sg-pet-name"><i class="bi bi-paw" aria-hidden="true"></i><span>Luna</span></div>
-                                        <div class="sg-pet-sub">Socializacion</div>
-                                        <div class="sg-progress">
-                                            <div class="sg-progress-head">
-                                                <span>Progreso</span>
-                                                <span>60%</span>
-                                            </div>
-                                            <div class="sg-progress-bar"><div class="sg-progress-fill" style="width: 60%"></div></div>
+                            @empty
+                                <div class="sg-pet">
+                                    <div class="sg-pet-row">
+                                        <div class="sg-avatar" aria-hidden="true">0</div>
+                                        <div class="sg-pet-main">
+                                            <div class="sg-pet-name"><i class="bi bi-paw" aria-hidden="true"></i><span>No tienes mascotas registradas</span></div>
+                                            <div class="sg-pet-sub">Cuando registres una mascota, aparecerá aquí.</div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-
-                            <div class="sg-pet">
-                                <div class="sg-pet-row">
-                                    <div class="sg-avatar" aria-hidden="true">R</div>
-                                    <div class="sg-pet-main">
-                                        <div class="sg-pet-name"><i class="bi bi-paw" aria-hidden="true"></i><span>Rocky</span></div>
-                                        <div class="sg-pet-sub">Sin servicio activo</div>
-                                    </div>
-                                </div>
-                            </div>
+                            @endforelse
                         </div>
 
                         <div class="sg-tabs" role="tablist" aria-label="Categorias">
-                            <button class="sg-tab sg-tab--active" type="button" role="tab" aria-selected="true">Todos</button>
-                            <button class="sg-tab" type="button" role="tab" aria-selected="false">Entrenamiento</button>
-                            <button class="sg-tab" type="button" role="tab" aria-selected="false">Comportamiento</button>
-                            <button class="sg-tab" type="button" role="tab" aria-selected="false">General</button>
+                            <button class="sg-tab sg-tab--active" type="button" role="tab" aria-selected="true">Todos los seguimientos</button>
                         </div>
                     </div>
 
                     <div class="sg-list" aria-label="Reportes">
-                        <article class="sg-item" data-sg-item>
-                            <div class="sg-item-head" data-sg-toggle>
-                                <div class="sg-item-left">
-                                    <div class="sg-avatar" aria-hidden="true">M</div>
-                                    <div class="sg-item-main">
-                                        <div class="sg-item-title-row">
-                                            <div class="sg-item-title">Sesion de Obediencia Basica</div>
-                                            <span class="sg-pill sg-pill--entreno">Entrenamiento</span>
-                                        </div>
-                                        <div class="sg-meta">
-                                            <span><i class="bi bi-person" aria-hidden="true"></i>Max</span>
-                                            <span><i class="bi bi-calendar" aria-hidden="true"></i>2026-03-08</span>
-                                            <span><i class="bi bi-activity" aria-hidden="true"></i>Carlos Martinez</span>
+                        @forelse (($reports ?? []) as $report)
+                            <article class="sg-item" data-sg-item>
+                                <div class="sg-item-head" data-sg-toggle>
+                                    <div class="sg-item-left">
+                                        <div class="sg-avatar" aria-hidden="true">{{ mb_strtoupper(mb_substr($report->pet_name ?? 'M', 0, 1)) }}</div>
+                                        <div class="sg-item-main">
+                                            <div class="sg-item-title-row">
+                                                <div class="sg-item-title">{{ $report->pet_name }} - {{ $report->activity_name ?: 'Seguimiento' }}</div>
+                                            </div>
+                                            <div class="sg-meta">
+                                                <span><i class="bi bi-calendar-event" aria-hidden="true"></i>{{ optional($report->created_at ? \Carbon\Carbon::parse($report->created_at) : null)->format('d/m/Y H:i') }}</span>
+                                                <span><i class="bi bi-person" aria-hidden="true"></i>{{ $report->trainer_name ?: 'Entrenador' }}</span>
+                                                <span><i class="bi bi-graph-up" aria-hidden="true"></i>{{ ucfirst($report->nivel_progreso ?? '') }}</span>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="sg-item-right">
-                                    <div class="sg-stars" aria-label="Calificacion 5 de 5">
-                                        <i class="bi bi-star-fill sg-star sg-star--on" aria-hidden="true"></i>
-                                        <i class="bi bi-star-fill sg-star sg-star--on" aria-hidden="true"></i>
-                                        <i class="bi bi-star-fill sg-star sg-star--on" aria-hidden="true"></i>
-                                        <i class="bi bi-star-fill sg-star sg-star--on" aria-hidden="true"></i>
-                                        <i class="bi bi-star-fill sg-star sg-star--on" aria-hidden="true"></i>
-                                    </div>
-                                    <button class="sg-chevron" type="button" data-sg-btn aria-expanded="false" aria-label="Ver detalle">
+                                    <button class="sg-more" type="button" data-sg-btn aria-expanded="false">
                                         <i class="bi bi-chevron-down" aria-hidden="true"></i>
                                     </button>
                                 </div>
-                            </div>
-
-                            <div class="sg-details" hidden>
-                                <div class="sg-section sg-section--summary">
-                                    <div class="sg-section-head">
-                                        <i class="bi bi-file-earmark-text" aria-hidden="true"></i>
-                                        <div class="sg-section-title">Resumen</div>
+                                <div class="sg-details" hidden>
+                                    <div class="sg-meta">
+                                        <span><i class="bi bi-heart" aria-hidden="true"></i>Estado: {{ $report->estado_animo ?: 'No registrado' }}</span>
+                                        <span><i class="bi bi-clock" aria-hidden="true"></i>Duración: {{ $report->duracion ? $report->duracion . ' minutos' : 'No registrada' }}</span>
                                     </div>
-                                    <div class="sg-section-body">Excelente progreso en comandos basicos. Max muestra gran disposicion para aprender y responde muy bien a los estimulos positivos.</div>
+                                    @if($report->notas)
+                                        <p>{{ $report->notas }}</p>
+                                    @endif
+                                    @if($report->mensaje_dueno)
+                                        <p>{{ $report->mensaje_dueno }}</p>
+                                    @endif
                                 </div>
-
-                                <div class="sg-section">
-                                    <div class="sg-section-head">
-                                        <i class="bi bi-graph-up" aria-hidden="true"></i>
-                                        <div class="sg-section-title">Detalles de la Sesion</div>
-                                    </div>
-                                    <div class="sg-checklist">
-                                        <div class="sg-check"><i class="bi bi-check-circle-fill" aria-hidden="true"></i><span>Trabajamos el comando 'sentado' con 95% de precision</span></div>
-                                        <div class="sg-check"><i class="bi bi-check-circle-fill" aria-hidden="true"></i><span>Mejora notable en 'quieto' - mantiene posicion por 30 segundos</span></div>
-                                        <div class="sg-check"><i class="bi bi-check-circle-fill" aria-hidden="true"></i><span>Comenzamos entrenamiento de 'ven aqui' con correa larga</span></div>
-                                        <div class="sg-check"><i class="bi bi-check-circle-fill" aria-hidden="true"></i><span>Socializacion con otros perros: comportamiento tranquilo</span></div>
-                                    </div>
-                                </div>
-
-                                <div class="sg-section">
-                                    <div class="sg-section-head">
-                                        <i class="bi bi-lightbulb" aria-hidden="true"></i>
-                                        <div class="sg-section-title">Recomendaciones para el Tutor</div>
-                                    </div>
-                                    <div class="sg-recos">
-                                        <div class="sg-reco"><div class="sg-reco-num">1</div><div class="sg-reco-text">Practicar 'sentado' 10 minutos diarios en casa</div></div>
-                                        <div class="sg-reco"><div class="sg-reco-num">2</div><div class="sg-reco-text">Usar premios pequenos para reforzar comandos</div></div>
-                                        <div class="sg-reco"><div class="sg-reco-num">3</div><div class="sg-reco-text">Evitar gritar los comandos, usar tono firme pero calmo</div></div>
-                                        <div class="sg-reco"><div class="sg-reco-num">4</div><div class="sg-reco-text">Continuar socializacion en parques con correa</div></div>
-                                    </div>
-                                </div>
-
-                                <div class="sg-section">
-                                    <div class="sg-section-head">
-                                        <i class="bi bi-image" aria-hidden="true"></i>
-                                        <div class="sg-section-title">Fotos de la Sesion</div>
-                                    </div>
-                                    <div class="sg-photos">
-                                        <div class="sg-photo" aria-hidden="true"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </article>
-
-                        <article class="sg-item" data-sg-item>
-                            <div class="sg-item-head" data-sg-toggle>
-                                <div class="sg-item-left">
-                                    <div class="sg-avatar" aria-hidden="true">M</div>
-                                    <div class="sg-item-main">
-                                        <div class="sg-item-title-row">
-                                            <div class="sg-item-title">Evaluacion de Comportamiento</div>
-                                            <span class="sg-pill sg-pill--comp">Comportamiento</span>
-                                        </div>
-                                        <div class="sg-meta">
-                                            <span><i class="bi bi-person" aria-hidden="true"></i>Max</span>
-                                            <span><i class="bi bi-calendar" aria-hidden="true"></i>2026-03-01</span>
-                                            <span><i class="bi bi-activity" aria-hidden="true"></i>Carlos Martinez</span>
+                            </article>
+                        @empty
+                            <article class="sg-item" data-sg-item>
+                                <div class="sg-item-head" data-sg-toggle>
+                                    <div class="sg-item-left">
+                                        <div class="sg-avatar" aria-hidden="true">0</div>
+                                        <div class="sg-item-main">
+                                            <div class="sg-item-title-row">
+                                                <div class="sg-item-title">No tienes reportes registrados</div>
+                                            </div>
+                                            <div class="sg-meta">
+                                                <span><i class="bi bi-file-earmark-text" aria-hidden="true"></i>Cuando exista un reporte, aparecerá aquí.</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="sg-item-right">
-                                    <div class="sg-stars" aria-label="Calificacion 4 de 5">
-                                        <i class="bi bi-star-fill sg-star sg-star--on" aria-hidden="true"></i>
-                                        <i class="bi bi-star-fill sg-star sg-star--on" aria-hidden="true"></i>
-                                        <i class="bi bi-star-fill sg-star sg-star--on" aria-hidden="true"></i>
-                                        <i class="bi bi-star-fill sg-star sg-star--on" aria-hidden="true"></i>
-                                        <i class="bi bi-star sg-star" aria-hidden="true"></i>
-                                    </div>
-                                    <button class="sg-chevron" type="button" data-sg-btn aria-expanded="false" aria-label="Ver detalle">
-                                        <i class="bi bi-chevron-down" aria-hidden="true"></i>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="sg-details" hidden>
-                                <div class="sg-section sg-section--summary">
-                                    <div class="sg-section-head">
-                                        <i class="bi bi-file-earmark-text" aria-hidden="true"></i>
-                                        <div class="sg-section-title">Resumen</div>
-                                    </div>
-                                    <div class="sg-section-body">Max presenta ansiedad leve por separacion que estamos trabajando. Su nivel de energia es alto y necesita actividad fisica regular.</div>
-                                </div>
-                            </div>
-                        </article>
-
-                        <article class="sg-item" data-sg-item>
-                            <div class="sg-item-head" data-sg-toggle>
-                                <div class="sg-item-left">
-                                    <div class="sg-avatar" aria-hidden="true">L</div>
-                                    <div class="sg-item-main">
-                                        <div class="sg-item-title-row">
-                                            <div class="sg-item-title">Sesion de Socializacion</div>
-                                            <span class="sg-pill sg-pill--entreno">Entrenamiento</span>
-                                        </div>
-                                        <div class="sg-meta">
-                                            <span><i class="bi bi-person" aria-hidden="true"></i>Luna</span>
-                                            <span><i class="bi bi-calendar" aria-hidden="true"></i>2026-03-05</span>
-                                            <span><i class="bi bi-activity" aria-hidden="true"></i>Maria Rodriguez</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="sg-item-right">
-                                    <div class="sg-stars" aria-label="Calificacion 5 de 5">
-                                        <i class="bi bi-star-fill sg-star sg-star--on" aria-hidden="true"></i>
-                                        <i class="bi bi-star-fill sg-star sg-star--on" aria-hidden="true"></i>
-                                        <i class="bi bi-star-fill sg-star sg-star--on" aria-hidden="true"></i>
-                                        <i class="bi bi-star-fill sg-star sg-star--on" aria-hidden="true"></i>
-                                        <i class="bi bi-star-fill sg-star sg-star--on" aria-hidden="true"></i>
-                                    </div>
-                                    <button class="sg-chevron" type="button" data-sg-btn aria-expanded="false" aria-label="Ver detalle">
-                                        <i class="bi bi-chevron-down" aria-hidden="true"></i>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="sg-details" hidden>
-                                <div class="sg-section sg-section--summary">
-                                    <div class="sg-section-head">
-                                        <i class="bi bi-file-earmark-text" aria-hidden="true"></i>
-                                        <div class="sg-section-title">Resumen</div>
-                                    </div>
-                                    <div class="sg-section-body">Luna tuvo un excelente dia de socializacion. Interactuo muy bien con perros de diferentes tamanos y mostro un temperamento equilibrado.</div>
-                                </div>
-                            </div>
-                        </article>
-
-                        <article class="sg-item" data-sg-item>
-                            <div class="sg-item-head" data-sg-toggle>
-                                <div class="sg-item-left">
-                                    <div class="sg-avatar" aria-hidden="true">R</div>
-                                    <div class="sg-item-main">
-                                        <div class="sg-item-title-row">
-                                            <div class="sg-item-title">Reporte de Guarderia</div>
-                                            <span class="sg-pill sg-pill--general">General</span>
-                                        </div>
-                                        <div class="sg-meta">
-                                            <span><i class="bi bi-person" aria-hidden="true"></i>Rocky</span>
-                                            <span><i class="bi bi-calendar" aria-hidden="true"></i>2026-02-28</span>
-                                            <span><i class="bi bi-activity" aria-hidden="true"></i>Carlos Martinez</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="sg-item-right">
-                                    <div class="sg-stars" aria-label="Calificacion 4 de 5">
-                                        <i class="bi bi-star-fill sg-star sg-star--on" aria-hidden="true"></i>
-                                        <i class="bi bi-star-fill sg-star sg-star--on" aria-hidden="true"></i>
-                                        <i class="bi bi-star-fill sg-star sg-star--on" aria-hidden="true"></i>
-                                        <i class="bi bi-star-fill sg-star sg-star--on" aria-hidden="true"></i>
-                                        <i class="bi bi-star sg-star" aria-hidden="true"></i>
-                                    </div>
-                                    <button class="sg-chevron" type="button" data-sg-btn aria-expanded="false" aria-label="Ver detalle">
-                                        <i class="bi bi-chevron-down" aria-hidden="true"></i>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="sg-details" hidden>
-                                <div class="sg-section sg-section--summary">
-                                    <div class="sg-section-head">
-                                        <i class="bi bi-file-earmark-text" aria-hidden="true"></i>
-                                        <div class="sg-section-title">Resumen</div>
-                                    </div>
-                                    <div class="sg-section-body">Rocky disfruto mucho su dia en guarderia. Mostro buen comportamiento general y se integro bien con el grupo.</div>
-                                </div>
-                            </div>
-                        </article>
+                            </article>
+                        @endforelse
                     </div>
                 </section>
                 </div>

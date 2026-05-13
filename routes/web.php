@@ -93,6 +93,10 @@ Route::get('/dashboard/pagos', [OwnerModulesController::class, 'pagos'])
     ->middleware('auth')
     ->name('owner.pagos');
 
+Route::post('/dashboard/pagos/reservas/{reserva}', [OwnerModulesController::class, 'pagarReserva'])
+    ->middleware('auth')
+    ->name('owner.pagos.reservas.pagar');
+
 Route::get('/dashboard/plan-padrino', [OwnerModulesController::class, 'planPadrino'])
     ->middleware('auth')
     ->name('owner.planpadrino');
@@ -187,6 +191,10 @@ Route::get('/entrenador/seguimiento', [TrainerModulesController::class, 'seguimi
     ->middleware('auth')
     ->name('entrenador.seguimiento');
 
+Route::post('/entrenador/seguimiento', [TrainerModulesController::class, 'storeSeguimiento'])
+    ->middleware('auth')
+    ->name('entrenador.seguimiento.store');
+
 Route::get('/entrenador/mi-horario', [TrainerModulesController::class, 'horario'])
     ->middleware('auth')
     ->name('entrenador.horario');
@@ -198,6 +206,10 @@ Route::post('/entrenador/mi-horario/availability', [TrainerModulesController::cl
 Route::get('/entrenador/reservas', [TrainerModulesController::class, 'reservas'])
     ->middleware('auth')
     ->name('entrenador.reservas');
+
+Route::post('/entrenador/reservas/{reserva}/estado', [TrainerModulesController::class, 'updateReservaEstado'])
+    ->middleware('auth')
+    ->name('entrenador.reservas.estado');
 
 Route::get('/entrenador/chat', [TrainerModulesController::class, 'chat'])
     ->middleware('auth')

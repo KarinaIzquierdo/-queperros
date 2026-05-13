@@ -31,8 +31,10 @@ class OwnerReservaController extends Controller
             ]);
         }
 
+        $mascotaKey = Schema::hasColumn('mascotas', 'id_mascota') ? 'id_mascota' : 'id';
+
         $pet = DB::table('mascotas')
-            ->where('id', (int) $validated['mascota_id'])
+            ->where($mascotaKey, (int) $validated['mascota_id'])
             ->where('id_dueno', (int) $user->id)
             ->first();
 
@@ -42,15 +44,18 @@ class OwnerReservaController extends Controller
             ]);
         }
 
-        if (!Schema::hasTable('servicios')) {
+        $hasServicios = Schema::hasTable('servicios');
+        $hasActividades = !$hasServicios && Schema::hasTable('actividades');
+
+        if (!$hasServicios && !$hasActividades) {
             return redirect()->back()->withInput()->withErrors([
                 'servicio_id' => 'No se pudo validar el servicio. Verifica la estructura de la base de datos.',
             ]);
         }
 
-        $serviceExists = DB::table('servicios')
-            ->where('id', (int) $validated['servicio_id'])
-            ->exists();
+        $serviceExists = $hasServicios
+            ? DB::table('servicios')->where('id', (int) $validated['servicio_id'])->exists()
+            : DB::table('actividades')->where('id_actividad', (int) $validated['servicio_id'])->exists();
 
         if (!$serviceExists) {
             return redirect()->back()->withInput()->withErrors([
@@ -143,11 +148,13 @@ class OwnerReservaController extends Controller
             ]);
         }
 
+        $reservaKey = Schema::hasColumn('reservas', 'id_reserva') ? 'id_reserva' : 'id';
+
         $row = DB::table('reservas as r')
-            ->join('mascotas as m', 'm.id', '=', 'r.mascota_id')
-            ->where('r.id', (int) $reserva)
+            ->join('mascotas as m', 'm.id', '=', 'r.id_mascota')
+            ->where("r.$reservaKey", (int) $reserva)
             ->where('m.id_dueno', (int) $user->id)
-            ->select(['r.id', 'r.estado'])
+            ->select(["r.$reservaKey as id", 'r.estado'])
             ->first();
 
         if (!$row) {
@@ -156,7 +163,7 @@ class OwnerReservaController extends Controller
             ]);
         }
 
-        if ((string) $row->estado !== 'pendiente') {
+        if (mb_strtolower((string) $row->estado) !== 'pendiente') {
             return redirect()->back()->withErrors([
                 'error' => 'Solo puedes modificar reservas en estado pendiente.',
             ]);
@@ -186,7 +193,7 @@ class OwnerReservaController extends Controller
             ARRAY_FILTER_USE_BOTH
         );
 
-        DB::table('reservas')->where('id', (int) $row->id)->update($payload);
+        DB::table('reservas')->where($reservaKey, (int) $row->id)->update($payload);
 
         return redirect()->route('owner.reservas')->with('success', 'Reserva modificada correctamente.');
     }
@@ -201,11 +208,13 @@ class OwnerReservaController extends Controller
             ]);
         }
 
+        $reservaKey = Schema::hasColumn('reservas', 'id_reserva') ? 'id_reserva' : 'id';
+
         $row = DB::table('reservas as r')
-            ->join('mascotas as m', 'm.id', '=', 'r.mascota_id')
-            ->where('r.id', (int) $reserva)
+            ->join('mascotas as m', 'm.id', '=', 'r.id_mascota')
+            ->where("r.$reservaKey", (int) $reserva)
             ->where('m.id_dueno', (int) $user->id)
-            ->select(['r.id', 'r.estado'])
+            ->select(["r.$reservaKey as id", 'r.estado'])
             ->first();
 
         if (!$row) {
@@ -214,14 +223,14 @@ class OwnerReservaController extends Controller
             ]);
         }
 
-        if ((string) $row->estado !== 'pendiente') {
+        if (mb_strtolower((string) $row->estado) !== 'pendiente') {
             return redirect()->back()->withErrors([
                 'error' => 'Solo puedes cancelar reservas en estado pendiente.',
             ]);
         }
 
         $payload = [
-            'estado' => 'cancelado',
+            'estado' => 'Cancelada',
             'updated_at' => now(),
         ];
 
@@ -232,7 +241,7 @@ class OwnerReservaController extends Controller
             ARRAY_FILTER_USE_BOTH
         );
 
-        DB::table('reservas')->where('id', (int) $row->id)->update($payload);
+        DB::table('reservas')->where($reservaKey, (int) $row->id)->update($payload);
 
         return redirect()->route('owner.reservas')->with('success', 'Reserva cancelada correctamente.');
     }

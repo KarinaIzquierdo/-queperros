@@ -131,6 +131,12 @@
                             </ul>
                         </article>
                     </div>
+
+                    @if (Route::has('register'))
+                        <div class="mq-services-cta">
+                            <a class="mq-services-register" href="{{ route('register') }}">Regístrate para solicitar un servicio</a>
+                        </div>
+                    @endif
                 </div>
             </section>
 

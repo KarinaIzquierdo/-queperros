@@ -36,7 +36,7 @@
                 ])
 
                 <section class="ma-grid" aria-label="Mascotas asignadas">
-                    @foreach (($pets ?? []) as $pet)
+                    @forelse (($pets ?? []) as $pet)
                         <article class="ma-card">
                             <div class="ma-top">
                                 <div class="ma-avatar" aria-hidden="true">
@@ -74,7 +74,16 @@
                                 <a class="ma-btn ma-btn--ghost" href="#">Mensaje</a>
                             </div>
                         </article>
-                    @endforeach
+                    @empty
+                        <article class="ma-card">
+                            <div class="ma-top">
+                                <div class="ma-main">
+                                    <div class="ma-name">No tienes mascotas asignadas</div>
+                                    <div class="ma-breed">Cuando tengas reservas asignadas, las mascotas aparecerán aquí.</div>
+                                </div>
+                            </div>
+                        </article>
+                    @endforelse
                 </section>
             </main>
         </div>

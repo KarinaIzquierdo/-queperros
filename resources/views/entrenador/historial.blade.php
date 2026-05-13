@@ -53,7 +53,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (($records ?? []) as $row)
+                                @forelse (($records ?? []) as $row)
                                     <tr>
                                         <td>{{ $row['date'] ?? '' }}</td>
                                         <td>{{ $row['pet'] ?? '' }}</td>
@@ -61,7 +61,11 @@
                                         <td>{{ $row['duration'] ?? '' }}</td>
                                         <td>{{ $row['notes'] ?? '' }}</td>
                                     </tr>
-                                @endforeach
+                                @empty
+                                    <tr>
+                                        <td colspan="5">No hay historial registrado.</td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>

@@ -90,34 +90,44 @@
             <img class="mq-login-footer-heading" src="{{ asset('img/footer-servicios.png') }}" alt="Servicios">
             <ul class="mq-footer-services-list" aria-label="Listado de servicios">
                 <li class="mq-footer-service-item">
-                    <span class="mq-footer-service-icon-wrap" aria-hidden="true">
-                        <img class="mq-footer-service-icon" src="{{ asset('img/icono1.png') }}" alt="">
-                    </span>
-                    <span class="mq-footer-service-text">Entrenamiento básico integral y deportivo</span>
+                    <a class="mq-footer-service-link" href="{{ Route::has('register') ? route('register') : '#' }}">
+                        <span class="mq-footer-service-icon-wrap" aria-hidden="true">
+                            <img class="mq-footer-service-icon" src="{{ asset('img/icono1.png') }}" alt="">
+                        </span>
+                        <span class="mq-footer-service-text">Entrenamiento básico integral y deportivo</span>
+                    </a>
                 </li>
                 <li class="mq-footer-service-item">
-                    <span class="mq-footer-service-icon-wrap" aria-hidden="true">
-                        <img class="mq-footer-service-icon" src="{{ asset('img/icono2.png') }}" alt="">
-                    </span>
-                    <span class="mq-footer-service-text">Formación y crianza para perros de trabajo o especialidades</span>
+                    <a class="mq-footer-service-link" href="{{ Route::has('register') ? route('register') : '#' }}">
+                        <span class="mq-footer-service-icon-wrap" aria-hidden="true">
+                            <img class="mq-footer-service-icon" src="{{ asset('img/icono2.png') }}" alt="">
+                        </span>
+                        <span class="mq-footer-service-text">Formación y crianza para perros de trabajo o especialidades</span>
+                    </a>
                 </li>
                 <li class="mq-footer-service-item">
-                    <span class="mq-footer-service-icon-wrap" aria-hidden="true">
-                        <img class="mq-footer-service-icon" src="{{ asset('img/icono3.png') }}" alt="">
-                    </span>
-                    <span class="mq-footer-service-text">Hotel canino</span>
+                    <a class="mq-footer-service-link" href="{{ Route::has('register') ? route('register') : '#' }}">
+                        <span class="mq-footer-service-icon-wrap" aria-hidden="true">
+                            <img class="mq-footer-service-icon" src="{{ asset('img/icono3.png') }}" alt="">
+                        </span>
+                        <span class="mq-footer-service-text">Hotel canino</span>
+                    </a>
                 </li>
                 <li class="mq-footer-service-item">
-                    <span class="mq-footer-service-icon-wrap" aria-hidden="true">
-                        <img class="mq-footer-service-icon" src="{{ asset('img/icono4.png') }}" alt="">
-                    </span>
-                    <span class="mq-footer-service-text">Día de diversión en Más que Perros</span>
+                    <a class="mq-footer-service-link" href="{{ Route::has('register') ? route('register') : '#' }}">
+                        <span class="mq-footer-service-icon-wrap" aria-hidden="true">
+                            <img class="mq-footer-service-icon" src="{{ asset('img/icono4.png') }}" alt="">
+                        </span>
+                        <span class="mq-footer-service-text">Día de diversión en Más que Perros</span>
+                    </a>
                 </li>
                 <li class="mq-footer-service-item">
-                    <span class="mq-footer-service-icon-wrap" aria-hidden="true">
-                        <img class="mq-footer-service-icon" src="{{ asset('img/icono5.png') }}" alt="">
-                    </span>
-                    <span class="mq-footer-service-text">Plan padrino</span>
+                    <a class="mq-footer-service-link" href="{{ Route::has('register') ? route('register') : '#' }}">
+                        <span class="mq-footer-service-icon-wrap" aria-hidden="true">
+                            <img class="mq-footer-service-icon" src="{{ asset('img/icono5.png') }}" alt="">
+                        </span>
+                        <span class="mq-footer-service-text">Plan padrino</span>
+                    </a>
                 </li>
             </ul>
         </div>

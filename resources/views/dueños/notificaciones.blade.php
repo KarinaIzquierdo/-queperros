@@ -42,7 +42,7 @@
                     <div class="nt-head-row">
                         <div>
                             <h1 class="nt-title">Notificaciones</h1>
-                            <p class="nt-sub">2 sin leer</p>
+                            <p class="nt-sub">{{ $unreadCount ?? 0 }} sin leer</p>
                         </div>
                         <a href="#" class="nt-mark-all">Marcar todas como leidas</a>
                     </div>
@@ -57,72 +57,41 @@
                     </div>
 
                     <div class="nt-list">
-                        <article class="nt-item nt-item--unread">
-                            <div class="nt-ico-wrap nt-ico--blue">
-                                <i class="bi bi-calendar-event" aria-hidden="true"></i>
-                            </div>
-                            <div class="nt-main">
-                                <div class="nt-top-row">
-                                    <h2 class="nt-item-title">Sesion manana</h2>
-                                    <span class="nt-dot" aria-hidden="true"></span>
+                        @forelse (($notifications ?? []) as $notification)
+                            @php
+                                $type = (string) ($notification->tipo ?? 'general');
+                                $icon = $type === 'pago' ? 'bi-credit-card' : ($type === 'cita' ? 'bi-calendar-check' : 'bi-bell');
+                                $color = $type === 'pago' ? 'blue' : ($type === 'cita' ? 'green' : 'gray');
+                            @endphp
+                            <article class="nt-item {{ empty($notification->leida_en) ? 'nt-item--unread' : '' }}">
+                                <div class="nt-ico-wrap nt-ico--{{ $color }}">
+                                    <i class="bi {{ $icon }}" aria-hidden="true"></i>
                                 </div>
-                                <p class="nt-desc">Recuerda la sesion de entrenamiento de Max manana a las 10:00 am</p>
-                                <div class="nt-time">Hace 2 horas</div>
-                            </div>
-                        </article>
-
-                        <article class="nt-item nt-item--unread">
-                            <div class="nt-ico-wrap nt-ico--purple">
-                                <i class="bi bi-paw" aria-hidden="true"></i>
-                            </div>
-                            <div class="nt-main">
-                                <div class="nt-top-row">
-                                    <h2 class="nt-item-title">Nuevo reporte disponible</h2>
-                                    <span class="nt-dot" aria-hidden="true"></span>
+                                <div class="nt-main">
+                                    <div class="nt-top-row">
+                                        <h2 class="nt-item-title">{{ $notification->titulo }}</h2>
+                                    </div>
+                                    <p class="nt-desc">{{ $notification->mensaje }}</p>
+                                    <div class="nt-time">{{ optional($notification->created_at ? \Carbon\Carbon::parse($notification->created_at) : null)->diffForHumans() }}</div>
+                                    @if(!empty($notification->url))
+                                        <a class="nt-mark-all" href="{{ $notification->url }}">Ver detalle</a>
+                                    @endif
                                 </div>
-                                <p class="nt-desc">El entrenador ha subido un nuevo reporte de progreso para Max</p>
-                                <div class="nt-time">Hace 5 horas</div>
-                            </div>
-                        </article>
-
-                        <article class="nt-item">
-                            <div class="nt-ico-wrap nt-ico--green">
-                                <i class="bi bi-check2-circle" aria-hidden="true"></i>
-                            </div>
-                            <div class="nt-main">
-                                <div class="nt-top-row">
-                                    <h2 class="nt-item-title">Pago recibido</h2>
+                            </article>
+                        @empty
+                            <article class="nt-item">
+                                <div class="nt-ico-wrap nt-ico--gray">
+                                    <i class="bi bi-bell" aria-hidden="true"></i>
                                 </div>
-                                <p class="nt-desc">Hemos recibido tu pago de $150.000 por el entrenamiento de Marzo</p>
-                                <div class="nt-time">Hace 1 dia</div>
-                            </div>
-                        </article>
-
-                        <article class="nt-item">
-                            <div class="nt-ico-wrap nt-ico--pink">
-                                <i class="bi bi-heart" aria-hidden="true"></i>
-                            </div>
-                            <div class="nt-main">
-                                <div class="nt-top-row">
-                                    <h2 class="nt-item-title">Promocion especial</h2>
+                                <div class="nt-main">
+                                    <div class="nt-top-row">
+                                        <h2 class="nt-item-title">No tienes notificaciones</h2>
+                                    </div>
+                                    <p class="nt-desc">Cuando recibas una notificación, aparecerá aquí.</p>
+                                    <div class="nt-time"></div>
                                 </div>
-                                <p class="nt-desc">20% de descuento en guarderia durante todo el mes de Marzo</p>
-                                <div class="nt-time">Hace 3 dias</div>
-                            </div>
-                        </article>
-
-                        <article class="nt-item">
-                            <div class="nt-ico-wrap nt-ico--gray">
-                                <i class="bi bi-bell" aria-hidden="true"></i>
-                            </div>
-                            <div class="nt-main">
-                                <div class="nt-top-row">
-                                    <h2 class="nt-item-title">Vacuna pendiente</h2>
-                                </div>
-                                <p class="nt-desc">Luna necesita su vacuna de refuerzo. Agenda una cita pronto.</p>
-                                <div class="nt-time">Hace 5 dias</div>
-                            </div>
-                        </article>
+                            </article>
+                        @endforelse
                     </div>
                 </section>
                 </div>

@@ -3,7 +3,17 @@
     $mqTopbarUser = $user ?? (\Illuminate\Support\Facades\Auth::user());
     $mqTopbarName = Str::before($mqTopbarUser->name ?? 'Usuario', ' ');
     $mqTopbarRoleLabel = $roleLabel ?? '';
-    $mqTopbarNotifCount = $notifCount ?? 2;
+    $mqTopbarNotifications = collect();
+    if (\Illuminate\Support\Facades\Schema::hasTable('notificaciones') && $mqTopbarUser) {
+        $mqTopbarNotifications = \Illuminate\Support\Facades\DB::table('notificaciones')
+            ->where('user_id', (int) $mqTopbarUser->id)
+            ->orderByDesc('created_at')
+            ->limit(5)
+            ->get();
+    }
+    $mqTopbarNotifCount = \Illuminate\Support\Facades\Schema::hasTable('notificaciones') && $mqTopbarUser
+        ? \Illuminate\Support\Facades\DB::table('notificaciones')->where('user_id', (int) $mqTopbarUser->id)->whereNull('leida_en')->count()
+        : ($notifCount ?? 0);
 
     $mqTopbarProfileUrl = $profileUrl ?? '#';
     $mqTopbarSettingsUrl = $settingsUrl ?? '#';
@@ -111,29 +121,33 @@
         </div>
 
         <div class="mqx-notif-list">
-            <div class="mqx-notif-item">
-                <div class="mqx-notif-dot" aria-hidden="true"></div>
-                <div class="mqx-notif-body">
-                    <div class="mqx-notif-title">Cita confirmada</div>
-                    <div class="mqx-notif-sub">Tu cita para Rocky el 15 de marzo ha sido confirmada</div>
-                    <div class="mqx-notif-time">Hace 2h</div>
+            @forelse ($mqTopbarNotifications as $notification)
+                @php
+                    $mqTopbarNotifIcon = match($notification->tipo ?? '') {
+                        'pago' => 'bi-credit-card',
+                        'cita' => 'bi-calendar-check',
+                        default => 'bi-bell',
+                    };
+                @endphp
+                <a class="mqx-notif-item" href="{{ $notification->url ?: $mqTopbarNotificationsUrl }}">
+                    <div class="mqx-notif-icon">
+                        <i class="bi {{ $mqTopbarNotifIcon }}" aria-hidden="true"></i>
+                    </div>
+                    <div class="mqx-notif-body">
+                        <div class="mqx-notif-title">{{ $notification->titulo }}</div>
+                        <div class="mqx-notif-sub">{{ $notification->mensaje }}</div>
+                        <div class="mqx-notif-time">{{ optional($notification->created_at ? \Carbon\Carbon::parse($notification->created_at) : null)->diffForHumans() }}</div>
+                    </div>
+                </a>
+            @empty
+                <div class="mqx-notif-item mqx-notif-item--plain">
+                    <div class="mqx-notif-body">
+                        <div class="mqx-notif-title">No tienes notificaciones</div>
+                        <div class="mqx-notif-sub">Cuando recibas una notificación, aparecerá aquí.</div>
+                        <div class="mqx-notif-time"></div>
+                    </div>
                 </div>
-            </div>
-            <div class="mqx-notif-item">
-                <div class="mqx-notif-dot" aria-hidden="true"></div>
-                <div class="mqx-notif-body">
-                    <div class="mqx-notif-title">Vacuna pendiente</div>
-                    <div class="mqx-notif-sub">Luna necesita su vacuna de refuerzo</div>
-                    <div class="mqx-notif-time">Hace 1 dia</div>
-                </div>
-            </div>
-            <div class="mqx-notif-item mqx-notif-item--plain">
-                <div class="mqx-notif-body">
-                    <div class="mqx-notif-title">Promocion especial</div>
-                    <div class="mqx-notif-sub">20% de descuento en guarderia este mes</div>
-                    <div class="mqx-notif-time">Hace 3 dias</div>
-                </div>
-            </div>
+            @endforelse
         </div>
 
         <a class="mqx-notif-footer" href="{{ $mqTopbarNotificationsUrl }}">Ver todas las notificaciones</a>

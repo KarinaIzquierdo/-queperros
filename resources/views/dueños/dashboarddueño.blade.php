@@ -44,55 +44,74 @@
 
                 <section class="mq-feature" aria-label="Resumen de tu perro">
                     <div class="mq-feature-card">
+                        @if ($featuredPet)
                         <div class="mq-feature-left">
                             <div class="mq-feature-photo" aria-hidden="true">
-                                <img src="{{ asset('img/pet.png') }}" alt="">
+                                <img src="{{ $featuredPet->foto ? asset('storage/' . $featuredPet->foto) : asset('img/pet.png') }}" alt="">
                             </div>
                         </div>
                         <div class="mq-feature-main">
                             <div class="mq-feature-head">
-                                <div class="mq-feature-name">Max</div>
-                                <div class="mq-feature-breed">(Pastor Aleman)</div>
+                                <div class="mq-feature-name">{{ $featuredPet->nombre }}</div>
+                                <div class="mq-feature-breed">({{ $featuredPet->raza ?? 'Sin raza registrada' }})</div>
                             </div>
                             <div class="mq-feature-status">
                                 <div class="mq-feature-status-label">Estado actual:</div>
-                                <span class="mq-feature-badge">En entrenamiento</span>
+                                <span class="mq-feature-badge">{{ $featuredPet->estado_actual ?? 'Sin estado registrado' }}</span>
                             </div>
                             <div class="mq-feature-next">
                                 <div class="mq-feature-next-ico"><i class="bi bi-calendar2-check" aria-hidden="true"></i></div>
                                 <div>
                                     <div class="mq-feature-next-label">Proxima sesion:</div>
-                                    <div class="mq-feature-next-value">12 Marzo - 10:00 am</div>
+                                    <div class="mq-feature-next-value">Sin sesion programada</div>
                                 </div>
                             </div>
                             <div class="mq-feature-report">
                                 <div class="mq-feature-report-label">Ultimo reporte:</div>
-                                <div class="mq-feature-report-text">Mejora en obediencia básica. Excelente progreso en comandos de sentado y quieto.</div>
+                                <div class="mq-feature-report-text">Sin reportes registrados.</div>
                                 <a class="mq-feature-report-link" href="#">Ver reporte completo <i class="bi bi-chevron-right" aria-hidden="true"></i></a>
                             </div>
                         </div>
+                        @else
+                        <div class="mq-feature-main">
+                            <div class="mq-feature-head">
+                                <div class="mq-feature-name">No tienes mascotas registradas</div>
+                                <div class="mq-feature-breed"></div>
+                            </div>
+                            <div class="mq-feature-status">
+                                <div class="mq-feature-status-label">Cuando registres una mascota, aparecerá aquí.</div>
+                            </div>
+                            <div class="mq-feature-next">
+                                <div class="mq-feature-next-ico"><i class="bi bi-paw" aria-hidden="true"></i></div>
+                                <div>
+                                    <div class="mq-feature-next-label">Mascotas registradas:</div>
+                                    <div class="mq-feature-next-value">0</div>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
                     </div>
                 </section>
 
                 <section class="mq-kpis">
                     <div class="mq-kpi">
                         <div class="mq-kpi-ico"><i class="bi bi-paw" aria-hidden="true"></i></div>
-                        <div class="mq-kpi-value">3</div>
+                        <div class="mq-kpi-value">{{ $petCount ?? 0 }}</div>
                         <div class="mq-kpi-label">Mis Perros</div>
                     </div>
                     <div class="mq-kpi">
                         <div class="mq-kpi-ico"><i class="bi bi-calendar2-check" aria-hidden="true"></i></div>
-                        <div class="mq-kpi-value">2</div>
+                        <div class="mq-kpi-value">0</div>
                         <div class="mq-kpi-label">Reservas Activas</div>
                     </div>
                     <div class="mq-kpi">
                         <div class="mq-kpi-ico"><i class="bi bi-activity" aria-hidden="true"></i></div>
-                        <div class="mq-kpi-value">5</div>
+                        <div class="mq-kpi-value">0</div>
                         <div class="mq-kpi-label">Reportes</div>
                     </div>
                     <div class="mq-kpi">
                         <div class="mq-kpi-ico"><i class="bi bi-bell" aria-hidden="true"></i></div>
-                        <div class="mq-kpi-value">2</div>
+                        <div class="mq-kpi-value">0</div>
                         <div class="mq-kpi-label">Notificaciones</div>
                     </div>
                 </section>
@@ -108,26 +127,9 @@
                             <div class="mq-row">
                                 <div class="mq-row-ico"><i class="bi bi-calendar2-week" aria-hidden="true"></i></div>
                                 <div class="mq-row-body">
-                                    <div class="mq-row-title">Entrenamiento Basico</div>
-                                    <div class="mq-row-sub">Max - 12 Mar</div>
+                                    <div class="mq-row-title">No tienes reservas registradas</div>
+                                    <div class="mq-row-sub">Cuando tengas una reserva, aparecerá aquí.</div>
                                 </div>
-                                <span class="mq-pill mq-pill--ok">Confirmada</span>
-                            </div>
-                            <div class="mq-row">
-                                <div class="mq-row-ico"><i class="bi bi-calendar2-week" aria-hidden="true"></i></div>
-                                <div class="mq-row-body">
-                                    <div class="mq-row-title">Hotel Canino</div>
-                                    <div class="mq-row-sub">Luna - 15-20 Mar</div>
-                                </div>
-                                <span class="mq-pill mq-pill--warn">Pendiente</span>
-                            </div>
-                            <div class="mq-row">
-                                <div class="mq-row-ico"><i class="bi bi-calendar2-week" aria-hidden="true"></i></div>
-                                <div class="mq-row-body">
-                                    <div class="mq-row-title">Guarderia</div>
-                                    <div class="mq-row-sub">Rocky - 18 Mar</div>
-                                </div>
-                                <span class="mq-pill mq-pill--ok">Confirmada</span>
                             </div>
                         </div>
                     </article>
@@ -139,24 +141,10 @@
                         </header>
 
                         <div class="mq-panel-list">
-                            <div class="mq-note mq-note--blue">
-                                <div class="mq-note-dot"></div>
-                                <div class="mq-note-body">
-                                    <div class="mq-note-title">Sesion manana</div>
-                                    <div class="mq-note-sub">Recuerda la sesion de entrenamiento de Max manana a las 10:00 am</div>
-                                </div>
-                            </div>
-                            <div class="mq-note mq-note--blue">
-                                <div class="mq-note-dot"></div>
-                                <div class="mq-note-body">
-                                    <div class="mq-note-title">Nuevo reporte disponible</div>
-                                    <div class="mq-note-sub">El entrenador ha subido un nuevo reporte de progreso</div>
-                                </div>
-                            </div>
                             <div class="mq-note">
                                 <div class="mq-note-body">
-                                    <div class="mq-note-title">Promocion especial</div>
-                                    <div class="mq-note-sub">20% de descuento en guarderia este mes</div>
+                                    <div class="mq-note-title">No tienes notificaciones</div>
+                                    <div class="mq-note-sub">Cuando recibas una notificación, aparecerá aquí.</div>
                                 </div>
                             </div>
                         </div>
@@ -173,24 +161,10 @@
 
                     <div class="mq-activity-list">
                         <div class="mq-act">
-                            <div class="mq-act-ico mq-act-ico--pink"><i class="bi bi-file-earmark-text" aria-hidden="true"></i></div>
+                            <div class="mq-act-ico"><i class="bi bi-activity" aria-hidden="true"></i></div>
                             <div class="mq-act-body">
-                                <div class="mq-act-title">Nuevo reporte de entrenamiento - Max</div>
-                                <div class="mq-act-sub">Hace 2 horas</div>
-                            </div>
-                        </div>
-                        <div class="mq-act">
-                            <div class="mq-act-ico"><i class="bi bi-calendar2-check" aria-hidden="true"></i></div>
-                            <div class="mq-act-body">
-                                <div class="mq-act-title">Reserva confirmada - Hotel Canino</div>
-                                <div class="mq-act-sub">Hace 1 dia</div>
-                            </div>
-                        </div>
-                        <div class="mq-act">
-                            <div class="mq-act-ico mq-act-ico--green"><i class="bi bi-cash" aria-hidden="true"></i></div>
-                            <div class="mq-act-body">
-                                <div class="mq-act-title">Pago recibido - Entrenamiento</div>
-                                <div class="mq-act-sub">Hace 3 dias</div>
+                                <div class="mq-act-title">No hay actividades recientes</div>
+                                <div class="mq-act-sub">Cuando exista actividad, aparecerá aquí.</div>
                             </div>
                         </div>
                     </div>

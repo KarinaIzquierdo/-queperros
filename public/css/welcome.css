@@ -774,6 +774,35 @@ body.mq-body {
     justify-self: center;
 }
 
+.mq-services-cta {
+    display: flex;
+    justify-content: center;
+    margin-top: 42px;
+}
+
+.mq-services-register {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 58px;
+    padding: 0 34px;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #3a6cae;
+    font-family: var(--mq-font-heading);
+    font-size: 24px;
+    text-decoration: none;
+    box-shadow: 0 8px 0 rgba(0, 0, 0, 0.16);
+    border: 2px solid rgba(0, 0, 0, 0.20);
+    transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+}
+
+.mq-services-register:hover {
+    background: #fff2b8;
+    transform: translateY(-2px);
+    box-shadow: 0 11px 0 rgba(0, 0, 0, 0.16);
+}
+
 .mq-why {
     padding: 46px 0 164px;
     color: #ffffff;

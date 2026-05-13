@@ -45,7 +45,7 @@
                     </div>
 
                     <div class="mt-list">
-                        @foreach ($tasks as $task)
+                        @forelse ($tasks as $task)
                             <article class="mt-row {{ !empty($task['done']) ? 'mt-row--done' : '' }}" data-status="{{ $task['status'] }}">
                                 <div class="mt-left">
                                     <span class="mt-box" aria-hidden="true">
@@ -63,7 +63,16 @@
                                     <button class="mt-btn mt-btn--details" type="button">Detalles</button>
                                 </div>
                             </article>
-                        @endforeach
+                        @empty
+                            <article class="mt-row">
+                                <div class="mt-left">
+                                    <div class="mt-meta">
+                                        <div class="mt-name">No tienes tareas registradas</div>
+                                        <div class="mt-time">Cuando tengas tareas asignadas, aparecerán aquí.</div>
+                                    </div>
+                                </div>
+                            </article>
+                        @endforelse
                     </div>
                 </section>
             </main>
