@@ -1382,3 +1382,282 @@ border: 10px solid #9442A3;
         transform: translate(-10%, 10%);
     }
 }
+
+@media (max-width: 1200px) {
+    .mq-about-grid {
+        width: 100%;
+        gap: 32px;
+    }
+
+    .mq-about-title {
+        font-size: clamp(44px, 7vw, 72px);
+    }
+
+    .mq-about-text {
+        margin-top: 0;
+    }
+
+    .mq-card-ui h3 {
+        font-size: clamp(34px, 5vw, 52px);
+    }
+
+    .mq-mv-card {
+        border-width: 34px;
+    }
+
+    .mq-mv-card h3,
+    .mq-title--dark {
+        font-size: clamp(42px, 7vw, 72px);
+    }
+}
+
+@media (max-width: 900px) {
+    .mq-hero {
+        height: 62vh;
+        min-height: 430px;
+    }
+
+    .mq-hero-title {
+        font-size: clamp(52px, 14vw, 112px);
+        text-align: center;
+    }
+
+    .mq-about-wrap {
+        padding: 44px 0 22px;
+    }
+
+    .mq-about-grid,
+    .mq-about-title,
+    .mq-about-text {
+        grid-column: auto;
+    }
+
+    .mq-about-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .mq-about-card {
+        width: min(520px, 100%);
+        margin: 0 auto;
+    }
+
+    .mq-about-box {
+        height: min(460px, 68vw);
+        min-height: 300px;
+    }
+
+    .mq-about-title {
+        text-align: center;
+    }
+
+    .mq-about-text {
+        max-width: 760px;
+        margin: 0 auto;
+        font-size: 18px;
+        text-align: center;
+    }
+
+    .mq-tagline-text {
+        margin-top: 0;
+        color: #0f0f0f;
+        text-shadow: 0 2px 0 rgba(255, 255, 255, 0.4);
+    }
+
+    .mq-about-tagline {
+        position: relative;
+        top: auto;
+        left: auto;
+        margin-bottom: 14px;
+    }
+
+    .mq-rainbow {
+        width: 104px;
+        left: -18px;
+        top: -36px;
+    }
+
+    .mq-services-wrap {
+        padding: 76px 0 84px;
+    }
+
+    .mq-services-grid {
+        grid-template-columns: 1fr;
+        max-width: 680px;
+        gap: 28px;
+    }
+
+    .mq-services-center {
+        width: 100%;
+    }
+
+    .mq-card-ui {
+        padding: 28px 24px;
+        min-height: auto;
+    }
+
+    .mq-card-ui span {
+        font-size: 21px;
+    }
+
+    .mq-why {
+        margin-top: 0;
+        padding: 68px 0 110px;
+    }
+
+    .mq-why p {
+        font-size: 22px;
+    }
+
+    .mq-mv-grid {
+        grid-template-columns: 1fr;
+        max-width: 680px;
+        padding-bottom: 70px;
+    }
+
+    .mq-pet {
+        width: 160px;
+        bottom: -76px;
+    }
+
+    .mq-bark {
+        right: 18px;
+        top: -42px;
+        font-size: 28px;
+    }
+
+    .mq-values-wrap {
+        margin-top: 0;
+    }
+}
+
+@media (max-width: 640px) {
+    .mq-container,
+    .mq-services-wrap .mq-container {
+        width: min(100% - 28px, 520px);
+    }
+
+    .mq-navbar {
+        width: calc(100% - 20px);
+        top: 10px;
+        padding: 10px 12px;
+    }
+
+    .mq-nav-link,
+    .mq-nav-login {
+        font-size: 14px;
+    }
+
+    .mq-hero {
+        min-height: 360px;
+    }
+
+    .mq-title--xl {
+        font-size: clamp(36px, 12vw, 58px);
+    }
+
+    .mq-about-title {
+        font-size: clamp(38px, 13vw, 60px);
+    }
+
+    .mq-about-text {
+        font-size: 16px;
+        line-height: 1.5;
+    }
+
+    .mq-card-ui h3 {
+        font-size: clamp(30px, 11vw, 44px);
+    }
+
+    .mq-card-ui span {
+        font-size: 18px;
+    }
+
+    .mq-paw-item {
+        grid-template-columns: 38px 1fr;
+    }
+
+    .mq-paw,
+    .mq-paw img {
+        width: 38px;
+        height: 38px;
+    }
+
+    .mq-services-register {
+        width: 100%;
+        min-height: 54px;
+        padding: 0 20px;
+        font-size: 18px;
+        text-align: center;
+    }
+
+    .mq-mv-card {
+        border-width: 18px;
+        padding: 26px 20px 30px;
+        min-height: auto;
+    }
+
+    .mq-mv-card h3,
+    .mq-title--dark {
+        font-size: clamp(36px, 13vw, 58px);
+    }
+
+    .mq-mv-card p {
+        font-size: 16px;
+    }
+
+    .mq-values-grid {
+        margin-top: 76px;
+    }
+
+    .mq-values-badge,
+    .mq-values-dog {
+        display: none;
+    }
+
+    .mq-cookie-inner {
+        width: 100%;
+        grid-template-columns: 1fr;
+        padding: 18px 16px;
+    }
+
+    .mq-cookie-bone {
+        display: none;
+    }
+
+    .mq-cookie-actions {
+        gap: 12px;
+        padding-right: 0;
+    }
+}
+
+@media (max-width: 420px) {
+    .mq-nav-center {
+        font-size: 20px;
+    }
+
+    .mq-user-icon {
+        width: 36px;
+        height: 36px;
+    }
+
+    .mq-card-ui {
+        padding: 24px 18px;
+    }
+
+    .mq-why p {
+        font-size: 18px;
+    }
+
+    .mq-instagram-row {
+        margin-top: 42px;
+    }
+
+    .instagram-post {
+        border-width: 6px;
+        border-radius: 28px;
+    }
+
+    .instagram-phone-frame {
+        width: 100% !important;
+    }
+}

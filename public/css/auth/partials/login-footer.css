@@ -319,22 +319,73 @@
 
 @media (max-width: 980px) {
     .mq-login-bottom {
-        padding: 22px 16px;
+        margin-top: 0;
+        padding: 38px 18px;
+        overflow: hidden;
     }
 
     .mq-login-footer-inner {
         grid-template-columns: 1fr;
-        gap: 18px;
+        max-width: 620px;
+        gap: 34px;
         justify-items: center;
     }
 
     .mq-login-footer-left {
+        width: 100%;
+        margin-left: 0;
+        gap: 18px;
         justify-items: center;
         text-align: center;
     }
 
+    .mq-login-footer-brand {
+        width: min(330px, 86vw);
+    }
+
+    .mq-login-footer-tagline {
+        width: min(300px, 82vw);
+    }
+
+    .mq-login-footer-col {
+        width: 100%;
+        align-items: center;
+    }
+
+    .mq-footer-contact-info {
+        width: min(100%, 420px);
+        margin-left: 0;
+        justify-items: stretch;
+    }
+
+    .mq-footer-contact-row {
+        grid-template-columns: 22px minmax(0, 1fr);
+    }
+
+    .mq-footer-contact-text {
+        font-size: 16px;
+        overflow-wrap: anywhere;
+    }
+
+    .mq-footer-social.example-2 {
+        margin-left: 0;
+        flex-wrap: wrap;
+        gap: 14px;
+    }
+
+    .mq-footer-social.example-2 .icon-content {
+        margin: 0;
+    }
+
+    .mq-login-footer-heading {
+        width: min(300px, 82vw);
+        margin-left: 0;
+    }
+
     .mq-login-footer-services {
         margin-left: 0;
+        width: 100%;
+        justify-self: stretch;
     }
 
     .mq-login-footer-heading {
@@ -348,7 +399,79 @@
         column-gap: 12px;
     }
 
+    .mq-footer-service-item,
+    .mq-footer-service-item:nth-child(3) {
+        grid-area: auto;
+        justify-self: stretch;
+        margin: 0;
+    }
+
     .mq-footer-col {
         max-width: 420px;
+    }
+}
+
+@media (max-width: 560px) {
+    .mq-login-bottom {
+        padding: 34px 18px 42px;
+    }
+
+    .mq-login-footer-inner {
+        justify-items: stretch;
+        gap: 30px;
+    }
+
+    .mq-login-footer-left {
+        align-items: center;
+    }
+
+    .mq-login-footer-brand {
+        width: min(280px, 78vw);
+    }
+
+    .mq-login-footer-tagline {
+        width: min(260px, 74vw);
+    }
+
+    .mq-login-footer-col,
+    .mq-login-footer-services {
+        width: 100%;
+    }
+
+    .mq-footer-service-link {
+        grid-template-columns: 48px 1fr;
+        gap: 12px;
+    }
+
+    .mq-footer-service-icon-wrap {
+        width: 48px;
+        height: 48px;
+    }
+
+    .mq-footer-service-icon {
+        width: 36px;
+        height: 36px;
+    }
+
+    .mq-footer-service-text {
+        font-size: 14px;
+        line-height: 1.25;
+    }
+}
+
+@media (max-width: 380px) {
+    .mq-login-bottom {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+    .mq-footer-social.example-2 .icon-content a {
+        width: 44px;
+        height: 44px;
+    }
+
+    .mq-footer-social.example-2 .icon-content a svg {
+        width: 25px;
+        height: 25px;
     }
 }
