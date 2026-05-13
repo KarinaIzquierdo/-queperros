@@ -57,11 +57,24 @@ class CaregiverDashboardController extends Controller
             ],
         ];
 
-        return view('cuidador.dashboardcuidador', [
+        return view('entrenador.dashboardentrenador', [
             'user' => $user,
-            'stats' => $stats,
-            'appointments' => $appointments,
-            'recentPets' => $recentPets,
+            'kpis' => [
+                'pending_reservations' => $stats['appointments_today'] ?? 0,
+                'confirmed_reservations' => $stats['completed_consults'] ?? 0,
+                'weekly_appointments' => $stats['appointments_today'] ?? 0,
+                'monthly_income' => 0,
+            ],
+            'pendingReservations' => array_map(function($app) {
+                return [
+                    'pet' => $app['pet'],
+                    'owner' => $app['owner'],
+                    'status' => 'PENDIENTE',
+                    'service' => 'Entrenamiento',
+                    'date' => $app['time'],
+                    'price' => 50000,
+                ];
+            }, $appointments),
         ]);
     }
 }

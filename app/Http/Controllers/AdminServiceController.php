@@ -6,6 +6,7 @@ use App\Models\Servicio;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 
 class AdminServiceController extends Controller
@@ -81,6 +82,8 @@ class AdminServiceController extends Controller
 
     public function store(Request $request)
     {
+        Log::info('Intentando crear servicio', ['request_data' => $request->all()]);
+
         $data = $request->validate([
             'name' => ['required', 'string', 'max:120'],
             'description' => ['nullable', 'string', 'max:1000'],
@@ -88,6 +91,8 @@ class AdminServiceController extends Controller
             'duration' => ['required', 'integer', 'min:1'],
             'category_id' => ['required', 'integer', 'exists:categorias_servicio,id'],
         ]);
+
+        Log::info('Datos validados', ['validated_data' => $data]);
 
         $payload = [
             'nombre' => $data['name'],
@@ -101,7 +106,15 @@ class AdminServiceController extends Controller
             $payload['activo'] = 1;
         }
 
-        Servicio::create($payload);
+        Log::info('Payload para crear servicio', ['payload' => $payload]);
+
+        try {
+            $servicio = Servicio::create($payload);
+            Log::info('Servicio creado exitosamente', ['servicio_id' => $servicio->id]);
+        } catch (\Exception $e) {
+            Log::error('Error al crear servicio', ['error' => $e->getMessage()]);
+            return redirect()->route('admin.services')->with('error', 'Error al crear servicio: ' . $e->getMessage());
+        }
 
         return redirect()->route('admin.services');
     }

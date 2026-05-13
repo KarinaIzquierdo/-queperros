@@ -354,24 +354,36 @@ class TrainerModulesController extends Controller
 
         $active = collect($conversations)->firstWhere('active', true) ?? $conversations[0];
 
-        $messages = [
-            [
-                'from' => 'owner',
-                'text' => 'Hola Juan, como estuvo Max hoy en el paseo?',
-            ],
-            [
-                'from' => 'trainer',
-                'text' => 'Hola Carlos! Max estuvo excelente, muy energico y obediente.',
-            ],
-            [
-                'from' => 'owner',
-                'text' => 'Que bueno escuchar eso! Ha mejorado mucho con el entrenamiento.',
-            ],
-            [
-                'from' => 'trainer',
-                'text' => 'Si, su progreso es muy notable. Mañana trabajaremos en comandos avanzados.',
-            ],
-        ];
+        // Cargar mensajes desde la base de datos
+        $dbMessages = \App\Models\ChatMessage::orderBy('created_at', 'asc')->get();
+        $messages = $dbMessages->map(function ($msg) use ($user) {
+            return [
+                'from' => $msg->sender_id === $user->id ? 'trainer' : 'owner',
+                'text' => $msg->message,
+            ];
+        })->toArray();
+
+        // Si no hay mensajes, usar mensajes de ejemplo
+        if (empty($messages)) {
+            $messages = [
+                [
+                    'from' => 'owner',
+                    'text' => 'Hola Juan, como estuvo Max hoy en el paseo?',
+                ],
+                [
+                    'from' => 'trainer',
+                    'text' => 'Hola Carlos! Max estuvo excelente, muy energico y obediente.',
+                ],
+                [
+                    'from' => 'owner',
+                    'text' => 'Que bueno escuchar eso! Ha mejorado mucho con el entrenamiento.',
+                ],
+                [
+                    'from' => 'trainer',
+                    'text' => 'Si, su progreso es muy notable. Mañana trabajaremos en comandos avanzados.',
+                ],
+            ];
+        }
 
         return view('entrenador.chat', [
             'user' => $user,
@@ -379,6 +391,23 @@ class TrainerModulesController extends Controller
             'activeConversation' => $active,
             'messages' => $messages,
         ]);
+    }
+
+    public function sendMessage(Request $request)
+    {
+        $validated = $request->validate([
+            'message' => ['required', 'string', 'max:1000'],
+        ]);
+
+        // Guardar el mensaje en la base de datos
+        \App\Models\ChatMessage::create([
+            'sender_id' => Auth::id(),
+            'message' => $validated['message'],
+            'sender_type' => 'trainer',
+            'is_read' => false,
+        ]);
+
+        return response()->json(['success' => true]);
     }
 
     public function notificaciones()
@@ -443,5 +472,55 @@ class TrainerModulesController extends Controller
             'user' => $user,
             'profile' => $profile,
         ]);
+    }
+
+    public function updatePerfil(Request $request)
+    {
+        $user = Auth::user();
+
+        $validated = $request->validate([
+            'nombre' => ['required', 'string', 'max:255'],
+            'apellido' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255'],
+            'telefono' => ['nullable', 'string', 'max:60'],
+            'especialidad' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $fullName = trim($validated['nombre'] . ' ' . $validated['apellido']);
+
+        $user->name = $fullName;
+        $user->email = $validated['email'];
+        $user->save();
+
+        if (Schema::hasTable('entrenadores')) {
+            $cols = Schema::getColumnListing('entrenadores');
+
+            $payload = [];
+            if (in_array('nombre', $cols, true)) {
+                $payload['nombre'] = $fullName;
+            }
+            if (in_array('telefono', $cols, true)) {
+                $payload['telefono'] = $validated['telefono'] ?? null;
+            }
+            if (in_array('especialidad', $cols, true)) {
+                $payload['especialidad'] = $validated['especialidad'] ?? null;
+            }
+
+            if (!empty($payload)) {
+                $exists = DB::table('entrenadores')->where('id_entrenador', (int) $user->id)->exists();
+
+                if ($exists) {
+                    DB::table('entrenadores')->where('id_entrenador', (int) $user->id)->update($payload);
+                } else {
+                    DB::table('entrenadores')->insert(array_merge($payload, [
+                        'id_entrenador' => $user->id,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]));
+                }
+            }
+        }
+
+        return redirect()->route('entrenador.perfil')->with('success', 'Perfil actualizado correctamente');
     }
 }

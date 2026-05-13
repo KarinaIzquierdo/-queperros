@@ -21,57 +21,65 @@ class OwnerModulesController extends Controller
             && Schema::hasColumn('mascotas', 'id_dueno')
         ) {
             $reservas = DB::table('reservas as r')
-                ->join('mascotas as m', 'm.id', '=', 'r.mascota_id')
-                ->leftJoin('servicios as s', 's.id', '=', 'r.servicio_id')
-                ->leftJoin('users as u', 'u.id', '=', 'r.profesional_id')
+                ->join('mascotas as m', 'm.id', '=', 'r.id_mascota')
+                ->leftJoin('servicios as s', 's.id', '=', 'r.id_actividad')
+                ->leftJoin('users as u', 'u.id', '=', 'r.id_empleado')
                 ->where('m.id_dueno', (int) $user->id)
                 ->select([
                     'r.id',
-                    'r.mascota_id',
-                    'r.servicio_id',
-                    'r.profesional_id',
+                    'r.id_mascota as mascota_id',
+                    'r.id_actividad as servicio_id',
+                    'r.id_empleado as profesional_id',
                     'r.fecha',
-                    'r.hora',
                     'r.estado',
-                    'r.comentarios',
-                    'r.precio_estimado',
-                    'r.created_at',
                     'm.nombre as mascota_nombre',
                     's.nombre as servicio_nombre',
                     'u.name as profesional_nombre',
                 ])
-                ->orderByDesc('r.created_at')
+                ->orderByDesc('r.id')
                 ->get();
         }
 
-        $counts = [
-            'activas' => 0,
-            'confirmadas' => 0,
-            'pendientes' => 0,
-            'completadas' => 0,
-            'historial' => 0,
-        ];
+        // Separar reservas por estado
+        $pendientes = collect();
+        $confirmadas = collect();
+        $completadas = collect();
+        $canceladas = collect();
 
         foreach ($reservas as $r) {
-            $estado = (string) ($r->estado ?? '');
+            $estado = mb_strtolower((string) ($r->estado ?? ''));
             if ($estado === 'pendiente') {
-                $counts['pendientes']++;
-                $counts['activas']++;
-            } elseif ($estado === 'confirmado') {
-                $counts['confirmadas']++;
-                $counts['activas']++;
-            } elseif ($estado === 'finalizado') {
-                $counts['completadas']++;
-                $counts['historial']++;
-            } elseif ($estado === 'cancelado') {
-                $counts['historial']++;
+                $pendientes->push($r);
+            } elseif ($estado === 'confirmada') {
+                $confirmadas->push($r);
+            } elseif ($estado === 'finalizada') {
+                $completadas->push($r);
+            } elseif ($estado === 'cancelada') {
+                $canceladas->push($r);
             }
         }
+
+        $counts = [
+            'activas' => $pendientes->count() + $confirmadas->count(),
+            'confirmadas' => $confirmadas->count(),
+            'pendientes' => $pendientes->count(),
+            'completadas' => $completadas->count(),
+            'historial' => $completadas->count() + $canceladas->count(),
+        ];
 
         return view('dueños.reservas', [
             'user' => $user,
             'reservas' => $reservas,
+            'pendientes' => $pendientes,
+            'confirmadas' => $confirmadas,
+            'completadas' => $completadas,
+            'canceladas' => $canceladas,
             'counts' => $counts,
+        ])->with('debug', [
+            'pendientes_count' => $pendientes->count(),
+            'confirmadas_count' => $confirmadas->count(),
+            'pendientes_data' => $pendientes->toArray(),
+            'confirmadas_data' => $confirmadas->toArray(),
         ]);
     }
 
@@ -220,9 +228,37 @@ class OwnerModulesController extends Controller
     {
         $user = Auth::user();
 
+        // Cargar mensajes desde la base de datos
+        $dbMessages = \App\Models\ChatMessage::orderBy('created_at', 'asc')->get();
+        $messages = $dbMessages->map(function ($msg) use ($user) {
+            return [
+                'from' => $msg->sender_id === $user->id ? 'me' : 'them',
+                'text' => $msg->message,
+                'time' => $msg->created_at->format('h:i a'),
+            ];
+        })->toArray();
+
         return view('dueños.chat', [
             'user' => $user,
+            'messages' => $messages,
         ]);
+    }
+
+    public function sendMessage(Request $request)
+    {
+        $validated = $request->validate([
+            'message' => ['required', 'string', 'max:1000'],
+        ]);
+
+        // Guardar el mensaje en la base de datos
+        \App\Models\ChatMessage::create([
+            'sender_id' => Auth::id(),
+            'message' => $validated['message'],
+            'sender_type' => 'user',
+            'is_read' => false,
+        ]);
+
+        return response()->json(['success' => true]);
     }
 
     public function notificaciones()

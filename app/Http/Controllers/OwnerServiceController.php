@@ -24,9 +24,9 @@ class OwnerServiceController extends Controller
         }
 
         $trainers = collect();
-        if (Schema::hasTable('users') && Schema::hasColumn('users', 'rol_id')) {
+        if (Schema::hasTable('users')) {
             $trainers = DB::table('users')
-                ->where('rol_id', 3)
+                ->where('rol', 'entrenador')
                 ->select(['id', 'name'])
                 ->orderBy('name')
                 ->get();

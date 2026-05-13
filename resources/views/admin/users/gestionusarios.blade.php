@@ -42,11 +42,12 @@
                     $activeUsers = $stats['active_users'] ?? ($users ?? collect())->whereNotNull('email_verified_at')->count();
                     $inactiveUsers = $stats['inactive_users'] ?? ($users ?? collect())->whereNull('email_verified_at')->count();
                     $definedRoles = $stats['defined_roles'] ?? ($users ?? collect())->pluck('rol')->filter()->unique()->count();
+                    $rolesList = ($users ?? collect())->pluck('rol')->filter()->unique()->sort()->values();
                 @endphp
 
                 <section class="gu-page-head">
                     <div class="gu-page-head-left">
-                        <h1 class="gu-page-title">Gestion de Usuarios</h1>
+                        <h1 class="gu-page-title">Gestión de Usuarios</h1>
                         <p class="gu-page-subtitle">Administra los usuarios del sistema</p>
                     </div>
                     <button type="button" class="gu-new-user" id="openAdminRegisterUserFromUsers">
@@ -82,6 +83,13 @@
                         <div class="gu-stat-main">
                             <div class="gu-stat-value">{{ $definedRoles }}</div>
                             <div class="gu-stat-label">Roles</div>
+                            @if($rolesList->isNotEmpty())
+                                <div class="gu-roles-list">
+                                    @foreach($rolesList as $role)
+                                        <span class="gu-role-tag">{{ ucfirst($role) }}</span>
+                                    @endforeach
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </section>
@@ -185,35 +193,27 @@
                                                 data-gu-action="open-edit"
                                                 data-user-id="{{ $user->id }}"
                                                 data-user-name="{{ $user->name }}"
-                                                data-user-initials="{{ $initials }}"
                                                 data-user-email="{{ $user->email }}"
-                                                data-user-phone="+57 310 987 6543"
-                                                data-user-role="{{ $roleText }}"
                                                 data-user-rol-code="{{ $user->rol ?? '' }}"
-                                                data-user-created="{{ optional($user->created_at)->format('d/n/Y') ?? '—' }}"
-                                                data-user-pets="0"
-                                                data-user-status="{{ $isActive ? 'Activo' : 'Inactivo' }}"
                                             >
                                                 <i class="bi bi-pencil" aria-hidden="true"></i>
                                             </button>
-                                            <button
-                                                type="button"
-                                                class="gu-action-icon-btn gu-action-icon-btn--danger"
-                                                aria-label="Eliminar"
-                                                data-gu-action="open-delete"
-                                                data-user-id="{{ $user->id }}"
-                                                data-user-name="{{ $user->name }}"
-                                                data-user-initials="{{ $initials }}"
-                                                data-user-email="{{ $user->email }}"
-                                                data-user-phone="+57 310 987 6543"
-                                                data-user-role="{{ $roleText }}"
-                                                data-user-rol-code="{{ $user->rol ?? '' }}"
-                                                data-user-created="{{ optional($user->created_at)->format('d/n/Y') ?? '—' }}"
-                                                data-user-pets="0"
-                                                data-user-status="{{ $isActive ? 'Activo' : 'Inactivo' }}"
+                                            <form
+                                                action="{{ route('admin.users.destroy', $user->id) }}"
+                                                method="POST"
+                                                onsubmit="return confirm('¿Estás seguro de eliminar este usuario? Esta acción eliminará también todas sus mascotas, reservas y datos relacionados. No se puede deshacer.');"
+                                                style="display: inline;"
                                             >
-                                                <i class="bi bi-trash" aria-hidden="true"></i>
-                                            </button>
+                                                @csrf
+                                                @method('DELETE')
+                                                <button
+                                                    type="submit"
+                                                    class="gu-action-icon-btn gu-action-icon-btn--danger"
+                                                    aria-label="Eliminar"
+                                                >
+                                                    <i class="bi bi-trash" aria-hidden="true"></i>
+                                                </button>
+                                            </form>
                                         </div>
                                     </td>
                                 </tr>
@@ -425,6 +425,11 @@
 
                 const closeModal = (el) => {
                     if (!el) return;
+                    // Eliminar el foco de cualquier elemento dentro del modal antes de ocultarlo
+                    const focusedElement = el.querySelector(':focus');
+                    if (focusedElement) {
+                        focusedElement.blur();
+                    }
                     el.classList.remove('gu-modal--open');
                     el.setAttribute('aria-hidden', 'true');
                 };

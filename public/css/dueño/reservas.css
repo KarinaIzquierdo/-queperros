@@ -176,6 +176,22 @@
     gap: 14px;
 }
 
+.rs-section {
+    margin-bottom: 20px;
+}
+
+.rs-section-head {
+    margin-bottom: 12px;
+}
+
+.rs-section-title {
+    font-family: "Lilita One", system-ui, sans-serif;
+    font-size: 22px;
+    font-weight: 900;
+    color: rgba(17, 17, 17, 0.82);
+    margin: 0;
+}
+
 .rs-item {
     background: rgba(255, 255, 255, 0.92);
     border: 1px solid rgba(15, 23, 42, 0.08);

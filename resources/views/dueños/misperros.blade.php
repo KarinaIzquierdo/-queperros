@@ -512,6 +512,7 @@
 
                 function showStep(n) {
                     currentStep = Math.min(Math.max(1, n), totalSteps);
+                    console.log('showStep called:', currentStep, 'totalSteps:', totalSteps);
                     steps.forEach((el) => {
                         const s = parseInt(el.getAttribute('data-gm-step') || '0', 10);
                         el.style.display = s === currentStep ? '' : 'none';
@@ -519,7 +520,10 @@
 
                     if (btnPrev) btnPrev.style.display = currentStep === 1 ? 'none' : '';
                     if (btnNext) btnNext.style.display = currentStep === totalSteps ? 'none' : '';
-                    if (btnSubmit) btnSubmit.style.display = currentStep === totalSteps ? '' : 'none';
+                    if (btnSubmit) {
+                        btnSubmit.style.display = currentStep === totalSteps ? '' : 'none';
+                        console.log('Submit button display:', btnSubmit.style.display);
+                    }
                     setProgress();
                 }
 
@@ -577,6 +581,22 @@
                 }
                 if (form) {
                     form.addEventListener('submit', (e) => {
+                        // Quitar required de campos ocultos antes de enviar
+                        const hiddenInputs = form.querySelectorAll('input[style*="display: none"], input[style*="display:none"]');
+                        hiddenInputs.forEach(input => {
+                            input.removeAttribute('required');
+                        });
+
+                        // También quitar required de campos en pasos ocultos
+                        steps.forEach(step => {
+                            if (step.style.display === 'none') {
+                                const inputs = step.querySelectorAll('input[required], select[required], textarea[required]');
+                                inputs.forEach(input => {
+                                    input.removeAttribute('required');
+                                });
+                            }
+                        });
+
                         if (!validateStep(currentStep)) {
                             e.preventDefault();
                         }

@@ -48,7 +48,8 @@
 
                     <div class="pf-divider" aria-hidden="true"></div>
 
-                    <form class="pf-form" action="#" method="POST">
+                    <form class="pf-form" action="{{ route('entrenador.perfil.update') }}" method="POST">
+                        @csrf
                         <div class="pf-row">
                             <div class="pf-field">
                                 <label class="pf-label" for="pf-nombre">Nombre</label>

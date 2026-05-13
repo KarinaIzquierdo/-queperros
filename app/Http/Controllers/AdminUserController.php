@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class AdminUserController extends Controller
@@ -31,18 +33,20 @@ class AdminUserController extends Controller
         $totalUsers = $users->count();
         $activeUsers = $users->whereNotNull('email_verified_at')->count();
         $inactiveUsers = $users->whereNull('email_verified_at')->count();
-        $definedRoles = $users->pluck('rol')->filter()->unique()->count();
+        $definedRoles = $users->pluck('rol')->filter()->unique()->sort()->values();
+        $definedRolesCount = $definedRoles->count();
 
         return view('admin.users.gestionusarios', [
             'admin' => $admin,
             'users' => $users,
+            'rolesList' => $definedRoles,
             'stats' => [
                 'total_users' => $totalUsers,
                 'active_users' => $activeUsers,
                 'inactive_users' => $inactiveUsers,
-                'defined_roles' => $definedRoles,
+                'defined_roles' => $definedRolesCount,
             ],
-        ]);
+        ])->with('debug_roles', $definedRoles->toArray());
     }
 
     public function store(Request $request)
@@ -106,5 +110,64 @@ class AdminUserController extends Controller
         return redirect()
             ->route('admin.dashboard')
             ->with('status', 'Rol asignado correctamente');
+    }
+
+    public function destroy($id)
+    {
+        $user = User::findOrFail($id);
+
+        if ($user->id === Auth::id()) {
+            return redirect()
+                ->route('admin.users')
+                ->with('error', 'No puedes eliminar tu propio usuario');
+        }
+
+        DB::beginTransaction();
+        try {
+            // Eliminar reservas asociadas a las mascotas del usuario
+            if (Schema::hasTable('reservas') && Schema::hasTable('mascotas')) {
+                $mascotaIds = DB::table('mascotas')
+                    ->where('id_dueno', $user->id)
+                    ->pluck('id');
+
+                if ($mascotaIds->isNotEmpty()) {
+                    DB::table('reservas')
+                        ->whereIn('id_mascota', $mascotaIds)
+                        ->delete();
+                }
+            }
+
+            // Eliminar mascotas del usuario
+            if (Schema::hasTable('mascotas')) {
+                $mascotas = DB::table('mascotas')
+                    ->where('id_dueno', $user->id)
+                    ->get();
+
+                foreach ($mascotas as $mascota) {
+                    // Eliminar foto si existe
+                    if ($mascota->foto && Storage::disk('public')->exists($mascota->foto)) {
+                        Storage::disk('public')->delete($mascota->foto);
+                    }
+                }
+
+                DB::table('mascotas')
+                    ->where('id_dueno', $user->id)
+                    ->delete();
+            }
+
+            // Eliminar el usuario
+            $user->delete();
+
+            DB::commit();
+
+            return redirect()
+                ->route('admin.users')
+                ->with('status', 'Usuario eliminado correctamente junto con todos sus datos');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()
+                ->route('admin.users')
+                ->with('error', 'Error al eliminar el usuario: ' . $e->getMessage());
+        }
     }
 }

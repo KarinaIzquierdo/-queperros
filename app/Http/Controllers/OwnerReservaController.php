@@ -23,6 +23,8 @@ class OwnerReservaController extends Controller
             'precio_estimado' => ['nullable', 'string', 'max:60'],
         ]);
 
+        \Log::info('Datos recibidos en reserva:', $validated);
+
         if (!Schema::hasTable('mascotas') || !Schema::hasColumn('mascotas', 'id_dueno')) {
             return redirect()->back()->withInput()->withErrors([
                 'mascota_id' => 'No se pudo validar la mascota. Verifica la estructura de la base de datos.',
@@ -56,7 +58,7 @@ class OwnerReservaController extends Controller
             ]);
         }
 
-        if (!Schema::hasTable('users') || !Schema::hasColumn('users', 'rol_id')) {
+        if (!Schema::hasTable('users')) {
             return redirect()->back()->withInput()->withErrors([
                 'profesional_id' => 'No se pudo validar el entrenador. Verifica la estructura de la base de datos.',
             ]);
@@ -67,7 +69,7 @@ class OwnerReservaController extends Controller
         // Verificar que el usuario existe y es entrenador
         $trainer = DB::table('users')
             ->where('id', $trainerId)
-            ->where('rol_id', 3)
+            ->where('rol', 'entrenador')
             ->first();
 
         if (!$trainer) {
@@ -92,26 +94,34 @@ class OwnerReservaController extends Controller
         }
 
         $data = [
-            'mascota_id' => (int) $validated['mascota_id'],
-            'servicio_id' => (int) $validated['servicio_id'],
-            'profesional_id' => (int) $validated['profesional_id'],
+            'id_mascota' => (int) $validated['mascota_id'],
+            'id_actividad' => (int) $validated['servicio_id'],
+            'id_empleado' => (int) $validated['profesional_id'],
             'fecha' => $validated['fecha'],
-            'hora' => $validated['hora'],
-            'estado' => 'pendiente',
-            'comentarios' => $validated['comentarios'] ?? null,
-            'precio_estimado' => $precio,
+            'estado' => 'Pendiente',
             'created_at' => now(),
             'updated_at' => now(),
         ];
 
         $columns = Schema::getColumnListing('reservas');
+        \Log::info('Columnas de reservas:', $columns);
         $data = array_filter(
             $data,
             fn ($_, $key) => in_array($key, $columns, true),
             ARRAY_FILTER_USE_BOTH
         );
 
-        DB::table('reservas')->insert($data);
+        \Log::info('Datos a insertar:', $data);
+
+        try {
+            DB::table('reservas')->insert($data);
+            \Log::info('Reserva insertada correctamente');
+        } catch (\Exception $e) {
+            \Log::error('Error al insertar reserva:', ['error' => $e->getMessage()]);
+            return redirect()->back()->withInput()->withErrors([
+                'error' => 'Error al guardar la reserva: ' . $e->getMessage(),
+            ]);
+        }
 
         return redirect()->route('owner.reservas')->with('success', 'Reserva creada correctamente.');
     }

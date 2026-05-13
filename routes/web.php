@@ -113,6 +113,10 @@ Route::get('/dashboard/chat-entrenador', [OwnerModulesController::class, 'chat']
     ->middleware('auth')
     ->name('owner.chat');
 
+Route::post('/dashboard/chat-entrenador', [OwnerModulesController::class, 'sendMessage'])
+    ->middleware('auth')
+    ->name('owner.chat.send');
+
 Route::get('/dashboard/notificaciones', [OwnerModulesController::class, 'notificaciones'])
     ->middleware('auth')
     ->name('owner.notificaciones');
@@ -161,6 +165,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/admin/users/assign-role', [AdminUserController::class, 'assignRole'])
         ->name('admin.users.assignRole');
 
+    Route::delete('/admin/users/{id}', [AdminUserController::class, 'destroy'])
+        ->name('admin.users.destroy');
+
     Route::get('/admin/settings', [AdminSettingsController::class, 'index'])
         ->name('admin.settings');
 
@@ -196,6 +203,10 @@ Route::get('/entrenador/chat', [TrainerModulesController::class, 'chat'])
     ->middleware('auth')
     ->name('entrenador.chat');
 
+Route::post('/entrenador/chat', [TrainerModulesController::class, 'sendMessage'])
+    ->middleware('auth')
+    ->name('entrenador.chat.send');
+
 Route::get('/entrenador/notificaciones', [TrainerModulesController::class, 'notificaciones'])
     ->middleware('auth')
     ->name('entrenador.notificaciones');
@@ -203,3 +214,7 @@ Route::get('/entrenador/notificaciones', [TrainerModulesController::class, 'noti
 Route::get('/entrenador/perfil', [TrainerModulesController::class, 'perfil'])
     ->middleware('auth')
     ->name('entrenador.perfil');
+
+Route::post('/entrenador/perfil', [TrainerModulesController::class, 'updatePerfil'])
+    ->middleware('auth')
+    ->name('entrenador.perfil.update');

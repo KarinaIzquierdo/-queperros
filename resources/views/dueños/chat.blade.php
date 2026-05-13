@@ -58,30 +58,39 @@
 
                         <div class="ch-body">
                             <div class="ch-messages" aria-label="Mensajes">
-                                <div class="ch-msg">
-                                    <div>Hola! Como estas? Te cuento que Max tuvo una excelente sesion hoy.</div>
-                                    <div class="ch-msg-time">10:30 am</div>
-                                </div>
+                                @if (empty($messages))
+                                    <div class="ch-msg">
+                                        <div>Hola! Como estas? Te cuento que Max tuvo una excelente sesion hoy.</div>
+                                        <div class="ch-msg-time">10:30 am</div>
+                                    </div>
 
-                                <div class="ch-msg ch-msg--me">
-                                    <div>Que bueno! Como le fue con los comandos nuevos?</div>
-                                    <div class="ch-msg-time">10:35 am ✓</div>
-                                </div>
+                                    <div class="ch-msg ch-msg--me">
+                                        <div>Que bueno! Como le fue con los comandos nuevos?</div>
+                                        <div class="ch-msg-time">10:35 am ✓</div>
+                                    </div>
 
-                                <div class="ch-msg">
-                                    <div>Muy bien! Ya domina el 'quieto' por 30 segundos. Recomiendo practicarlo en casa 10 minutos diarios.</div>
-                                    <div class="ch-msg-time">10:38 am</div>
-                                </div>
+                                    <div class="ch-msg">
+                                        <div>Muy bien! Ya domina el 'quieto' por 30 segundos. Recomiendo practicarlo en casa 10 minutos diarios.</div>
+                                        <div class="ch-msg-time">10:38 am</div>
+                                    </div>
 
-                                <div class="ch-msg">
-                                    <div>Te envie algunas fotos de la sesion en la galeria.</div>
-                                    <div class="ch-msg-time">10:40 am</div>
-                                </div>
+                                    <div class="ch-msg">
+                                        <div>Te envie algunas fotos de la sesion en la galeria.</div>
+                                        <div class="ch-msg-time">10:40 am</div>
+                                    </div>
+                                @else
+                                    @foreach ($messages as $msg)
+                                        <div class="ch-msg {{ ($msg['from'] ?? '') === 'me' ? 'ch-msg--me' : '' }}">
+                                            <div>{{ $msg['text'] ?? '' }}</div>
+                                            <div class="ch-msg-time">{{ $msg['time'] ?? '' }}{{ ($msg['from'] ?? '') === 'me' ? ' ✓' : '' }}</div>
+                                        </div>
+                                    @endforeach
+                                @endif
                             </div>
 
                             <form class="ch-inputbar" action="#" method="POST">
-                                <input class="ch-input" type="text" placeholder="Escribe un mensaje..." aria-label="Escribe un mensaje">
-                                <button class="ch-send" type="button" aria-label="Enviar">
+                                <input class="ch-input" type="text" id="ownerMessageInput" name="message" placeholder="Escribe un mensaje..." aria-label="Escribe un mensaje" onkeypress="if(event.key === 'Enter') sendOwnerMessage();">
+                                <button class="ch-send" type="button" id="ownerSendButton" aria-label="Enviar" onclick="sendOwnerMessage()">
                                     <i class="bi bi-send" aria-hidden="true"></i>
                                 </button>
                             </form>
@@ -91,5 +100,32 @@
                 </div>
             </main>
         </div>
+
+        <script>
+            function sendOwnerMessage() {
+                const messageInput = document.getElementById('ownerMessageInput');
+                const message = messageInput.value.trim();
+
+                if (message) {
+                    // Enviar mensaje al servidor
+                    fetch('{{ route('owner.chat.send') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        },
+                        body: 'message=' + encodeURIComponent(message)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        // Recargar la página para mostrar el mensaje guardado
+                        window.location.reload();
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+                }
+            }
+        </script>
     </body>
 </html>

@@ -17,11 +17,14 @@ class AdminDashboardController extends Controller
         $ownersCount = User::query()->where('rol', 'dueno')->count();
         $vetsCount = User::query()->where('rol', 'empleado')->count();
         $adminsCount = User::query()->where('rol', 'admin')->count();
+        $definedRoles = $users->pluck('rol')->filter()->unique()->sort()->values();
+        $definedRolesCount = $definedRoles->count();
 
         $stats = [
             'total_users' => User::query()->count(),
             'active_services' => 6,
-            'defined_roles' => 3,
+            'defined_roles' => $definedRolesCount,
+            'roles_list' => $definedRoles,
             'owners_count' => $ownersCount,
             'vets_count' => $vetsCount,
             'admins_count' => $adminsCount,
@@ -32,6 +35,7 @@ class AdminDashboardController extends Controller
             'stats' => $stats,
             'users' => $users,
             'recentUsers' => $recentUsers,
+            'rolesList' => $definedRoles,
         ]);
     }
 }

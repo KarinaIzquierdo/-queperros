@@ -345,6 +345,11 @@
 
                 function closeModal() {
                     if (!modal) return;
+                    // Eliminar el foco de cualquier elemento dentro del modal antes de ocultarlo
+                    const focusedElement = modal.querySelector(':focus');
+                    if (focusedElement) {
+                        focusedElement.blur();
+                    }
                     modal.classList.remove('ad2-modal--open');
                     modal.setAttribute('aria-hidden', 'true');
                     document.body.style.overflow = '';
@@ -359,6 +364,11 @@
 
                 function closeAnyModal(m) {
                     if (!m) return;
+                    // Eliminar el foco de cualquier elemento dentro del modal antes de ocultarlo
+                    const focusedElement = m.querySelector(':focus');
+                    if (focusedElement) {
+                        focusedElement.blur();
+                    }
                     m.classList.remove('ad2-modal--open');
                     m.setAttribute('aria-hidden', 'true');
                     document.body.style.overflow = '';

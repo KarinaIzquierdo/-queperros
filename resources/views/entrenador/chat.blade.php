@@ -75,13 +75,40 @@
                             @endforeach
                         </div>
 
-                        <form class="ch-chat-input" action="#" method="POST">
-                            <input class="ch-input" type="text" placeholder="Escribe un mensaje..." />
-                            <button class="ch-send" type="submit">Enviar</button>
+                        <form class="ch-chat-input" id="chatForm">
+                            <input class="ch-input" type="text" id="messageInput" name="message" placeholder="Escribe un mensaje..." onkeypress="if(event.key === 'Enter') sendMessage();" />
+                            <button class="ch-send" type="button" onclick="sendMessage()">Enviar</button>
                         </form>
                     </div>
                 </section>
             </main>
         </div>
+
+        <script>
+            function sendMessage() {
+                const messageInput = document.getElementById('messageInput');
+                const message = messageInput.value.trim();
+
+                if (message) {
+                    // Enviar mensaje al servidor
+                    fetch('{{ route('entrenador.chat.send') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        },
+                        body: 'message=' + encodeURIComponent(message)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        // Recargar la página para mostrar el mensaje guardado
+                        window.location.reload();
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+                }
+            }
+        </script>
     </body>
 </html>

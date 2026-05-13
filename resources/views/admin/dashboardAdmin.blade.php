@@ -85,7 +85,7 @@
                         <div class="ad2-card-hover">
                             <div class="ad2-card-divider"></div>
                             <div class="ad2-card-hover-text">Consulta, Vacunacion, Guarderia...</div>
-                            <a href="#" class="ad2-card-hover-link">Ver detalle <span aria-hidden="true">→</span></a>
+                            <a href="{{ route('admin.services') }}" class="ad2-card-hover-link">Ver detalle <span aria-hidden="true">→</span></a>
                         </div>
                     </div>
 
@@ -96,6 +96,13 @@
                         </div>
                         <div class="ad2-card-number">{{ $stats['defined_roles'] }}</div>
                         <div class="ad2-card-label">Roles Definidos</div>
+                        @if(isset($rolesList) && $rolesList->isNotEmpty())
+                            <div class="ad2-roles-list">
+                                @foreach($rolesList as $role)
+                                    <span class="ad2-role-tag">{{ ucfirst($role) }}</span>
+                                @endforeach
+                            </div>
+                        @endif
                         <div class="ad2-card-hover">
                             <div class="ad2-card-divider"></div>
                             <div class="ad2-card-hover-text">Admin, Veterinario, Propietario</div>
@@ -486,6 +493,11 @@
 
                 function closeModal() {
                     if (!modal) return;
+                    // Eliminar el foco de cualquier elemento dentro del modal antes de ocultarlo
+                    const focusedElement = modal.querySelector(':focus');
+                    if (focusedElement) {
+                        focusedElement.blur();
+                    }
                     modal.classList.remove('ad2-modal--open');
                     modal.setAttribute('aria-hidden', 'true');
                     document.body.style.overflow = '';

@@ -101,129 +101,50 @@
                     </div>
 
                     <div class="rs-list" aria-label="Lista de reservas">
-                        @php
-                            $reservasList = $reservas ?? collect();
-                            $pillClass = function (string $estado): string {
-                                return match ($estado) {
-                                    'confirmado' => 'rs-pill--confirmed',
-                                    'pendiente' => 'rs-pill--pending',
-                                    'cancelado' => 'rs-pill--cancelled',
-                                    'finalizado' => 'rs-pill--done',
-                                    default => 'rs-pill--active',
-                                };
-                            };
-                            $pillLabel = function (string $estado): string {
-                                return match ($estado) {
-                                    'confirmado' => 'Confirmada',
-                                    'pendiente' => 'Pendiente',
-                                    'cancelado' => 'Cancelada',
-                                    'finalizado' => 'Completada',
-                                    default => 'Activa',
-                                };
-                            };
-                            $fmtMoney = function ($value): string {
-                                if ($value === null || $value === '') return '-';
-                                $num = (float) $value;
-                                return '$' . number_format($num, 0, ',', '.');
-                            };
-                        @endphp
-
-                        @if($reservasList->isEmpty())
-                            <div class="rs-empty">Aún no tienes reservas registradas.</div>
-                        @else
-                            @foreach($reservasList as $r)
-                                @php
-                                    $estado = (string) ($r->estado ?? 'pendiente');
-                                    $serviceName = (string) ($r->servicio_nombre ?? 'Servicio');
-                                    $petName = (string) ($r->mascota_nombre ?? 'Mascota');
-                                    $trainerName = (string) ($r->profesional_nombre ?? '');
-                                    $fecha = (string) ($r->fecha ?? '');
-                                    $hora = (string) ($r->hora ?? '');
-                                    $comments = (string) ($r->comentarios ?? '');
-                                    $price = $fmtMoney($r->precio_estimado ?? null);
-                                    $avatarLetter = mb_strtoupper(mb_substr($petName !== '' ? $petName : $serviceName, 0, 1));
-                                    $isPending = $estado === 'pendiente';
-                                    $group = in_array($estado, ['cancelado', 'finalizado'], true) ? 'history' : 'active';
-                                @endphp
-
-                                <article
-                                    class="rs-item"
-                                    data-rs-item
-                                    data-rs-group="{{ $group }}"
-                                    data-reserva-id="{{ $r->id }}"
-                                    data-reserva-estado="{{ $estado }}"
-                                    data-reserva-servicio="{{ $serviceName }}"
-                                    data-reserva-mascota="{{ $petName }}"
-                                    data-reserva-entrenador="{{ $trainerName }}"
-                                    data-reserva-fecha="{{ $fecha }}"
-                                    data-reserva-hora="{{ $hora }}"
-                                    data-reserva-comentarios="{{ $comments }}"
-                                    data-reserva-precio="{{ $r->precio_estimado ?? '' }}"
-                                >
-                                    <div class="rs-item-head">
-                                        <div class="rs-item-left">
-                                            <div class="rs-avatar" aria-hidden="true">{{ $avatarLetter }}</div>
-                                            <div class="rs-main">
-                                                <div class="rs-row-top">
-                                                    <div class="rs-service">{{ $serviceName }}</div>
-                                                    <span class="rs-pill {{ $pillClass($estado) }}">{{ $pillLabel($estado) }}</span>
-                                                </div>
-                                                <div class="rs-meta">
-                                                    <span><i class="bi bi-person" aria-hidden="true"></i>{{ $petName }}</span>
-                                                    @if($trainerName !== '')
-                                                        <span><i class="bi bi-person-badge" aria-hidden="true"></i>{{ $trainerName }}</span>
-                                                    @endif
-                                                    @if($fecha !== '')
-                                                        <span><i class="bi bi-calendar" aria-hidden="true"></i>{{ $fecha }}</span>
-                                                    @endif
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="rs-item-right">
-                                            <div class="rs-price">
-                                                <div class="rs-price-amount">{{ $price }}</div>
-                                                <div class="rs-price-sub">{{ $hora }}</div>
-                                            </div>
-                                            <button class="rs-chevron" type="button" data-rs-toggle aria-expanded="false" aria-label="Ver detalle">
-                                                <i class="bi bi-chevron-down" aria-hidden="true"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <div class="rs-details" hidden>
-                                        <div class="rs-detail-grid">
-                                            <div class="rs-detail-card">
-                                                <div class="rs-detail-label">Fecha</div>
-                                                <div class="rs-detail-value">{{ $fecha }}</div>
-                                            </div>
-                                            <div class="rs-detail-card">
-                                                <div class="rs-detail-label">Horario</div>
-                                                <div class="rs-detail-value">{{ $hora }}</div>
-                                            </div>
-                                            <div class="rs-detail-card">
-                                                <div class="rs-detail-label">Total</div>
-                                                <div class="rs-detail-value rs-detail-value--green">{{ $price }}</div>
-                                            </div>
-                                        </div>
-
-                                        <div class="rs-notes">Notas: {{ $comments !== '' ? $comments : '-' }}</div>
-
-                                        @if($isPending)
-                                            <div class="rs-actions">
-                                                <button class="rs-action rs-action--primary" type="button" data-rs-edit>
-                                                    <i class="bi bi-pencil" aria-hidden="true"></i>
-                                                    <span>Modificar</span>
-                                                </button>
-                                                <button class="rs-action rs-action--danger" type="button" data-rs-cancel>
-                                                    <i class="bi bi-trash" aria-hidden="true"></i>
-                                                    <span>Cancelar</span>
-                                                </button>
-                                            </div>
-                                        @endif
-                                    </div>
-                                </article>
-                            @endforeach
+                        @if(isset($debug))
+                            <pre style="background: #f0f0f0; padding: 10px; margin: 10px 0; border-radius: 5px;">
+                                DEBUG DATA:
+                                Pendientes count: {{ $debug['pendientes_count'] ?? 0 }}
+                                Confirmadas count: {{ $debug['confirmadas_count'] ?? 0 }}
+                                Pendientes data: {{ json_encode($debug['pendientes_data'] ?? []) }}
+                                Confirmadas data: {{ json_encode($debug['confirmadas_data'] ?? []) }}
+                            </pre>
                         @endif
+
+                        <!-- Mostrar datos directamente -->
+                        <div style="background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                            <h2>Reservas Pendientes ({{ $pendientes->count() ?? 0 }})</h2>
+                            @if(($pendientes ?? collect())->isNotEmpty())
+                                @foreach($pendientes as $r)
+                                    <div style="border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 8px;">
+                                        <p><strong>Servicio:</strong> {{ $r->servicio_nombre ?? 'N/A' }}</p>
+                                        <p><strong>Mascota:</strong> {{ $r->mascota_nombre ?? 'N/A' }}</p>
+                                        <p><strong>Entrenador:</strong> {{ $r->profesional_nombre ?? 'N/A' }}</p>
+                                        <p><strong>Fecha:</strong> {{ $r->fecha ?? 'N/A' }}</p>
+                                        <p><strong>Estado:</strong> {{ $r->estado ?? 'N/A' }}</p>
+                                    </div>
+                                @endforeach
+                            @else
+                                <p>No hay reservas pendientes</p>
+                            @endif
+                        </div>
+
+                        <div style="background: white; padding: 20px; border-radius: 10px;">
+                            <h2>Reservas Confirmadas ({{ $confirmadas->count() ?? 0 }})</h2>
+                            @if(($confirmadas ?? collect())->isNotEmpty())
+                                @foreach($confirmadas as $r)
+                                    <div style="border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 8px;">
+                                        <p><strong>Servicio:</strong> {{ $r->servicio_nombre ?? 'N/A' }}</p>
+                                        <p><strong>Mascota:</strong> {{ $r->mascota_nombre ?? 'N/A' }}</p>
+                                        <p><strong>Entrenador:</strong> {{ $r->profesional_nombre ?? 'N/A' }}</p>
+                                        <p><strong>Fecha:</strong> {{ $r->fecha ?? 'N/A' }}</p>
+                                        <p><strong>Estado:</strong> {{ $r->estado ?? 'N/A' }}</p>
+                                    </div>
+                                @endforeach
+                            @else
+                                <p>No hay reservas confirmadas</p>
+                            @endif
+                        </div>
                     </div>
                 </section>
                 </div>
