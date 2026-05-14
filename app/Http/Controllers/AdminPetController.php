@@ -40,17 +40,25 @@ class AdminPetController extends Controller
             ->unique()
             ->values();
 
-        $duenosById = (Schema::hasTable('duenos') && $ownerIds->isNotEmpty())
+        $hasDuenosTable = Schema::hasTable('duenos');
+        $duenosColumns = $hasDuenosTable ? Schema::getColumnListing('duenos') : [];
+        $duenosSelect = array_values(array_intersect(
+            ['id_dueno', 'user_id', 'nombre', 'telefono', 'direccion'],
+            $duenosColumns
+        ));
+        $hasDuenoUserId = in_array('user_id', $duenosColumns, true);
+
+        $duenosById = ($hasDuenosTable && $ownerIds->isNotEmpty() && in_array('id_dueno', $duenosSelect, true))
             ? DB::table('duenos')
                 ->whereIn('id_dueno', $ownerIds)
-                ->get(['id_dueno', 'user_id', 'telefono', 'direccion'])
+                ->get($duenosSelect)
                 ->keyBy('id_dueno')
             : collect();
 
-        $duenosByUserId = (Schema::hasTable('duenos') && $ownerIds->isNotEmpty())
+        $duenosByUserId = ($hasDuenoUserId && $ownerIds->isNotEmpty())
             ? DB::table('duenos')
                 ->whereIn('user_id', $ownerIds)
-                ->get(['id_dueno', 'user_id', 'telefono', 'direccion'])
+                ->get($duenosSelect)
                 ->keyBy('user_id')
             : collect();
 
@@ -86,9 +94,9 @@ class AdminPetController extends Controller
                 }
             }
 
-            $userId = $duenoRow ? (int) ($duenoRow->user_id ?? 0) : $ownerId;
+            $userId = $duenoRow ? (int) ($duenoRow->user_id ?? $ownerId) : $ownerId;
             $ownerUser = $userId > 0 ? $ownerUsers->get($userId) : null;
-            $ownerName = $ownerUser ? (string) ($ownerUser->name ?? '') : '';
+            $ownerName = $ownerUser ? (string) ($ownerUser->name ?? '') : trim((string) ($duenoRow->nombre ?? ''));
             $ownerEmail = $ownerUser ? (string) ($ownerUser->email ?? '') : '';
 
             $duenoPhone = $duenoRow ? trim((string) ($duenoRow->telefono ?? '')) : '';
