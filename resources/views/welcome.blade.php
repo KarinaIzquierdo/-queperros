@@ -41,6 +41,7 @@
             <div class="mq-navbar" role="navigation" aria-label="Navegación principal">
                 <div class="mq-nav-left">
                     <a class="mq-nav-link" href="#servicios">Servicios</a>
+                    <a class="mq-nav-link" href="{{ route('galeria') }}">Galería</a>
                 </div>
 
                 <div class="mq-nav-center">MAS QUE PERROS</div>
@@ -57,10 +58,10 @@
                         @auth
                             <a class="mq-nav-login" href="{{ url('/dashboard') }}">Mi cuenta</a>
                         @else
-                            <a class="mq-nav-login" href="{{ route('login') }}">Iniciar Sesion</a>
+                            <a class="mq-nav-login" href="{{ route('login') }}">Iniciar Sesión</a>
                         @endauth
                     @else
-                        <a class="mq-nav-login" href="#">Iniciar Sesion</a>
+                        <a class="mq-nav-login" href="#">Iniciar Sesión</a>
                     @endif
                 </div>
             </div>
@@ -103,31 +104,53 @@
                 <div class="mq-services-shape mq-services-shape--c" aria-hidden="true"></div>
                 <div class="mq-services-shape mq-services-shape--d" aria-hidden="true"></div>
 
-                <div class="mq-container">
-                    <h2 class="mq-title mq-title--xl mq-title--light mq-services-title">NUESTROS SERVICIOS</h2>
+                <div class="mq-container" style="max-width: 1000px; margin: 0 auto; padding: 4rem 1rem;">
+                    <h2 class="mq-title mq-title--xl mq-title--light mq-services-title" style="text-align: center; margin-bottom: 4rem; font-size: 3.5rem; text-shadow: 2px 2px 0px rgba(0,0,0,0.1);">NUESTROS SERVICIOS</h2>
 
-                    <div class="mq-services-grid">
-                        <article class="mq-card-ui" aria-label="Entrenamiento canino">
-                            <h3>ENTRENAMIENTO CANINO</h3>
-                            <ul class="mq-paw-list">
-                                <li class="mq-paw-item"><span class="mq-paw" aria-hidden="true"><img src="{{ asset('img/huellita.png') }}" alt=""></span><span>Entrenamiento básico integral y deportivo</span></li>
-                                <li class="mq-paw-item"><span class="mq-paw" aria-hidden="true"><img src="{{ asset('img/huellita.png') }}" alt=""></span><span>Formación y crianza para perros de trabajo o especialidades</span></li>
-                            </ul>
-                        </article>
+                    <div class="mq-services-grid" style="display: flex; flex-direction: column; align-items: center; gap: 2.5rem;">
+                        <!-- Fila Superior -->
+                        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 2.5rem; width: 100%;">
+                            <article class="mq-card-ui" style="background: #DCEBFA; border-radius: 20px; border: 1px solid #B4C7D9; box-shadow: 0 4px 15px rgba(0,0,0,0.08); padding: 2.5rem; width: 380px; height: 260px; display: flex; flex-direction: column; justify-content: flex-start;">
+                                <h3 style="font-family: 'Lilita One', cursive; font-size: 1.8rem; color: #1B1B18; text-align: center; margin-bottom: 1.5rem; letter-spacing: 1px; line-height: 1.1;">ENTRENAMIENTO CANINO</h3>
+                                <ul style="list-style: none; padding: 0; margin: 0;">
+                                    <li style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 1.2rem; color: #1B1B18; font-size: 1.1rem; line-height: 1.3;">
+                                        <img src="{{ asset('img/huellita.png') }}" alt="" style="width: 20px; margin-top: 4px; flex-shrink: 0;">
+                                        <span>Entrenamiento básico integral y deportivo</span>
+                                    </li>
+                                    <li style="display: flex; align-items: flex-start; gap: 12px; color: #1B1B18; font-size: 1.1rem; line-height: 1.3;">
+                                        <img src="{{ asset('img/huellita.png') }}" alt="" style="width: 20px; margin-top: 4px; flex-shrink: 0;">
+                                        <span>Formación y crianza para perros de trabajo o especialidades</span>
+                                    </li>
+                                </ul>
+                            </article>
 
-                        <article class="mq-card-ui" aria-label="Cuidado y alojamiento">
-                            <h3>CUIDADO Y ALOJAMIENTO</h3>
-                            <ul class="mq-paw-list">
-                                <li class="mq-paw-item"><span class="mq-paw" aria-hidden="true"><img src="{{ asset('img/huellita.png') }}" alt=""></span><span>Hotel canino</span></li>
-                                <li class="mq-paw-item"><span class="mq-paw" aria-hidden="true"><img src="{{ asset('img/huellita.png') }}" alt=""></span><span>Guardería (solo para la calera y zonas aledañas)</span></li>
-                            </ul>
-                        </article>
+                            <article class="mq-card-ui" style="background: #DCEBFA; border-radius: 20px; border: 1px solid #B4C7D9; box-shadow: 0 4px 15px rgba(0,0,0,0.08); padding: 2.5rem; width: 380px; height: 260px; display: flex; flex-direction: column; justify-content: flex-start;">
+                                <h3 style="font-family: 'Lilita One', cursive; font-size: 1.8rem; color: #1B1B18; text-align: center; margin-bottom: 1.5rem; letter-spacing: 1px; line-height: 1.1;">CUIDADO Y ALOJAMIENTO</h3>
+                                <ul style="list-style: none; padding: 0; margin: 0;">
+                                    <li style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 1.2rem; color: #1B1B18; font-size: 1.1rem; line-height: 1.3;">
+                                        <img src="{{ asset('img/huellita.png') }}" alt="" style="width: 20px; margin-top: 4px; flex-shrink: 0;">
+                                        <span>Hotel canino</span>
+                                    </li>
+                                    <li style="display: flex; align-items: flex-start; gap: 12px; color: #1B1B18; font-size: 1.1rem; line-height: 1.3;">
+                                        <img src="{{ asset('img/huellita.png') }}" alt="" style="width: 20px; margin-top: 4px; flex-shrink: 0;">
+                                        <span>Guardería (solo para la calera y zonas aledañas)</span>
+                                    </li>
+                                </ul>
+                            </article>
+                        </div>
 
-                        <article class="mq-card-ui mq-services-center" aria-label="Otras actividades">
-                            <h3>OTRAS ACTIVIDADES</h3>
-                            <ul class="mq-paw-list">
-                                <li class="mq-paw-item"><span class="mq-paw" aria-hidden="true"><img src="{{ asset('img/huellita.png') }}" alt=""></span><span>Día de diversión en Más que Perros</span></li>
-                                <li class="mq-paw-item"><span class="mq-paw" aria-hidden="true"><img src="{{ asset('img/huellita.png') }}" alt=""></span><span>Plan padrino</span></li>
+                        <!-- Fila Inferior -->
+                        <article class="mq-card-ui" style="background: #DCEBFA; border-radius: 20px; border: 1px solid #B4C7D9; box-shadow: 0 4px 15px rgba(0,0,0,0.08); padding: 2.5rem; width: 500px; display: flex; flex-direction: column; align-items: center;">
+                            <h3 style="font-family: 'Lilita One', cursive; font-size: 1.8rem; color: #1B1B18; text-align: center; margin-bottom: 1.5rem; letter-spacing: 1px; line-height: 1.1;">OTRAS ACTIVIDADES</h3>
+                            <ul style="list-style: none; padding: 0; margin: 0;">
+                                <li style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 1.2rem; color: #1B1B18; font-size: 1.1rem; line-height: 1.3;">
+                                    <img src="{{ asset('img/huellita.png') }}" alt="" style="width: 20px; margin-top: 4px; flex-shrink: 0;">
+                                    <span>Día de diversión en Más que Perros</span>
+                                </li>
+                                <li style="display: flex; align-items: flex-start; gap: 12px; color: #1B1B18; font-size: 1.1rem; line-height: 1.3;">
+                                    <img src="{{ asset('img/huellita.png') }}" alt="" style="width: 20px; margin-top: 4px; flex-shrink: 0;">
+                                    <span>Plan padrino</span>
+                                </li>
                             </ul>
                         </article>
                     </div>
@@ -142,7 +165,7 @@
 
             <section class="mq-why" id="por-que-elegirnos" aria-label="Por qué elegirnos">
                 <div class="mq-container">
-                    <h2 class="mq-title mq-title--xl mq-title--light">¿PORQUE ELEGIRNOS?</h2>
+                    <h2 class="mq-title mq-title--xl mq-title--light">¿POR QUÉ ELEGIRNOS?</h2>
                     <p>Nos distinguimos por nuestro enfoque ético y basado en bienestar animal</p>
 
                     <div class="mq-mv-grid">
@@ -174,13 +197,13 @@
                                 <img src="{{ asset('img/mq-bone.svg') }}" alt="">
                                 <span>AMOR Y RESPETO POR LOS ANIMALES</span>
                             </div>
-                            <p>Atendemos cada perro como un ser sintiente, con sensibilidad, paciencia y comprensi&oacute;n, reconociendo su individualidad y sus necesidades.</p>
+                            <p>Atendemos cada perro como un ser sintiente, con sensibilidad, paciencia y comprensión, reconociendo su individualidad y sus necesidades.</p>
                         </article>
 
                         <article class="mq-value-card">
                             <div class="mq-value-bone">
                                 <img src="{{ asset('img/mq-bone.svg') }}" alt="">
-                                <span>PROFESIONALISMO Y &Eacute;TICA</span>
+                                <span>PROFESIONALISMO Y ÉTICA</span>
                             </div>
                             <p>Actuamos con responsabilidad y coherencia en cada proceso de entrenamiento, cuidado y crianza.</p>
                         </article>
@@ -190,7 +213,7 @@
                                 <img src="{{ asset('img/mq-bone.svg') }}" alt="">
                                 <span>BIENESTAR INTEGRAL</span>
                             </div>
-                            <p>Promovemos el equilibrio f&iacute;sico, mental y emocional del perro como base de una vida saludable.</p>
+                            <p>Promovemos el equilibrio físico, mental y emocional del perro como base de una vida saludable.</p>
                         </article>
 
                         <article class="mq-value-card">
@@ -198,7 +221,7 @@
                                 <img src="{{ asset('img/mq-bone.svg') }}" alt="">
                                 <span>TRANSPARENCIA Y CONFIANZA</span>
                             </div>
-                            <p>Brindamos informaci&oacute;n clara y seguimiento real del progreso del perro para que el tutor siempre se sienta acompa&ntilde;ado.</p>
+                            <p>Brindamos información clara y seguimiento real del progreso del perro para que el tutor siempre se sienta acompañado.</p>
                         </article>
 
                         <article class="mq-value-card">
@@ -206,15 +229,15 @@
                                 <img src="{{ asset('img/mq-bone.svg') }}" alt="">
                                 <span>COMPROMISO CON EL TRABAJO CANINO</span>
                             </div>
-                            <p>Formamos perros de trabajo de manera &eacute;tica, responsable y con m&eacute;todos que respetan su naturaleza y sus capacidades.</p>
+                            <p>Formamos perros de trabajo de manera ética, responsable y con métodos que respetan su naturaleza y sus capacidades.</p>
                         </article>
 
                         <article class="mq-value-card">
                             <div class="mq-value-bone">
                                 <img src="{{ asset('img/mq-bone.svg') }}" alt="">
-                                <span>COMUNICACI&Oacute;N CONSTANTE</span>
+                                <span>COMUNICACIÓN CONSTANTE</span>
                             </div>
-                            <p>Guiamos a los tutores con orientaci&oacute;n clara, honesta y constante para fortalecer el v&iacute;nculo con sus perros.</p>
+                            <p>Guiamos a los tutores con orientación clara, honesta y constante para fortalecer el vínculo con sus perros.</p>
                         </article>
                     </div>
                 </div>

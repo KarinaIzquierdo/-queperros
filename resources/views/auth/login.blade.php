@@ -34,7 +34,7 @@
                     </a>
                     <div class="mq-login-card" aria-label="Iniciar sesión">
                         <img class="mq-login-card-img" src="{{ asset('img/Recurso 1.png') }}" alt="" aria-hidden="true">
-                        <h1 class="mq-login-title">INICIAR SESION</h1>
+                        <h1 class="mq-login-title">INICIAR SESIÓN</h1>
 
                         @if (session('status'))
                             <div style="margin-bottom: 1rem; padding: 0.75rem 1rem; border-radius: 0.5rem; background-color: #dcfce7; color: #166534; font-size: 0.9rem;">
@@ -80,12 +80,12 @@
 
                             <div class="mq-actions">
                                 <a class="mq-forgot" href="{{ route('password.request') }}">¿Olvidaste tu contraseña?</a>
-                                <button class="mq-btn" type="submit">INICIAR SESION</button>
+                                <button class="mq-btn" type="submit">INICIAR SESIÓN</button>
                             </div>
 
                             <div class="mq-bottom-text">
                                 ¿No tienes una cuenta?
-                                <a href="{{ route('register') }}">Registrate AQUI</a>
+                                <a href="{{ route('register') }}">Regístrate AQUÍ</a>
                             </div>
                         </form>
                     </div>

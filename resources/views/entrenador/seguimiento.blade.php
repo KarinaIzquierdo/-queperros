@@ -77,7 +77,7 @@
                         </div>
 
                         <div class="sg-field">
-                            <div class="sg-label">Estado de animo de la mascota</div>
+                            <div class="sg-label">Estado de ánimo de la mascota</div>
                             <input type="hidden" name="mood" id="sg-mood" value="{{ old('mood') }}">
                             <div class="sg-pills" role="group" aria-label="Estado de ánimo">
                                 <button type="button" class="sg-pill {{ old('mood') === 'Feliz' ? 'sg-pill--active' : '' }}" data-value="Feliz">Feliz</button>
@@ -90,7 +90,7 @@
 
                         <div class="sg-row">
                             <div class="sg-field">
-                                <label class="sg-label" for="sg-duration">Duracion (minutos)</label>
+                                <label class="sg-label" for="sg-duration">Duración (minutos)</label>
                                 <input id="sg-duration" name="duration" class="sg-control" type="number" value="{{ old('duration') }}" />
                             </div>
 
@@ -106,12 +106,12 @@
 
                         <div class="sg-field">
                             <label class="sg-label" for="sg-notes">Notas y observaciones</label>
-                            <textarea id="sg-notes" name="notes" class="sg-control sg-control--area" rows="4" placeholder="Describe como fue la sesion...">{{ old('notes') }}</textarea>
+                            <textarea id="sg-notes" name="notes" class="sg-control sg-control--area" rows="4" placeholder="Describe cómo fue la sesión...">{{ old('notes') }}</textarea>
                         </div>
 
                         <div class="sg-field">
-                            <label class="sg-label" for="sg-message">Mensaje para el dueno</label>
-                            <textarea id="sg-message" name="message" class="sg-control sg-control--area" rows="4" placeholder="Escribe un mensaje para el dueno de la mascota...">{{ old('message') }}</textarea>
+                            <label class="sg-label" for="sg-message">Mensaje para el dueño</label>
+                            <textarea id="sg-message" name="message" class="sg-control sg-control--area" rows="4" placeholder="Escribe un mensaje para el dueño de la mascota...">{{ old('message') }}</textarea>
                         </div>
 
                         <div class="sg-actions">

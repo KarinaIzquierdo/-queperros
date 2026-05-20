@@ -23,9 +23,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/galeria', function () {
-    return view('galeria');
-})->name('galeria');
+Route::get('/galeria', [\App\Http\Controllers\AdminGalleryController::class, 'publicGallery'])->name('galeria');
 
 Route::get('/login', [LoginController::class, 'create'])->name('login');
 Route::post('/login', [LoginController::class, 'store']);
@@ -133,6 +131,14 @@ Route::get('/dashboard/galeria', [OwnerModulesController::class, 'galeria'])
     ->middleware('auth')
     ->name('owner.galeria');
 
+Route::post('/dashboard/galeria/upload', [OwnerModulesController::class, 'uploadGaleria'])
+    ->middleware('auth')
+    ->name('owner.galeria.upload');
+
+Route::delete('/dashboard/galeria/{photo}', [OwnerModulesController::class, 'destroyPhoto'])
+    ->middleware('auth')
+    ->name('owner.galeria.destroy');
+
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])
         ->name('admin.dashboard');
@@ -170,6 +176,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/admin/users', [AdminUserController::class, 'store'])
         ->name('admin.users.store');
 
+    Route::put('/admin/users/{user}', [AdminUserController::class, 'update'])
+        ->name('admin.users.update');
+
     Route::post('/admin/users/assign-role', [AdminUserController::class, 'assignRole'])
         ->name('admin.users.assignRole');
 
@@ -181,6 +190,14 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     Route::post('/admin/settings', [AdminSettingsController::class, 'update'])
         ->name('admin.settings.update');
+
+    // Gestión de Galería Pública
+    Route::get('/admin/gallery', [\App\Http\Controllers\AdminGalleryController::class, 'index'])
+        ->name('admin.gallery.index');
+    Route::post('/admin/gallery', [\App\Http\Controllers\AdminGalleryController::class, 'store'])
+        ->name('admin.gallery.store');
+    Route::delete('/admin/gallery/{photo}', [\App\Http\Controllers\AdminGalleryController::class, 'destroy'])
+        ->name('admin.gallery.destroy');
 });
 
 Route::get('/cuidador/dashboard', [CaregiverDashboardController::class, 'index'])

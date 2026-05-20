@@ -9,7 +9,7 @@
         </div>
     </div>
 
-    <p class="admin-sidebar-section">ADMINISTRACION</p>
+    <p class="admin-sidebar-section">ADMINISTRACIÓN</p>
 
     <nav class="admin-menu">
         <a href="{{ route('admin.dashboard') }}" class="admin-menu-item {{ request()->routeIs('admin.dashboard') ? 'admin-menu-item--active' : '' }}">
@@ -54,12 +54,21 @@
             </span>
             <span class="admin-menu-right"></span>
         </a>
+        <a href="{{ route('admin.gallery.index') }}" class="admin-menu-item {{ request()->routeIs('admin.gallery.*') ? 'admin-menu-item--active' : '' }}">
+            <span class="admin-menu-left">
+                <div class="admin-menu-icon-wrapper">
+                    <i class="admin-menu-icon bi bi-images" aria-hidden="true"></i>
+                </div>
+                <span>Gestión de Galería</span>
+            </span>
+            <span class="admin-menu-right"></span>
+        </a>
         <a href="{{ route('admin.settings') }}" class="admin-menu-item {{ request()->routeIs('admin.settings') ? 'admin-menu-item--active' : '' }}">
             <span class="admin-menu-left">
                 <div class="admin-menu-icon-wrapper">
                     <i class="admin-menu-icon bi bi-gear-fill" aria-hidden="true"></i>
                 </div>
-                <span>Configuracion</span>
+                <span>Configuración</span>
             </span>
             <span class="admin-menu-right"></span>
         </a>
@@ -73,7 +82,7 @@
         @csrf
         <button type="submit">
             <i class="admin-logout-icon bi bi-box-arrow-left" aria-hidden="true"></i>
-            <span>Cerrar sesion</span>
+            <span>Cerrar sesión</span>
         </button>
     </form>
 </aside>

@@ -89,7 +89,7 @@
                         </div>
 
                         <div class="pf-field">
-                            <label class="pf-label" for="pf-telefono">Telefono</label>
+                            <label class="pf-label" for="pf-telefono">Teléfono</label>
                             <input id="pf-telefono" name="telefono" class="pf-control" type="text" value="{{ $profile['phone'] ?? '' }}" />
                         </div>
 

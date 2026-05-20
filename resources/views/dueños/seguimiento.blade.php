@@ -67,7 +67,7 @@
                             @endforelse
                         </div>
 
-                        <div class="sg-tabs" role="tablist" aria-label="Categorias">
+                        <div class="sg-tabs" role="tablist" aria-label="Categorías">
                             <button class="sg-tab sg-tab--active" type="button" role="tab" aria-selected="true">Todos los seguimientos</button>
                         </div>
                     </div>

@@ -468,4 +468,17 @@ class OwnerModulesController extends Controller
             ->route('owner.galeria')
             ->with('success', 'Fotos subidas correctamente.');
     }
+
+    public function destroyPhoto($photo)
+    {
+        $user = Auth::user();
+        $path = 'gallery/' . (int) $user->id . '/' . $photo;
+
+        if (Storage::disk('public')->exists($path)) {
+            Storage::disk('public')->delete($path);
+            return redirect()->route('owner.galeria')->with('success', 'Foto eliminada.');
+        }
+
+        return redirect()->route('owner.galeria')->with('error', 'La foto no existe o no se pudo eliminar.');
+    }
 }

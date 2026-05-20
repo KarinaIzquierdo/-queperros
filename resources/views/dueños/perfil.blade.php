@@ -58,7 +58,7 @@
 
                     <div class="pf-head">
                         <h1 class="pf-title">Mi Perfil</h1>
-                        <p class="pf-sub">Gestiona tu informacion personal</p>
+                        <p class="pf-sub">Gestiona tu información personal</p>
                     </div>
 
                     <div class="pf-grid">
@@ -86,7 +86,7 @@
                                 <div class="pf-section">
                                     <div class="pf-sec-head">
                                         <i class="bi bi-person" aria-hidden="true"></i>
-                                        <span>Informacion Personal</span>
+                                        <span>Información Personal</span>
                                     </div>
 
                                     <form class="pf-form" method="POST" action="{{ route('owner.perfil.update') }}">
@@ -103,7 +103,7 @@
                                         </div>
 
                                         <div class="pf-field pf-field--full">
-                                            <div class="pf-label">Correo electronico *</div>
+                                            <div class="pf-label">Correo electrónico *</div>
                                             <div class="pf-input-wrap">
                                                 <i class="bi bi-envelope pf-input-icon" aria-hidden="true"></i>
                                                 <input class="pf-input pf-input--icon" type="email" name="email" value="{{ old('email', $user->email) }}" required>
@@ -111,7 +111,7 @@
                                         </div>
 
                                         <div class="pf-field">
-                                            <div class="pf-label">Telefono *</div>
+                                            <div class="pf-label">Teléfono *</div>
                                             <div class="pf-input-wrap">
                                                 <i class="bi bi-telephone pf-input-icon" aria-hidden="true"></i>
                                                 <input class="pf-input pf-input--icon" name="telefono" value="{{ old('telefono', $dueno->telefono ?? '') }}">
@@ -124,7 +124,7 @@
                                         </div>
 
                                         <div class="pf-field pf-field--full">
-                                            <div class="pf-label">Direccion</div>
+                                            <div class="pf-label">Dirección</div>
                                             <div class="pf-input-wrap">
                                                 <i class="bi bi-geo-alt pf-input-icon" aria-hidden="true"></i>
                                                 <input class="pf-input pf-input--icon" name="direccion" value="{{ old('direccion', $dueno->direccion ?? '') }}">
@@ -162,7 +162,7 @@
                                         @csrf
 
                                         <div class="pf-field pf-field--full">
-                                            <div class="pf-label">Contrasena actual</div>
+                                            <div class="pf-label">Contraseña actual</div>
                                             <div class="pf-input-wrap">
                                                 <i class="bi bi-lock pf-input-icon" aria-hidden="true"></i>
                                                 <input class="pf-input pf-input--icon" type="password" name="current_password" required>
@@ -173,7 +173,7 @@
                                         </div>
 
                                         <div class="pf-field">
-                                            <div class="pf-label">Nueva contrasena</div>
+                                            <div class="pf-label">Nueva contraseña</div>
                                             <div class="pf-input-wrap">
                                                 <input class="pf-input" type="password" name="password" required>
                                                 <button class="pf-eye" type="button" data-pf-eye>
@@ -183,11 +183,11 @@
                                         </div>
 
                                         <div class="pf-field">
-                                            <div class="pf-label">Confirmar contrasena</div>
+                                            <div class="pf-label">Confirmar contraseña</div>
                                             <input class="pf-input" type="password" name="password_confirmation" required>
                                         </div>
 
-                                        <button class="pf-btn pf-btn-wide" type="submit">Actualizar Contrasena</button>
+                                        <button class="pf-btn pf-btn-wide" type="submit">Actualizar Contraseña</button>
                                     </form>
                                 </div>
                             </div>

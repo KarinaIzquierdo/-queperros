@@ -157,16 +157,16 @@
                                     <div class="pg-total-value" data-pg-modal-total>$0</div>
                                 </div>
 
-                                <div class="pg-modal-section">Metodo de Pago</div>
+                                <div class="pg-modal-section">Método de Pago</div>
 
                                 <div class="pg-pay-methods">
                                     <label class="pg-radio">
                                         <input type="radio" name="pgMethod" value="credito">
-                                        <span>Tarjeta de credito</span>
+                                        <span>Tarjeta de crédito</span>
                                     </label>
                                     <label class="pg-radio">
                                         <input type="radio" name="pgMethod" value="debito">
-                                        <span>Tarjeta debito</span>
+                                        <span>Tarjeta débito</span>
                                     </label>
                                     <label class="pg-radio">
                                         <input type="radio" name="pgMethod" value="pse">

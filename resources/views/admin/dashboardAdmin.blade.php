@@ -112,7 +112,7 @@
                 </section>
 
                 <section class="ad2-block" aria-label="Acciones rápidas">
-                    <h2 class="ad2-section-title">Acciones Rapidas</h2>
+                    <h2 class="ad2-section-title">Acciones Rápidas</h2>
                     <p class="ad2-section-sub">Operaciones frecuentes del sistema</p>
 
                     <div class="ad2-actions">
@@ -313,7 +313,7 @@
                                 </label>
 
                                 <label class="ad2-field">
-                                    <span class="ad2-label">Descripcion</span>
+                                    <span class="ad2-label">Descripción</span>
                                     <textarea class="ad2-input ad2-textarea" name="description" rows="3" placeholder="Describe el servicio..."></textarea>
                                 </label>
 
@@ -324,18 +324,18 @@
                                     </label>
 
                                     <label class="ad2-field">
-                                        <span class="ad2-label">Duracion</span>
+                                        <span class="ad2-label">Duración</span>
                                         <input class="ad2-input" type="text" name="duration" placeholder="30 min" />
                                     </label>
                                 </div>
 
                                 <label class="ad2-field">
-                                    <span class="ad2-label">Categoria</span>
+                                    <span class="ad2-label">Categoría</span>
                                     <select class="ad2-select" name="category">
                                         <option value="Medicina">Medicina</option>
-                                        <option value="Vacunacion">Vacunacion</option>
+                                        <option value="Vacunación">Vacunación</option>
                                         <option value="Grooming">Grooming</option>
-                                        <option value="Guarderia">Guarderia</option>
+                                        <option value="Guardería">Guardería</option>
                                     </select>
                                 </label>
 
@@ -453,8 +453,8 @@
                                 <div class="ad2-success-icon" aria-hidden="true">
                                     <span class="ad2-success-icon-inner">✓</span>
                                 </div>
-                                <div class="ad2-success-main">Operacion exitosa</div>
-                                <div class="ad2-success-sub">La accion fue realizada correctamente</div>
+                                <div class="ad2-success-main">Operación exitosa</div>
+                                <div class="ad2-success-sub">La acción fue realizada correctamente</div>
                             </div>
                         </div>
                     </div>

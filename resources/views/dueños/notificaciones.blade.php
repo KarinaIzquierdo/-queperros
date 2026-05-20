@@ -44,16 +44,16 @@
                             <h1 class="nt-title">Notificaciones</h1>
                             <p class="nt-sub">{{ $unreadCount ?? 0 }} sin leer</p>
                         </div>
-                        <a href="#" class="nt-mark-all">Marcar todas como leidas</a>
+                        <a href="#" class="nt-mark-all">Marcar todas como leídas</a>
                     </div>
 
                     <div class="nt-filters" role="tablist">
                         <button class="nt-filter nt-filter--active">Todas</button>
-                        <button class="nt-filter">No leidas</button>
+                        <button class="nt-filter">No leídas</button>
                         <button class="nt-filter">Cita</button>
                         <button class="nt-filter">Reporte</button>
                         <button class="nt-filter">Pago</button>
-                        <button class="nt-filter">Promocion</button>
+                        <button class="nt-filter">Promoción</button>
                     </div>
 
                     <div class="nt-list">

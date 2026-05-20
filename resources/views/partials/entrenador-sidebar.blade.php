@@ -23,7 +23,7 @@
         </div>
     </div>
 
-    <div class="mq-side-section">MENU PRINCIPAL</div>
+    <div class="mq-side-section">MENÚ PRINCIPAL</div>
     <nav class="mq-side-menu" aria-label="Menú entrenador">
         <a href="{{ route('entrenador.dashboard') }}" class="mq-side-item {{ request()->routeIs('entrenador.dashboard') ? 'mq-side-item--active' : '' }}">
             <span class="mq-side-left">

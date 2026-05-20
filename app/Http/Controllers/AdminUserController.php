@@ -88,6 +88,37 @@ class AdminUserController extends Controller
             ->with('temp_password', $tempPassword);
     }
 
+    public function update(Request $request, User $user)
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
+            'rol' => ['required', 'string', 'in:admin,empleado,dueno,padrino,entrenador,cuidador,profesional'],
+            'telefono' => ['nullable', 'string', 'max:20'],
+        ]);
+
+        $user->name = $validated['name'];
+        $user->email = $validated['email'];
+
+        if (Schema::hasColumn('users', 'rol')) {
+            $user->rol = $validated['rol'];
+        }
+
+        if (Schema::hasColumn('users', 'rol_id')) {
+            $user->rol_id = $this->roleIdFromRol($validated['rol']);
+        }
+
+        if (Schema::hasColumn('users', 'telefono')) {
+            $user->telefono = $validated['telefono'];
+        }
+
+        $user->save();
+
+        return redirect()
+            ->route('admin.users')
+            ->with('status', 'Usuario actualizado correctamente');
+    }
+
     public function assignRole(Request $request)
     {
         $validated = $request->validate([

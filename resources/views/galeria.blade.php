@@ -41,23 +41,20 @@
 
             <section class="pg-section" aria-labelledby="clientes-title">
                 <div class="pg-section-head">
-                    <h2 id="clientes-title">Clientes satisfechos</h2>
-                    <p>Peluditos que han disfrutado nuestros espacios, cuidados y acompañamiento.</p>
+                    <h2 id="clientes-title">Nuestra Galería</h2>
+                    <p>Conoce a los peluditos que forman parte de la familia Más Que Perros.</p>
                 </div>
 
                 <div class="pg-grid">
-                    <article class="pg-card pg-card--large">
-                        <img src="{{ asset('img/QUEEN.jpeg') }}" alt="Cliente satisfecho Queen">
-                        <div><strong>Queen</strong><span>Un día lleno de cuidado y tranquilidad.</span></div>
-                    </article>
-                    <article class="pg-card">
-                        <img src="{{ asset('img/REIGY,.jpeg') }}" alt="Cliente satisfecho Reigy">
-                        <div><strong>Reigy</strong><span>Acompañamiento personalizado.</span></div>
-                    </article>
-                    <article class="pg-card">
-                        <img src="{{ asset('img/TITAN Y LOLA.jpeg') }}" alt="Clientes satisfechos Titán y Lola">
-                        <div><strong>Titán y Lola</strong><span>Socialización y diversión.</span></div>
-                    </article>
+                    @forelse($photos as $photo)
+                        <article class="pg-card {{ $loop->first ? 'pg-card--large' : '' }}">
+                            <img src="{{ $photo['url'] }}" alt="Momento en Más Que Perros" loading="lazy">
+                        </article>
+                    @empty
+                        <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: #666;">
+                            <p>Próximamente más fotos de nuestros peluditos.</p>
+                        </div>
+                    @endforelse
                 </div>
             </section>
 

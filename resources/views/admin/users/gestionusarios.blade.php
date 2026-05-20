@@ -279,29 +279,32 @@
                             <button type="button" class="gu-modal-x" aria-label="Cerrar" data-gu-action="close-modal">×</button>
                         </div>
                         <div class="gu-modal-body">
-                            <form class="gu-form" onsubmit="return false;">
+                            <form class="gu-form" id="guEditForm" method="POST" action="">
+                                @csrf
+                                @method('PUT')
                                 <label class="gu-field">
                                     <span class="gu-field-label">Nombre completo</span>
-                                    <input class="gu-input" type="text" id="guEditName" value="" />
+                                    <input class="gu-input" type="text" name="name" id="guEditName" value="" required />
                                 </label>
                                 <label class="gu-field">
                                     <span class="gu-field-label">Email</span>
-                                    <input class="gu-input" type="email" id="guEditEmail" value="" />
+                                    <input class="gu-input" type="email" name="email" id="guEditEmail" value="" required />
                                 </label>
                                 <label class="gu-field">
-                                    <span class="gu-field-label">Telefono</span>
-                                    <input class="gu-input" type="text" id="guEditPhone" value="" />
+                                    <span class="gu-field-label">Teléfono</span>
+                                    <input class="gu-input" type="text" name="telefono" id="guEditPhone" value="" />
                                 </label>
                                 <label class="gu-field">
                                     <span class="gu-field-label">Rol</span>
-                                    <select class="gu-input" id="guEditRole">
+                                    <select class="gu-input" name="rol" id="guEditRole">
                                         <option value="dueno">Propietario</option>
                                         <option value="admin">Administrador</option>
                                         <option value="empleado">Cuidador</option>
                                         <option value="padrino">Padrino</option>
+                                        <option value="entrenador">Entrenador</option>
                                     </select>
                                 </label>
-                                <button type="submit" class="gu-save" data-gu-action="save-edit">Guardar Cambios</button>
+                                <button type="submit" class="gu-save">Guardar Cambios</button>
                             </form>
                         </div>
                     </div>
@@ -469,6 +472,10 @@
 
                 const fillEdit = () => {
                     if (!state.currentUser) return;
+                    const form = document.getElementById('guEditForm');
+                    if (form) {
+                        form.action = `/admin/users/${state.currentUser.id}`;
+                    }
                     document.getElementById('guEditName').value = state.currentUser.name || '';
                     document.getElementById('guEditEmail').value = state.currentUser.email || '';
                     document.getElementById('guEditPhone').value = state.currentUser.phone || '';
@@ -547,12 +554,6 @@
                         closeModal(detailModal);
                         fillDelete();
                         openModal(deleteModal);
-                        return;
-                    }
-
-                    if (action === 'save-edit') {
-                        closeModal(editModal);
-                        showToast('operacion exitosa');
                         return;
                     }
 
