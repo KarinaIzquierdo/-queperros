@@ -113,13 +113,19 @@
                             <article class="mq-card-ui" style="background: #DCEBFA; border-radius: 20px; border: 1px solid #B4C7D9; box-shadow: 0 4px 15px rgba(0,0,0,0.08); padding: 2.5rem; width: 380px; height: 260px; display: flex; flex-direction: column; justify-content: flex-start;">
                                 <h3 style="font-family: 'Lilita One', cursive; font-size: 1.8rem; color: #1B1B18; text-align: center; margin-bottom: 1.5rem; letter-spacing: 1px; line-height: 1.1;">ENTRENAMIENTO CANINO</h3>
                                 <ul style="list-style: none; padding: 0; margin: 0;">
-                                    <li style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 1.2rem; color: #1B1B18; font-size: 1.1rem; line-height: 1.3;">
+                                    <li class="mq-service-item" style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 1.2rem; color: #1B1B18; font-size: 1.1rem; line-height: 1.3; position: relative;">
                                         <img src="{{ asset('img/huellita.png') }}" alt="" style="width: 20px; margin-top: 4px; flex-shrink: 0;">
-                                        <span>Entrenamiento básico integral y deportivo</span>
+                                        <div style="display: flex; flex-direction: column;">
+                                            <span>Entrenamiento básico integral y deportivo</span>
+                                            <button type="button" class="mq-ver-mas" data-service-name="Entrenamiento básico integral y deportivo" data-service-desc="Programa diseñado para fortalecer el vínculo, mejorar la obediencia y fomentar un desarrollo físico saludable a través del juego y el deporte.">Ver más</button>
+                                        </div>
                                     </li>
-                                    <li style="display: flex; align-items: flex-start; gap: 12px; color: #1B1B18; font-size: 1.1rem; line-height: 1.3;">
+                                    <li class="mq-service-item" style="display: flex; align-items: flex-start; gap: 12px; color: #1B1B18; font-size: 1.1rem; line-height: 1.3; position: relative;">
                                         <img src="{{ asset('img/huellita.png') }}" alt="" style="width: 20px; margin-top: 4px; flex-shrink: 0;">
-                                        <span>Formación y crianza para perros de trabajo o especialidades</span>
+                                        <div style="display: flex; flex-direction: column;">
+                                            <span>Formación y crianza para perros de trabajo o especialidades</span>
+                                            <button type="button" class="mq-ver-mas" data-service-name="Formación y crianza para perros de trabajo" data-service-desc="Selección y formación técnica de ejemplares con genética superior para tareas específicas de seguridad, asistencia y deporte.">Ver más</button>
+                                        </div>
                                     </li>
                                 </ul>
                             </article>
@@ -127,13 +133,19 @@
                             <article class="mq-card-ui" style="background: #DCEBFA; border-radius: 20px; border: 1px solid #B4C7D9; box-shadow: 0 4px 15px rgba(0,0,0,0.08); padding: 2.5rem; width: 380px; height: 260px; display: flex; flex-direction: column; justify-content: flex-start;">
                                 <h3 style="font-family: 'Lilita One', cursive; font-size: 1.8rem; color: #1B1B18; text-align: center; margin-bottom: 1.5rem; letter-spacing: 1px; line-height: 1.1;">CUIDADO Y ALOJAMIENTO</h3>
                                 <ul style="list-style: none; padding: 0; margin: 0;">
-                                    <li style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 1.2rem; color: #1B1B18; font-size: 1.1rem; line-height: 1.3;">
+                                    <li class="mq-service-item" style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 1.2rem; color: #1B1B18; font-size: 1.1rem; line-height: 1.3; position: relative;">
                                         <img src="{{ asset('img/huellita.png') }}" alt="" style="width: 20px; margin-top: 4px; flex-shrink: 0;">
-                                        <span>Hotel canino</span>
+                                        <div style="display: flex; flex-direction: column;">
+                                            <span>Hotel canino</span>
+                                            <button type="button" class="mq-ver-mas" data-service-name="Hotel canino" data-service-desc="Hospedaje campestre donde tu perro disfrutará de compañía constante, seguridad y mucha diversión mientras tú no estás.">Ver más</button>
+                                        </div>
                                     </li>
-                                    <li style="display: flex; align-items: flex-start; gap: 12px; color: #1B1B18; font-size: 1.1rem; line-height: 1.3;">
+                                    <li class="mq-service-item" style="display: flex; align-items: flex-start; gap: 12px; color: #1B1B18; font-size: 1.1rem; line-height: 1.3; position: relative;">
                                         <img src="{{ asset('img/huellita.png') }}" alt="" style="width: 20px; margin-top: 4px; flex-shrink: 0;">
-                                        <span>Guardería (solo para la calera y zonas aledañas)</span>
+                                        <div style="display: flex; flex-direction: column;">
+                                            <span>Guardería (solo para la calera y zonas aledañas)</span>
+                                            <button type="button" class="mq-ver-mas" data-service-name="Guardería" data-service-desc="Espacio de socialización y recreación diaria en un entorno natural controlado, ideal para liberar energía y reducir el estrés.">Ver más</button>
+                                        </div>
                                     </li>
                                 </ul>
                             </article>
@@ -143,13 +155,19 @@
                         <article class="mq-card-ui" style="background: #DCEBFA; border-radius: 20px; border: 1px solid #B4C7D9; box-shadow: 0 4px 15px rgba(0,0,0,0.08); padding: 2.5rem; width: 500px; display: flex; flex-direction: column; align-items: center;">
                             <h3 style="font-family: 'Lilita One', cursive; font-size: 1.8rem; color: #1B1B18; text-align: center; margin-bottom: 1.5rem; letter-spacing: 1px; line-height: 1.1;">OTRAS ACTIVIDADES</h3>
                             <ul style="list-style: none; padding: 0; margin: 0;">
-                                <li style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 1.2rem; color: #1B1B18; font-size: 1.1rem; line-height: 1.3;">
+                                <li class="mq-service-item" style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 1.2rem; color: #1B1B18; font-size: 1.1rem; line-height: 1.3; position: relative;">
                                     <img src="{{ asset('img/huellita.png') }}" alt="" style="width: 20px; margin-top: 4px; flex-shrink: 0;">
-                                    <span>Día de diversión en Más que Perros</span>
+                                    <div style="display: flex; flex-direction: column;">
+                                        <span>Día de diversión en Más que Perros</span>
+                                        <button type="button" class="mq-ver-mas" data-service-name="Día de diversión" data-service-desc="Jornadas especiales de actividades recreativas, senderismo y juegos grupales diseñados para la máxima felicidad canina.">Ver más</button>
+                                    </div>
                                 </li>
-                                <li style="display: flex; align-items: flex-start; gap: 12px; color: #1B1B18; font-size: 1.1rem; line-height: 1.3;">
+                                <li class="mq-service-item" style="display: flex; align-items: flex-start; gap: 12px; color: #1B1B18; font-size: 1.1rem; line-height: 1.3; position: relative;">
                                     <img src="{{ asset('img/huellita.png') }}" alt="" style="width: 20px; margin-top: 4px; flex-shrink: 0;">
-                                    <span>Plan padrino</span>
+                                    <div style="display: flex; flex-direction: column;">
+                                        <span>Plan padrino</span>
+                                        <button type="button" class="mq-ver-mas" data-service-name="Plan padrino" data-service-desc="Apoya el bienestar de perros en proceso de formación o rescate, contribuyendo a su cuidado integral mientras encuentran su hogar ideal.">Ver más</button>
+                                    </div>
                                 </li>
                             </ul>
                         </article>
@@ -271,6 +289,57 @@
 
             @include('auth.partials.login-footer')
         </div>
+
+        <!-- Modal para descripción de servicios en Landing -->
+        <div id="mqServiceModal" class="mq-modal" aria-hidden="true">
+            <div class="mq-modal-overlay"></div>
+            <div class="mq-modal-content">
+                <button type="button" class="mq-modal-close" aria-label="Cerrar">&times;</button>
+                <div class="mq-modal-header">
+                    <img src="{{ asset('img/huellita.png') }}" alt="" class="mq-modal-icon">
+                    <h2 id="mqModalTitle">Nombre del Servicio</h2>
+                </div>
+                <div class="mq-modal-body">
+                    <p id="mqModalDesc">Descripción detallada del servicio...</p>
+                </div>
+                <div class="mq-modal-footer">
+                    <button type="button" class="mq-modal-btn" id="mqCloseModal">Entendido</button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const modal = document.getElementById('mqServiceModal');
+                const modalTitle = document.getElementById('mqModalTitle');
+                const modalDesc = document.getElementById('mqModalDesc');
+                const closeBtns = document.querySelectorAll('.mq-modal-close, #mqCloseModal, .mq-modal-overlay');
+
+                document.querySelectorAll('.mq-ver-mas').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        modalTitle.textContent = this.dataset.serviceName;
+                        modalDesc.textContent = this.dataset.serviceDesc;
+                        modal.classList.add('is-active');
+                        document.body.style.overflow = 'hidden';
+                    });
+                });
+
+                closeBtns.forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        modal.classList.remove('is-active');
+                        document.body.style.overflow = '';
+                    });
+                });
+
+                // Cerrar con Escape
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && modal.classList.contains('is-active')) {
+                        modal.classList.remove('is-active');
+                        document.body.style.overflow = '';
+                    }
+                });
+            });
+        </script>
 
         <div class="hidden">
         <header class="w-full lg:max-w-4xl max-w-[335px] text-sm mb-6 not-has-[nav]:hidden">

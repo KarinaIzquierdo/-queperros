@@ -198,6 +198,14 @@ Route::middleware(['auth', 'admin'])->group(function () {
         ->name('admin.gallery.store');
     Route::delete('/admin/gallery/{photo}', [\App\Http\Controllers\AdminGalleryController::class, 'destroy'])
         ->name('admin.gallery.destroy');
+
+    // Gestión de Galería de Usuarios Específicos (para el panel del dueño)
+    Route::get('/admin/users/{id}/gallery', [\App\Http\Controllers\AdminGalleryController::class, 'getUserGallery'])
+        ->name('admin.users.gallery');
+    Route::post('/admin/users/{id}/gallery', [\App\Http\Controllers\AdminGalleryController::class, 'uploadUserGallery'])
+        ->name('admin.users.gallery.store');
+    Route::delete('/admin/users/{id}/gallery/{photo}', [\App\Http\Controllers\AdminGalleryController::class, 'destroyUserPhoto'])
+        ->name('admin.users.gallery.destroy');
 });
 
 Route::get('/cuidador/dashboard', [CaregiverDashboardController::class, 'index'])

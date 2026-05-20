@@ -170,6 +170,16 @@
                                         <div class="gu-actions-icons">
                                             <button
                                                 type="button"
+                                                class="gu-action-icon-btn gu-action-icon-btn--gallery"
+                                                aria-label="Ver galería"
+                                                data-gu-action="open-gallery"
+                                                data-user-id="{{ $user->id }}"
+                                                data-user-name="{{ $user->name }}"
+                                            >
+                                                <i class="bi bi-images" aria-hidden="true"></i>
+                                            </button>
+                                            <button
+                                                type="button"
                                                 class="gu-action-icon-btn"
                                                 aria-label="Ver detalle"
                                                 data-gu-action="open-detail"
@@ -238,6 +248,10 @@
                                     <div class="gu-detail-name" id="guDetailName">—</div>
                                     <div class="gu-detail-status"><span class="gu-status gu-status--ok" id="guDetailStatus">Activo</span></div>
                                 </div>
+                                <button type="button" class="gu-modal-btn gu-modal-btn--gallery-top" data-gu-action="detail-gallery" style="margin-left: auto; background: #9442A3; color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+                                    <i class="bi bi-images"></i>
+                                    Gestionar Galería
+                                </button>
                             </div>
 
                             <div class="gu-detail-grid">
@@ -366,6 +380,33 @@
                     </div>
                 </div>
 
+                <div class="gu-modal" id="guGalleryModal" aria-hidden="true">
+                    <div class="gu-modal-backdrop" data-gu-action="close-modal"></div>
+                    <div class="gu-modal-card gu-modal-card--lg" role="dialog" aria-modal="true" aria-label="Galería del Usuario">
+                        <div class="gu-modal-head">
+                            <div class="gu-modal-title">Galería de <span id="guGalleryUserName">—</span></div>
+                            <button type="button" class="gu-modal-x" aria-label="Cerrar" data-gu-action="close-modal">×</button>
+                        </div>
+                        <div class="gu-modal-body">
+                            <form id="guGalleryForm" class="gu-gallery-upload">
+                                @csrf
+                                <input type="file" id="guGalleryInput" name="photos[]" multiple hidden accept="image/*">
+                                <label for="guGalleryInput" style="cursor:pointer; display:block;">
+                                    <i class="bi bi-cloud-arrow-up text-4xl text-purple-500 mb-2"></i>
+                                    <div class="font-bold text-gray-700">Haz clic para subir fotos a este dueño</div>
+                                    <div class="text-sm text-gray-400">Las fotos aparecerán en su panel de Galería</div>
+                                </label>
+                            </form>
+
+                            <div id="guGalleryStatus" class="hidden mb-4 p-3 rounded text-sm text-center"></div>
+
+                            <div id="guGalleryGrid" class="gu-gallery-grid">
+                                <!-- Fotos se cargarán aquí -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="gu-toast" id="guSuccessToast" aria-hidden="true">operacion exitosa</div>
             </main>
         </div>
@@ -440,6 +481,7 @@
                 const detailModal = document.getElementById('guDetailModal');
                 const editModal = document.getElementById('guEditModal');
                 const deleteModal = document.getElementById('guDeleteModal');
+                const galleryModal = document.getElementById('guGalleryModal');
                 const toast = document.getElementById('guSuccessToast');
 
                 const setUserFromBtn = (btn) => {
@@ -487,6 +529,88 @@
                     document.getElementById('guDeleteName').textContent = state.currentUser.name || '—';
                 };
 
+                const loadGallery = async () => {
+                    if (!state.currentUser) return;
+                    const grid = document.getElementById('guGalleryGrid');
+                    const userNameSpan = document.getElementById('guGalleryUserName');
+                    userNameSpan.textContent = state.currentUser.name;
+                    grid.innerHTML = '<div class="col-span-full text-center py-8 text-gray-400">Cargando fotos...</div>';
+
+                    try {
+                        const res = await fetch(`/admin/users/${state.currentUser.id}/gallery`);
+                        const data = await res.json();
+                        grid.innerHTML = '';
+
+                        if (data.photos && data.photos.length > 0) {
+                            data.photos.forEach(photo => {
+                                const item = document.createElement('div');
+                                item.className = 'gu-gallery-item';
+                                item.innerHTML = `
+                                    <img src="${photo.url}" alt="${photo.name}">
+                                    <button type="button" class="gu-gallery-item-del" data-photo-name="${photo.name}">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
+                                `;
+                                grid.appendChild(item);
+                            });
+                        } else {
+                            grid.innerHTML = '<div class="col-span-full text-center py-8 text-gray-400">Este usuario no tiene fotos en su galería.</div>';
+                        }
+                    } catch (err) {
+                        grid.innerHTML = '<div class="col-span-full text-center py-8 text-red-400">Error al cargar la galería.</div>';
+                    }
+                };
+
+                const deleteUserPhoto = async (photoName) => {
+                    if (!confirm('¿Eliminar esta foto?')) return;
+                    try {
+                        const res = await fetch(`/admin/users/${state.currentUser.id}/gallery/${photoName}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            }
+                        });
+                        const data = await res.json();
+                        if (data.success) {
+                            loadGallery();
+                            showToast('Foto eliminada');
+                        }
+                    } catch (err) {
+                        showToast('Error al eliminar');
+                    }
+                };
+
+                const uploadPhotos = async (files) => {
+                    if (!files || files.length === 0) return;
+                    const status = document.getElementById('guGalleryStatus');
+                    status.className = 'mb-4 p-3 rounded text-sm text-center bg-blue-100 text-blue-700';
+                    status.textContent = 'Subiendo fotos...';
+                    status.classList.remove('hidden');
+
+                    const formData = new FormData();
+                    for (let i = 0; i < files.length; i++) {
+                        formData.append('photos[]', files[i]);
+                    }
+                    formData.append('_token', '{{ csrf_token() }}');
+
+                    try {
+                        const res = await fetch(`/admin/users/${state.currentUser.id}/gallery`, {
+                            method: 'POST',
+                            body: formData
+                        });
+                        const data = await res.json();
+                        if (data.success) {
+                            status.className = 'mb-4 p-3 rounded text-sm text-center bg-green-100 text-green-700';
+                            status.textContent = '¡Fotos subidas con éxito!';
+                            loadGallery();
+                            setTimeout(() => status.classList.add('hidden'), 3000);
+                        }
+                    } catch (err) {
+                        status.className = 'mb-4 p-3 rounded text-sm text-center bg-red-100 text-red-700';
+                        status.textContent = 'Error al subir las fotos.';
+                    }
+                };
+
                 const showToast = (text) => {
                     if (!toast) return;
                     toast.textContent = text || 'operacion exitosa';
@@ -524,7 +648,7 @@
                         return;
                     }
 
-                    if (action === 'open-detail' || action === 'open-edit' || action === 'open-delete') {
+                    if (action === 'open-detail' || action === 'open-edit' || action === 'open-delete' || action === 'open-gallery') {
                         setUserFromBtn(btn);
                         closeAllMenus();
 
@@ -539,6 +663,10 @@
                         if (action === 'open-delete') {
                             fillDelete();
                             openModal(deleteModal);
+                        }
+                        if (action === 'open-gallery') {
+                            openModal(galleryModal);
+                            loadGallery();
                         }
                         return;
                     }
@@ -557,6 +685,13 @@
                         return;
                     }
 
+                    if (action === 'detail-gallery') {
+                        closeModal(detailModal);
+                        openModal(galleryModal);
+                        loadGallery();
+                        return;
+                    }
+
                     if (action === 'confirm-delete') {
                         closeModal(deleteModal);
                         showToast('operacion exitosa');
@@ -567,7 +702,14 @@
                         closeModal(detailModal);
                         closeModal(editModal);
                         closeModal(deleteModal);
+                        closeModal(galleryModal);
                         closeAllMenus();
+                        return;
+                    }
+
+                    if (e.target.closest('.gu-gallery-item-del')) {
+                        const photoName = e.target.closest('.gu-gallery-item-del').getAttribute('data-photo-name');
+                        deleteUserPhoto(photoName);
                         return;
                     }
 
@@ -619,9 +761,14 @@
                         closeModal(detailModal);
                         closeModal(editModal);
                         closeModal(deleteModal);
+                        closeModal(galleryModal);
                         closeAllMenus();
                         closeRegisterModal();
                     }
+                });
+                
+                document.getElementById('guGalleryInput')?.addEventListener('change', (e) => {
+                    uploadPhotos(e.target.files);
                 });
             })();
         </script>

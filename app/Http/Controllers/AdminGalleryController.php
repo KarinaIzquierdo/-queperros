@@ -67,4 +67,45 @@ class AdminGalleryController extends Controller
 
         return redirect()->route('admin.gallery.index')->with('error', 'La foto no existe.');
     }
+
+    public function getUserGallery($id)
+    {
+        $directory = 'gallery/' . (int) $id;
+        $photos = collect(Storage::disk('public')->files($directory))
+            ->filter(fn ($file) => preg_match('/\.(jpe?g|png|webp|gif)$/i', $file))
+            ->sortDesc()
+            ->map(fn ($file) => [
+                'name' => basename($file),
+                'url' => Storage::url($file),
+            ])
+            ->values();
+
+        return response()->json(['photos' => $photos]);
+    }
+
+    public function uploadUserGallery(Request $request, $id)
+    {
+        $request->validate([
+            'photos' => ['required', 'array', 'min:1'],
+            'photos.*' => ['required', 'image', 'mimes:jpg,jpeg,png,webp,gif', 'max:5120'],
+        ]);
+
+        foreach ($request->file('photos') as $photo) {
+            $photo->store('gallery/' . (int) $id, 'public');
+        }
+
+        return response()->json(['success' => true]);
+    }
+
+    public function destroyUserPhoto($id, $photo)
+    {
+        $path = 'gallery/' . (int) $id . '/' . $photo;
+
+        if (Storage::disk('public')->exists($path)) {
+            Storage::disk('public')->delete($path);
+            return response()->json(['success' => true]);
+        }
+
+        return response()->json(['success' => false], 404);
+    }
 }

@@ -172,6 +172,16 @@
                                     data-service-id="{{ $s['id'] ?? '' }}"
                                     data-service-name="{{ $s['name'] ?? '' }}"
                                 ><i class="bi bi-trash" aria-hidden="true"></i></button>
+                                <button
+                                    type="button"
+                                    class="gs2-info-btn"
+                                    data-gs-action="show-info"
+                                    data-service-name="{{ $s['name'] ?? '' }}"
+                                    data-service-description="{{ $s['description'] ?? '' }}"
+                                    title="Ver descripción detallada"
+                                >
+                                    <i class="bi bi-info-circle" aria-hidden="true"></i>
+                                </button>
                             </div>
                         </article>
                     @endforeach
@@ -293,6 +303,25 @@
                     </div>
                 </div>
 
+                <div class="ad2-modal" id="gsInfoServiceModal" aria-hidden="true">
+                    <div class="ad2-modal-backdrop" data-close="true"></div>
+                    <div class="ad2-modal-card" role="dialog" aria-modal="true" aria-labelledby="gsInfoServiceTitle">
+                        <div class="ad2-modal-head">
+                            <h2 class="ad2-modal-title" id="gsInfoServiceTitle">Descripción del Servicio</h2>
+                            <button type="button" class="ad2-modal-close" id="closeGsInfoService" aria-label="Cerrar">×</button>
+                        </div>
+                        <div class="ad2-modal-body">
+                            <div class="gs-info-content">
+                                <h3 id="gsInfoName" style="margin-bottom: 1rem; color: #1e293b; font-size: 1.25rem;">—</h3>
+                                <p id="gsInfoDescription" style="line-height: 1.6; color: #475569; font-size: 1rem; background: #f8fafc; padding: 1.5rem; border-radius: 12px; border: 1px solid #e2e8f0;">—</p>
+                            </div>
+                            <div style="margin-top: 2rem; display: flex; justify-content: flex-end;">
+                                <button type="button" class="ad2-submit" id="gsCloseInfoBtn" style="width: auto; padding: 0.75rem 2rem;">Entendido</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 @if (session('success'))
                     <div class="gs-toast" id="gsToast">{{ session('success') }}</div>
                 @endif
@@ -325,6 +354,12 @@
                 const searchInput = document.getElementById('gsSearchInput');
                 const categoryChips = Array.from(document.querySelectorAll('.gs2-chip'));
                 const serviceCards = Array.from(document.querySelectorAll('.gs2-card'));
+
+                const infoModal = document.getElementById('gsInfoServiceModal');
+                const closeInfoBtn = document.getElementById('closeGsInfoService');
+                const gsCloseInfoBtn = document.getElementById('gsCloseInfoBtn');
+                const gsInfoName = document.getElementById('gsInfoName');
+                const gsInfoDescription = document.getElementById('gsInfoDescription');
 
                 function showToast() {
                     if (!toast) return;
@@ -378,6 +413,8 @@
                 closeBtn?.addEventListener('click', closeModal);
                 closeEditBtn?.addEventListener('click', () => closeAnyModal(editModal));
                 closeDeleteBtn?.addEventListener('click', () => closeAnyModal(deleteModal));
+                closeInfoBtn?.addEventListener('click', () => closeAnyModal(infoModal));
+                gsCloseInfoBtn?.addEventListener('click', () => closeAnyModal(infoModal));
                 cancelDeleteBtn?.addEventListener('click', () => closeAnyModal(deleteModal));
 
                 modal?.addEventListener('click', (e) => {
@@ -490,6 +527,23 @@
                         openAnyModal(deleteModal);
                         return;
                     }
+
+                    if (action === 'show-info') {
+                        const name = btn.getAttribute('data-service-name') || '';
+                        let description = btn.getAttribute('data-service-description') || '';
+                        
+                        // Descripción personalizada para Entrenamiento Básico y Personal
+                        if (name.toLowerCase().includes('entrenamiento') && 
+                            (name.toLowerCase().includes('básico') || name.toLowerCase().includes('basico')) && 
+                            name.toLowerCase().includes('personal')) {
+                            description = "Rutinas guiadas de fuerza, resistencia y flexibilidad para todos los niveles. El punto de partida perfecto para una vida activa y saludable.";
+                        }
+
+                        if (gsInfoName) gsInfoName.textContent = name;
+                        if (gsInfoDescription) gsInfoDescription.textContent = description || 'Sin descripción disponible.';
+                        openAnyModal(infoModal);
+                        return;
+                    }
                 });
 
                 document.addEventListener('keydown', (e) => {
@@ -497,6 +551,7 @@
                     if (modal?.classList.contains('ad2-modal--open')) closeModal();
                     if (editModal?.classList.contains('ad2-modal--open')) closeAnyModal(editModal);
                     if (deleteModal?.classList.contains('ad2-modal--open')) closeAnyModal(deleteModal);
+                    if (infoModal?.classList.contains('ad2-modal--open')) closeAnyModal(infoModal);
                 });
 
                 showToast();
