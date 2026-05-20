@@ -41,17 +41,42 @@
                     <section class="gl-page">
                     <div class="gl-head">
                         <h1 class="gl-title">Galeria</h1>
-                        <p class="gl-sub">Fotos y recuerdos de tus mascotas</p>
+                        <p class="gl-sub">Sube fotos y recuerdos de tus mascotas</p>
+                    </div>
+
+                    <div class="gl-card">
+                        @if (session('success'))
+                            <div class="gl-alert gl-alert--success">{{ session('success') }}</div>
+                        @endif
+
+                        @if ($errors->any())
+                            <div class="gl-alert gl-alert--error">{{ $errors->first() }}</div>
+                        @endif
+
+                        <form class="gl-upload" method="POST" action="{{ route('owner.galeria.upload') }}" enctype="multipart/form-data">
+                            @csrf
+                            <label class="gl-upload-box" for="photos">
+                                <i class="bi bi-cloud-arrow-up" aria-hidden="true"></i>
+                                <span>Seleccionar fotos</span>
+                                <small>JPG, PNG, WEBP o GIF hasta 4MB</small>
+                            </label>
+                            <input id="photos" name="photos[]" type="file" accept="image/*" multiple required>
+                            <button class="gl-upload-btn" type="submit">
+                                <i class="bi bi-images" aria-hidden="true"></i>
+                                Subir fotos
+                            </button>
+                        </form>
                     </div>
 
                     <div class="gl-card">
                         <div class="gl-grid" aria-label="Galeria">
-                            <div class="gl-ph">Foto</div>
-                            <div class="gl-ph">Foto</div>
-                            <div class="gl-ph">Foto</div>
-                            <div class="gl-ph">Foto</div>
-                            <div class="gl-ph">Foto</div>
-                            <div class="gl-ph">Foto</div>
+                            @forelse ($photos as $photo)
+                                <a class="gl-photo" href="{{ $photo['url'] }}" target="_blank" rel="noopener">
+                                    <img src="{{ $photo['url'] }}" alt="Foto de galería">
+                                </a>
+                            @empty
+                                <div class="gl-empty">Aún no has subido fotos.</div>
+                            @endforelse
                         </div>
                     </div>
                 </section>

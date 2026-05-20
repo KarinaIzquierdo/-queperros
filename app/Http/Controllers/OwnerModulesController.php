@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 
 class OwnerModulesController extends Controller
 {
@@ -433,9 +434,38 @@ class OwnerModulesController extends Controller
     public function galeria()
     {
         $user = Auth::user();
+        $directory = 'gallery/' . (int) $user->id;
+        $photos = collect(Storage::disk('public')->files($directory))
+            ->filter(fn ($file) => preg_match('/\.(jpe?g|png|webp|gif)$/i', $file))
+            ->sortDesc()
+            ->map(fn ($file) => [
+                'path' => $file,
+                'url' => Storage::url($file),
+                'name' => basename($file),
+            ])
+            ->values();
 
         return view('dueños.galeria', [
             'user' => $user,
+            'photos' => $photos,
         ]);
+    }
+
+    public function uploadGaleria(Request $request)
+    {
+        $user = Auth::user();
+
+        $validated = $request->validate([
+            'photos' => ['required', 'array', 'min:1'],
+            'photos.*' => ['required', 'image', 'mimes:jpg,jpeg,png,webp,gif', 'max:4096'],
+        ]);
+
+        foreach ($validated['photos'] as $photo) {
+            $photo->store('gallery/' . (int) $user->id, 'public');
+        }
+
+        return redirect()
+            ->route('owner.galeria')
+            ->with('success', 'Fotos subidas correctamente.');
     }
 }
