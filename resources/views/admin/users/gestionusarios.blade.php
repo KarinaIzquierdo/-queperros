@@ -86,7 +86,7 @@
                             @if($rolesList->isNotEmpty())
                                 <div class="gu-roles-list">
                                     @foreach($rolesList as $role)
-                                        <span class="gu-role-tag">{{ ucfirst($role) }}</span>
+                                        <span class="gu-role-tag">{{ $role === 'dueno' ? 'Dueño' : ucfirst($role) }}</span>
                                     @endforeach
                                 </div>
                             @endif
@@ -311,7 +311,7 @@
                                 <label class="gu-field">
                                     <span class="gu-field-label">Rol</span>
                                     <select class="gu-input" name="rol" id="guEditRole">
-                                        <option value="dueno">Propietario</option>
+                                        <option value="dueno">Dueño</option>
                                         <option value="admin">Administrador</option>
                                         <option value="empleado">Cuidador</option>
                                         <option value="padrino">Padrino</option>
