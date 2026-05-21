@@ -4,7 +4,7 @@
         $bizAddress = trim((string) ($settings->direccion ?? ''));
         $bizEmail = trim((string) ($settings->email ?? ''));
 
-        if ($bizPhone === '') $bizPhone = '3102792128 - 3177487468';
+        if ($bizPhone === '') $bizPhone = '3102792128 - 3246894960';
         if ($bizAddress === '') $bizAddress = 'Municipio la Calera, Kilometro 28 Vía Quizquiza';
         if ($bizEmail === '') $bizEmail = 'masqueperrosshows@gmail.com';
     @endphp

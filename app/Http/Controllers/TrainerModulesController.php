@@ -379,10 +379,13 @@ class TrainerModulesController extends Controller
             $base = DB::table('reservas as r')->where('r.id_empleado', (int) $user->id);
             if ($hasServicios) {
                 $base->join('servicios as sf', 'sf.id', '=', 'r.id_actividad')
-                    ->whereIn('sf.nombre', ['Entrenamiento Básico', 'Entrenamiento Avanzado']);
+                    ->whereIn('sf.categoria_id', [1]); // ID 1 es Entrenamiento
             } elseif ($hasActividades) {
                 $base->join('actividades as af', 'af.id_actividad', '=', 'r.id_actividad')
-                    ->whereIn('af.tipo_actividad', ['Entrenamiento Básico', 'Entrenamiento Avanzado']);
+                    ->whereIn('af.tipo_actividad', [
+                        'Entrenamiento Básico',
+                        'Entrenamiento Avanzado'
+                    ]);
             }
 
             $counts = [
@@ -407,8 +410,11 @@ class TrainerModulesController extends Controller
             }
 
             $reservas = $query
-                ->when($hasServicios, fn ($query) => $query->whereIn('s.nombre', ['Entrenamiento Básico', 'Entrenamiento Avanzado']))
-                ->when($hasActividades, fn ($query) => $query->whereIn('a.tipo_actividad', ['Entrenamiento Básico', 'Entrenamiento Avanzado']))
+                ->when($hasServicios, fn ($query) => $query->whereIn('s.categoria_id', [1]))
+                ->when($hasActividades, fn ($query) => $query->whereIn('a.tipo_actividad', [
+                    'Entrenamiento Básico',
+                    'Entrenamiento Avanzado'
+                ]))
                 ->orderByDesc("r.$reservaKey")
                 ->select([
                     DB::raw("r.$reservaKey as id"),

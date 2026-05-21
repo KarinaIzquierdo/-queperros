@@ -113,7 +113,13 @@
                                 $isConsult = mb_strtolower($priceText) === 'consultar' || str_contains(mb_strtolower($priceText), 'consultar');
                             @endphp
 
-                            <article class="sv-card sv-card--{{ $meta['key'] }}" data-service-id="{{ $service['id'] }}" data-service-name="{{ $service['name'] }}" data-service-price="{{ $priceText }}" data-service-category="{{ $meta['label'] }}" data-service-icon="{{ $meta['icon'] }}">
+                            <article class="sv-card sv-card--{{ $meta['key'] }}" 
+                                data-service-id="{{ $service['id'] }}" 
+                                data-service-name="{{ $service['name'] }}" 
+                                data-service-price="{{ $priceText }}" 
+                                data-service-category="{{ $meta['label'] }}" 
+                                data-service-icon="{{ $meta['icon'] }}"
+                                data-category-id="{{ $service['category_id'] }}">
                                 <header class="sv-card-head">
                                     <div class="sv-card-icon"><i class="bi {{ $meta['icon'] }}" aria-hidden="true"></i></div>
                                     <div class="sv-card-head-text">
@@ -214,10 +220,10 @@
                         </select>
                     </label>
 
-                    <label class="sv-field">
-                        <span class="sv-label">Entrenador</span>
-                        <select name="profesional_id" class="sv-select" required>
-                            <option value="" selected disabled>Selecciona un entrenador</option>
+                    <label class="sv-field" id="trainerField">
+                        <span class="sv-label" id="trainerLabel">Entrenador</span>
+                        <select name="profesional_id" class="sv-select" id="trainerSelect">
+                            <option value="" selected disabled id="trainerPlaceholder">Selecciona un entrenador</option>
                             @foreach (($trainers ?? []) as $trainer)
                                 <option value="{{ $trainer->id }}">{{ $trainer->name }}</option>
                             @endforeach
@@ -259,11 +265,31 @@
                 const formPrecioEstimado = document.getElementById('svFormPrecioEstimado');
                 const form = document.getElementById('svRequestForm');
 
+                const trainerField = document.getElementById('trainerField');
+                const trainerLabel = document.getElementById('trainerLabel');
+                const trainerSelect = document.getElementById('trainerSelect');
+                const trainerPlaceholder = document.getElementById('trainerPlaceholder');
+
                 const openModal = (card) => {
+                    const categoryId = parseInt(card.dataset.categoryId);
+                    
                     formServiceId.value = card.dataset.serviceId || '';
                     formPrecioEstimado.value = card.dataset.servicePrice || '';
                     modalServiceName.textContent = card.dataset.serviceName || 'Servicio';
                     modalPrice.textContent = card.dataset.servicePrice || '-';
+
+                    // Lógica para cambiar texto de Entrenador según categoría
+                    // Categoría 1 es Entrenamiento
+                    if (categoryId === 1) {
+                        trainerLabel.textContent = 'Entrenador';
+                        trainerPlaceholder.textContent = 'Selecciona un entrenador';
+                        trainerSelect.required = true;
+                    } else {
+                        trainerLabel.textContent = 'Personal de apoyo';
+                        trainerPlaceholder.textContent = 'Selecciona personal de apoyo';
+                        trainerSelect.required = true;
+                    }
+
                     modal.classList.add('is-open');
                     modal.setAttribute('aria-hidden', 'false');
                     document.body.style.overflow = 'hidden';

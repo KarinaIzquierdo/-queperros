@@ -26,13 +26,16 @@ class TrainerDashboardController extends Controller
             $hasActividades = !$hasServicios && Schema::hasTable('actividades');
             $hasUsers = Schema::hasTable('users');
 
-            $base = DB::table('reservas as r');
+            $base = DB::table('reservas as r')->where('r.id_empleado', (int) $user->id);
             if ($hasServicios) {
                 $base->join('servicios as sf', 'sf.id', '=', 'r.id_actividad')
-                    ->whereIn('sf.nombre', ['Entrenamiento Básico', 'Entrenamiento Avanzado']);
+                    ->whereIn('sf.categoria_id', [1]); // ID 1 es Entrenamiento
             } elseif ($hasActividades) {
                 $base->join('actividades as af', 'af.id_actividad', '=', 'r.id_actividad')
-                    ->whereIn('af.tipo_actividad', ['Entrenamiento Básico', 'Entrenamiento Avanzado']);
+                    ->whereIn('af.tipo_actividad', [
+                        'Entrenamiento Básico',
+                        'Entrenamiento Avanzado'
+                    ]);
             }
 
             $pendingCount = (clone $base)->where('r.estado', 'Pendiente')->count();
@@ -50,7 +53,7 @@ class TrainerDashboardController extends Controller
                     ->sum('s.precio');
             }
 
-            $query = DB::table('reservas as r');
+            $query = DB::table('reservas as r')->where('r.id_empleado', (int) $user->id);
 
             if ($hasMascotas) {
                 $query->leftJoin('mascotas as m', "m.$mascotaKey", '=', 'r.id_mascota');
@@ -65,8 +68,11 @@ class TrainerDashboardController extends Controller
             }
 
             $pendingReservations = $query
-                ->when($hasServicios, fn ($query) => $query->whereIn('s.nombre', ['Entrenamiento Básico', 'Entrenamiento Avanzado']))
-                ->when($hasActividades, fn ($query) => $query->whereIn('a.tipo_actividad', ['Entrenamiento Básico', 'Entrenamiento Avanzado']))
+                ->when($hasServicios, fn ($query) => $query->whereIn('s.categoria_id', [1]))
+                ->when($hasActividades, fn ($query) => $query->whereIn('a.tipo_actividad', [
+                    'Entrenamiento Básico',
+                    'Entrenamiento Avanzado'
+                ]))
                 ->where('r.estado', 'Pendiente')
                 ->orderByDesc("r.$reservaKey")
                 ->limit(3)

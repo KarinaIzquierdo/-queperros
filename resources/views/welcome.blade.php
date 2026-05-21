@@ -117,14 +117,14 @@
                                         <img src="{{ asset('img/huellita.png') }}" alt="" style="width: 20px; margin-top: 4px; flex-shrink: 0;">
                                         <div style="display: flex; flex-direction: column;">
                                             <span>Entrenamiento básico integral y deportivo</span>
-                                            <button type="button" class="mq-ver-mas" data-service-name="Entrenamiento básico integral y deportivo" data-service-desc="Programa diseñado para fortalecer el vínculo, mejorar la obediencia y fomentar un desarrollo físico saludable a través del juego y el deporte.">Ver más</button>
+                                            <button type="button" class="mq-ver-mas" data-service-name="Entrenamiento básico integral y deportivo" data-service-desc="Servicio diseñado para todos los perros de todas las edades y razas por que un perro entrenado mejora la convivencia y el bienestar de la familia multiespecie o para aquellos perros que necesitan apoyo en el aprendizaje o refuerzo de normas de convivencia. Incluye trabajo en obediencia, autocontrol, socialización, manejo de ansiedad y modificación de comportamientos no adecuados. Nuestro entrenamiento está orientado a la disciplina, el ejercicio mental y el desarrollo de capacidades físicas, estimulando su potencial mediante actividades deportivas y trabajo estructurado.">Ver más</button>
                                         </div>
                                     </li>
                                     <li class="mq-service-item" style="display: flex; align-items: flex-start; gap: 12px; color: #1B1B18; font-size: 1.1rem; line-height: 1.3; position: relative;">
                                         <img src="{{ asset('img/huellita.png') }}" alt="" style="width: 20px; margin-top: 4px; flex-shrink: 0;">
                                         <div style="display: flex; flex-direction: column;">
                                             <span>Formación y crianza para perros de trabajo o especialidades</span>
-                                            <button type="button" class="mq-ver-mas" data-service-name="Formación y crianza para perros de trabajo" data-service-desc="Selección y formación técnica de ejemplares con genética superior para tareas específicas de seguridad, asistencia y deporte.">Ver más</button>
+                                            <button type="button" class="mq-ver-mas" data-service-name="Formación y crianza para perros de trabajo" data-service-desc="Programa especializado en la selección, socialización, formación y desarrollo para perros de trabajo, incluye el cruce, la crianza, el entrenamiento estructurado, la estimulación temprana del cachorro, trabajo de obediencia, fortalecimiento emocional y preparación según la función que desempeñara. Nuestro enfoque combina genética adecuada, la socialización correcta para formar perros capaces, seguros y confiables en su labor. Priorizamos el bienestar, la ética y el respeto por la naturaleza del animal.">Ver más</button>
                                         </div>
                                     </li>
                                 </ul>
@@ -137,14 +137,14 @@
                                         <img src="{{ asset('img/huellita.png') }}" alt="" style="width: 20px; margin-top: 4px; flex-shrink: 0;">
                                         <div style="display: flex; flex-direction: column;">
                                             <span>Hotel canino</span>
-                                            <button type="button" class="mq-ver-mas" data-service-name="Hotel canino" data-service-desc="Hospedaje campestre donde tu perro disfrutará de compañía constante, seguridad y mucha diversión mientras tú no estás.">Ver más</button>
+                                            <button type="button" class="mq-ver-mas" data-service-name="Hotel canino" data-service-desc="Servicio de hospedaje para estancias de corta y larga duración. Ofrecemos un entorno seguro, cómodo y supervisado donde los perros reciben rutinas de cuidado, alimentación, ejercicio, descanso y acompañamiento profesional. Nos enfocamos en su bienestar físico, emocional y conductual para que se sientan tranquilos durante la ausencia del tutor. Ofrecemos servicio de recogida para estancias mayores a 8 días en la ciudad de Bogotá.">Ver más</button>
                                         </div>
                                     </li>
                                     <li class="mq-service-item" style="display: flex; align-items: flex-start; gap: 12px; color: #1B1B18; font-size: 1.1rem; line-height: 1.3; position: relative;">
                                         <img src="{{ asset('img/huellita.png') }}" alt="" style="width: 20px; margin-top: 4px; flex-shrink: 0;">
                                         <div style="display: flex; flex-direction: column;">
                                             <span>Guardería (solo para la calera y zonas aledañas)</span>
-                                            <button type="button" class="mq-ver-mas" data-service-name="Guardería" data-service-desc="Espacio de socialización y recreación diaria en un entorno natural controlado, ideal para liberar energía y reducir el estrés.">Ver más</button>
+                                            <button type="button" class="mq-ver-mas" data-service-name="Guardería" data-service-desc="Espacio seguro y tranquilo para perros cuyos tutores necesitan dejarlos por algunas horas o durante el día. En nuestra guardería, los perros reciben cuidado, actividades controladas, interacción social adecuada y supervisión constante en un ambiente natural, amplio y pensado para su bienestar.">Ver más</button>
                                         </div>
                                     </li>
                                 </ul>
@@ -159,14 +159,14 @@
                                     <img src="{{ asset('img/huellita.png') }}" alt="" style="width: 20px; margin-top: 4px; flex-shrink: 0;">
                                     <div style="display: flex; flex-direction: column;">
                                         <span>Día de diversión en Más que Perros</span>
-                                        <button type="button" class="mq-ver-mas" data-service-name="Día de diversión" data-service-desc="Jornadas especiales de actividades recreativas, senderismo y juegos grupales diseñados para la máxima felicidad canina.">Ver más</button>
+                                        <button type="button" class="mq-ver-mas" data-service-name="Día de diversión" data-service-desc="Un plan para disfrutar en familia junto a tu mejor amigo, en Más que Perros abrimos nuestras puertas para que tú, tu familia y tu perro vivan un día lleno de conexión, aprendizaje y diversión. Es una experiencia creada para fortalecer el vínculo con tu peludito mientras comparten actividades al aire libre en un ambiente seguro, amplio y natural.">Ver más</button>
                                     </div>
                                 </li>
                                 <li class="mq-service-item" style="display: flex; align-items: flex-start; gap: 12px; color: #1B1B18; font-size: 1.1rem; line-height: 1.3; position: relative;">
                                     <img src="{{ asset('img/huellita.png') }}" alt="" style="width: 20px; margin-top: 4px; flex-shrink: 0;">
                                     <div style="display: flex; flex-direction: column;">
                                         <span>Plan padrino</span>
-                                        <button type="button" class="mq-ver-mas" data-service-name="Plan padrino" data-service-desc="Apoya el bienestar de perros en proceso de formación o rescate, contribuyendo a su cuidado integral mientras encuentran su hogar ideal.">Ver más</button>
+                                        <button type="button" class="mq-ver-mas" data-service-name="Plan padrino" data-service-desc="Más que perros dispuestos a desarrollar su labor social, plantea el plan padrino que consiste en conseguir personas o empresas con alta capacidad económica que puedan adoptar un perro en condición de calle y estén dispuestos a patrocinar su cuidado y su tenencia en sus instalaciones de Más que perros.">Ver más</button>
                                     </div>
                                 </li>
                             </ul>
@@ -325,7 +325,8 @@
                 });
 
                 closeBtns.forEach(btn => {
-                    btn.addEventListener('click', function() {
+                    btn.addEventListener('click', function(e) {
+                        e.preventDefault();
                         modal.classList.remove('is-active');
                         document.body.style.overflow = '';
                     });
