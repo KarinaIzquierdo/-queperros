@@ -21,13 +21,16 @@ class OwnerModulesController extends Controller
             && Schema::hasTable('mascotas')
             && Schema::hasColumn('mascotas', 'id_dueno')
         ) {
+            $reservaKey = Schema::hasColumn('reservas', 'id_reserva') ? 'id_reserva' : 'id';
+            $mascotaKey = Schema::hasColumn('mascotas', 'id_mascota') ? 'id_mascota' : 'id';
+
             $reservas = DB::table('reservas as r')
-                ->join('mascotas as m', 'm.id', '=', 'r.id_mascota')
+                ->join('mascotas as m', "m.$mascotaKey", '=', 'r.id_mascota')
                 ->leftJoin('servicios as s', 's.id', '=', 'r.id_actividad')
                 ->leftJoin('users as u', 'u.id', '=', 'r.id_empleado')
                 ->where('m.id_dueno', (int) $user->id)
                 ->select([
-                    'r.id',
+                    "r.$reservaKey as id",
                     'r.id_mascota as mascota_id',
                     'r.id_actividad as servicio_id',
                     'r.id_empleado as profesional_id',
@@ -37,7 +40,7 @@ class OwnerModulesController extends Controller
                     's.nombre as servicio_nombre',
                     'u.name as profesional_nombre',
                 ])
-                ->orderByDesc('r.id')
+                ->orderByDesc("r.$reservaKey")
                 ->get();
         }
 

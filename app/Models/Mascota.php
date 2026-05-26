@@ -8,7 +8,7 @@ class Mascota extends Model
 {
     protected $table = 'mascotas';
 
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'id_mascota';
 
     public $incrementing = true;
 

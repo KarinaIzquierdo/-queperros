@@ -28,14 +28,9 @@ class TrainerDashboardController extends Controller
 
             $base = DB::table('reservas as r')->where('r.id_empleado', (int) $user->id);
             if ($hasServicios) {
-                $base->join('servicios as sf', 'sf.id', '=', 'r.id_actividad')
-                    ->whereIn('sf.categoria_id', [1]); // ID 1 es Entrenamiento
+                $base->leftJoin('servicios as sf', 'sf.id', '=', 'r.id_actividad');
             } elseif ($hasActividades) {
-                $base->join('actividades as af', 'af.id_actividad', '=', 'r.id_actividad')
-                    ->whereIn('af.tipo_actividad', [
-                        'Entrenamiento Básico',
-                        'Entrenamiento Avanzado'
-                    ]);
+                $base->leftJoin('actividades as af', 'af.id_actividad', '=', 'r.id_actividad');
             }
 
             $pendingCount = (clone $base)->where('r.estado', 'Pendiente')->count();
@@ -68,11 +63,6 @@ class TrainerDashboardController extends Controller
             }
 
             $pendingReservations = $query
-                ->when($hasServicios, fn ($query) => $query->whereIn('s.categoria_id', [1]))
-                ->when($hasActividades, fn ($query) => $query->whereIn('a.tipo_actividad', [
-                    'Entrenamiento Básico',
-                    'Entrenamiento Avanzado'
-                ]))
                 ->where('r.estado', 'Pendiente')
                 ->orderByDesc("r.$reservaKey")
                 ->limit(3)

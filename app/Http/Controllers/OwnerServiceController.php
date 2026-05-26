@@ -16,9 +16,11 @@ class OwnerServiceController extends Controller
 
         $pets = collect();
         if (Schema::hasTable('mascotas') && Schema::hasColumn('mascotas', 'id_dueno')) {
+            $petIdColumn = Schema::hasColumn('mascotas', 'id') ? 'id' : 'id_mascota';
+
             $pets = DB::table('mascotas')
                 ->where('id_dueno', (int) $user->id)
-                ->select(['id', 'nombre'])
+                ->select([$petIdColumn . ' as id', 'nombre'])
                 ->orderBy('nombre')
                 ->get();
         }

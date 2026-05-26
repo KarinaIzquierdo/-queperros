@@ -47,6 +47,17 @@ class OwnerPetController extends Controller
     {
         $user = Auth::user();
 
+        if (Schema::hasTable('duenos')) {
+            DB::table('duenos')->updateOrInsert(
+                ['id_dueno' => (int) $user->id],
+                [
+                    'nombre' => (string) ($user->name ?? $user->nombre ?? 'Dueño'),
+                    'updated_at' => now(),
+                    'created_at' => now(),
+                ]
+            );
+        }
+
         // El id_dueno se asigna automáticamente del usuario autenticado por seguridad.
         // No se incluye en el request->validate() para evitar manipulación externa.
         $validated = $request->validate([
@@ -252,7 +263,7 @@ class OwnerPetController extends Controller
 
         try {
             DB::table('mascotas')
-                ->where('id', $mascota->id)
+                ->where('id_mascota', $mascota->id_mascota)
                 ->update($filtered);
                 
             Log::info('Mascota actualizada exitosamente', [

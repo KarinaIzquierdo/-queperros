@@ -139,7 +139,7 @@
 
                                 <div class="mq-pet-actions">
                                     <button class="mq-detail" type="button" data-pet='@json($pet)'>Ver detalle <i class="bi bi-chevron-right" aria-hidden="true"></i></button>
-                                    <button class="mq-trash" type="button" aria-label="Eliminar" data-destroy-url="{{ route('owner.pets.destroy', $pet->id) }}" data-pet-name="{{ $pet->nombre }}">
+                                    <button class="mq-trash" type="button" aria-label="Eliminar" data-destroy-url="{{ route('owner.pets.destroy', $pet->getKey()) }}" data-pet-name="{{ $pet->nombre }}">
                                         <i class="bi bi-trash" aria-hidden="true"></i>
                                     </button>
                                 </div>

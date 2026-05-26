@@ -11,8 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (! Schema::hasTable('mascotas')) {
+            return;
+        }
+
         Schema::table('mascotas', function (Blueprint $table) {
-            $table->text('vacunas')->nullable()->change();
+            if (Schema::hasColumn('mascotas', 'vacunas')) {
+                $table->text('vacunas')->nullable()->change();
+            } else {
+                $table->text('vacunas')->nullable();
+            }
         });
     }
 
@@ -21,6 +29,10 @@ return new class extends Migration
      */
     public function down(): void
     {
+        if (! Schema::hasTable('mascotas') || ! Schema::hasColumn('mascotas', 'vacunas')) {
+            return;
+        }
+
         Schema::table('mascotas', function (Blueprint $table) {
             $table->enum('vacunas', ['Moquillo', 'Parvovirus', 'Hepatitis', 'Parainfluenza', 'Leptospira', 'Rabia', 'Multiple (DHPP)', 'Sextuple', 'Ninguna'])->nullable()->change();
         });

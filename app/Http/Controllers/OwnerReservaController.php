@@ -63,6 +63,24 @@ class OwnerReservaController extends Controller
             ]);
         }
 
+        if ($hasServicios && Schema::hasTable('actividades')) {
+            $service = DB::table('servicios')
+                ->where('id', (int) $validated['servicio_id'])
+                ->first();
+
+            if ($service) {
+                DB::table('actividades')->updateOrInsert(
+                    ['id_actividad' => (int) $validated['servicio_id']],
+                    [
+                        'tipo_actividad' => (string) $service->nombre,
+                        'horario' => '08:00-18:00',
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]
+                );
+            }
+        }
+
         if (!Schema::hasTable('users')) {
             return redirect()->back()->withInput()->withErrors([
                 'profesional_id' => 'No se pudo validar el entrenador. Verifica la estructura de la base de datos.',
@@ -81,6 +99,19 @@ class OwnerReservaController extends Controller
             return redirect()->back()->withInput()->withErrors([
                 'profesional_id' => 'El entrenador seleccionado no es valido.',
             ]);
+        }
+
+        if (Schema::hasTable('empleados')) {
+            DB::table('empleados')->updateOrInsert(
+                ['id_empleado' => $trainerId],
+                [
+                    'nombre' => (string) ($trainer->name ?? 'Entrenador'),
+                    'cargo' => 'entrenador',
+                    'turno' => 'diurno',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]
+            );
         }
 
         if (!Schema::hasTable('reservas')) {

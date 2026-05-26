@@ -11,12 +11,33 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (! Schema::hasTable('reservas')) {
+            return;
+        }
+
         Schema::table('reservas', function (Blueprint $table) {
-            $table->integer('id_mascota')->after('id');
-            $table->integer('id_empleado')->nullable()->after('id_mascota');
-            $table->integer('id_actividad')->nullable()->after('id_empleado');
-            $table->date('fecha')->nullable()->after('id_actividad');
-            $table->enum('estado', ['Pendiente', 'Confirmada', 'Cancelada', 'Finalizada'])->default('Pendiente')->after('fecha');
+            if (! Schema::hasColumn('reservas', 'id_mascota')) {
+                $column = $table->integer('id_mascota');
+                if (Schema::hasColumn('reservas', 'id')) {
+                    $column->after('id');
+                }
+            }
+
+            if (! Schema::hasColumn('reservas', 'id_empleado')) {
+                $table->integer('id_empleado')->nullable();
+            }
+
+            if (! Schema::hasColumn('reservas', 'id_actividad')) {
+                $table->integer('id_actividad')->nullable();
+            }
+
+            if (! Schema::hasColumn('reservas', 'fecha')) {
+                $table->date('fecha')->nullable();
+            }
+
+            if (! Schema::hasColumn('reservas', 'estado')) {
+                $table->enum('estado', ['Pendiente', 'Confirmada', 'Cancelada', 'Finalizada'])->default('Pendiente');
+            }
         });
     }
 

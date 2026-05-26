@@ -38,11 +38,9 @@ class TrainerModulesController extends Controller
                 ->where('r.id_empleado', (int) $user->id);
 
             if ($hasServicios) {
-                $query->join('servicios as s', 's.id', '=', 'r.id_actividad')
-                    ->whereIn('s.nombre', ['Entrenamiento Básico', 'Entrenamiento Avanzado']);
+                $query->leftJoin('servicios as s', 's.id', '=', 'r.id_actividad');
             } elseif ($hasActividades) {
-                $query->join('actividades as a', 'a.id_actividad', '=', 'r.id_actividad')
-                    ->whereIn('a.tipo_actividad', ['Entrenamiento Básico', 'Entrenamiento Avanzado']);
+                $query->leftJoin('actividades as a', 'a.id_actividad', '=', 'r.id_actividad');
             }
 
             if ($hasUsers) {
@@ -93,11 +91,9 @@ class TrainerModulesController extends Controller
                 ->whereIn('r.estado', ['Pendiente', 'Confirmada']);
 
             if (Schema::hasTable('servicios')) {
-                $petsQuery->join('servicios as s', 's.id', '=', 'r.id_actividad')
-                    ->whereIn('s.nombre', ['Entrenamiento Básico', 'Entrenamiento Avanzado']);
+                $petsQuery->leftJoin('servicios as s', 's.id', '=', 'r.id_actividad');
             } elseif (Schema::hasTable('actividades')) {
-                $petsQuery->join('actividades as a', 'a.id_actividad', '=', 'r.id_actividad')
-                    ->whereIn('a.tipo_actividad', ['Entrenamiento Básico', 'Entrenamiento Avanzado']);
+                $petsQuery->leftJoin('actividades as a', 'a.id_actividad', '=', 'r.id_actividad');
             }
 
             $pets = $petsQuery
@@ -114,7 +110,6 @@ class TrainerModulesController extends Controller
         if (Schema::hasTable('servicios')) {
             $activities = DB::table('servicios')
                 ->when(Schema::hasColumn('servicios', 'activo'), fn ($query) => $query->where('activo', true))
-                ->whereIn('nombre', ['Entrenamiento Básico', 'Entrenamiento Avanzado'])
                 ->select([
                     DB::raw('id as id'),
                     DB::raw('COALESCE(nombre, "") as name'),
@@ -123,7 +118,6 @@ class TrainerModulesController extends Controller
                 ->get();
         } elseif (Schema::hasTable('actividades')) {
             $activities = DB::table('actividades')
-                ->whereIn('tipo_actividad', ['Entrenamiento Básico', 'Entrenamiento Avanzado'])
                 ->select([
                     DB::raw('id_actividad as id'),
                     DB::raw('COALESCE(tipo_actividad, "") as name'),
@@ -165,18 +159,16 @@ class TrainerModulesController extends Controller
             ->where('id_actividad', (int) $validated['activity']);
 
         if (Schema::hasTable('servicios')) {
-            $existsQuery->join('servicios as s', 's.id', '=', 'reservas.id_actividad')
-                ->whereIn('s.nombre', ['Entrenamiento Básico', 'Entrenamiento Avanzado']);
+            $existsQuery->leftJoin('servicios as s', 's.id', '=', 'reservas.id_actividad');
         } elseif (Schema::hasTable('actividades')) {
-            $existsQuery->join('actividades as a', 'a.id_actividad', '=', 'reservas.id_actividad')
-                ->whereIn('a.tipo_actividad', ['Entrenamiento Básico', 'Entrenamiento Avanzado']);
+            $existsQuery->leftJoin('actividades as a', 'a.id_actividad', '=', 'reservas.id_actividad');
         }
 
         $exists = $existsQuery->exists();
 
         if (!$exists) {
             return redirect()->back()->withInput()->withErrors([
-                'pet' => 'La mascota seleccionada no está asignada a este entrenador para entrenamiento básico o avanzado.',
+                'pet' => 'La mascota seleccionada no está asignada a este entrenador.',
             ]);
         }
 
@@ -235,10 +227,12 @@ class TrainerModulesController extends Controller
             $isAvailable = $dayAvail->is_available ?? true;
 
             // Get reservations for this day
+            $reservationIdColumn = Schema::hasColumn('reservas', 'id') ? 'id' : 'id_reserva';
+
             $reservations = DB::table('reservas')
                 ->where('id_empleado', $user->id)
                 ->where('fecha', $date->format('Y-m-d'))
-                ->orderBy('id')
+                ->orderBy($reservationIdColumn)
                 ->get();
 
             $items = [];
@@ -378,14 +372,9 @@ class TrainerModulesController extends Controller
 
             $base = DB::table('reservas as r')->where('r.id_empleado', (int) $user->id);
             if ($hasServicios) {
-                $base->join('servicios as sf', 'sf.id', '=', 'r.id_actividad')
-                    ->whereIn('sf.categoria_id', [1]); // ID 1 es Entrenamiento
+                $base->leftJoin('servicios as sf', 'sf.id', '=', 'r.id_actividad');
             } elseif ($hasActividades) {
-                $base->join('actividades as af', 'af.id_actividad', '=', 'r.id_actividad')
-                    ->whereIn('af.tipo_actividad', [
-                        'Entrenamiento Básico',
-                        'Entrenamiento Avanzado'
-                    ]);
+                $base->leftJoin('actividades as af', 'af.id_actividad', '=', 'r.id_actividad');
             }
 
             $counts = [
@@ -410,11 +399,6 @@ class TrainerModulesController extends Controller
             }
 
             $reservas = $query
-                ->when($hasServicios, fn ($query) => $query->whereIn('s.categoria_id', [1]))
-                ->when($hasActividades, fn ($query) => $query->whereIn('a.tipo_actividad', [
-                    'Entrenamiento Básico',
-                    'Entrenamiento Avanzado'
-                ]))
                 ->orderByDesc("r.$reservaKey")
                 ->select([
                     DB::raw("r.$reservaKey as id"),
