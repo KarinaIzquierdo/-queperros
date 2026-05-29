@@ -31,7 +31,7 @@
                     'profileUrl' => route('admin.settings'),
                     'settingsUrl' => route('admin.settings'),
                     'helpUrl' => route('admin.dashboard'),
-                    'notificationsUrl' => route('admin.dashboard'),
+                    'notificationsUrl' => route('admin.notificaciones'),
                     'notifCount' => 3,
                 ])
 
@@ -70,7 +70,7 @@
                         <div class="ad2-card-label">Total Usuarios</div>
                         <div class="ad2-card-hover">
                             <div class="ad2-card-divider"></div>
-                            <div class="ad2-card-hover-text">3 propietarios, 2 veterinarios</div>
+                            <div class="ad2-card-hover-text">3 dueños, 2 veterinarios</div>
                             <a href="{{ route('admin.users') }}" class="ad2-card-hover-link">Ver detalle <span aria-hidden="true">→</span></a>
                         </div>
                     </div>
@@ -105,7 +105,7 @@
                         @endif
                         <div class="ad2-card-hover">
                             <div class="ad2-card-divider"></div>
-                            <div class="ad2-card-hover-text">Admin, Veterinario, Propietario</div>
+                            <div class="ad2-card-hover-text">Admin, Veterinario, Dueño</div>
                             <a href="#" class="ad2-card-hover-link">Ver detalle <span aria-hidden="true">→</span></a>
                         </div>
                     </div>
@@ -216,11 +216,11 @@
                     <div class="ad2-users-summary" aria-label="Resumen">
                         <div class="ad2-users-summary-card">
                             <div class="ad2-users-count ad2-users-count--blue">{{ $stats['owners_count'] ?? 0 }}</div>
-                            <div class="ad2-users-summary-label">Propietarios</div>
+                            <div class="ad2-users-summary-label">Dueños</div>
                         </div>
                         <div class="ad2-users-summary-card">
-                            <div class="ad2-users-count ad2-users-count--purple">{{ $stats['vets_count'] ?? 0 }}</div>
-                            <div class="ad2-users-summary-label">Cuidadores</div>
+                            <div class="ad2-users-count ad2-users-count--purple">{{ $stats['trainers_count'] ?? 0 }}</div>
+                            <div class="ad2-users-summary-label">Entrenadores</div>
                         </div>
                         <div class="ad2-users-summary-card">
                             <div class="ad2-users-count ad2-users-count--yellow">{{ $stats['admins_count'] ?? 0 }}</div>
@@ -234,8 +234,8 @@
                                 $initial = mb_strtoupper(mb_substr($u->name ?? 'U', 0, 1));
                                 $rolLabel = match($u->rol) {
                                     'admin' => 'Administrador',
-                                    'empleado' => 'Cuidador',
-                                    'dueno' => 'Propietario',
+                                    'empleado' => 'Entrenador',
+                                    'dueno' => 'Dueño',
                                     'padrino' => 'Padrino',
                                     'entrenador' => 'Entrenador',
                                     default => ucfirst((string) ($u->rol ?? 'Sin rol')),
@@ -285,7 +285,7 @@
                             <span class="ad2-label">Rol</span>
                             <select class="ad2-select" name="rol">
                                 <option value="admin">Administrador</option>
-                                <option value="empleado">Cuidador</option>
+                                <option value="empleado">Entrenador</option>
                                 <option value="dueno">Dueño</option>
                                 <option value="padrino">Padrino</option>
                                 <option value="entrenador">Entrenador</option>
@@ -427,8 +427,8 @@
                                 <label class="ad2-field">
                                     <span class="ad2-label">Nuevo rol</span>
                                     <select class="ad2-select" id="adminAssignRoleNewRole" name="rol">
-                                        <option value="dueno">Propietario</option>
-                                        <option value="empleado">Cuidador</option>
+                                        <option value="dueno">Dueño</option>
+                                        <option value="empleado">Entrenador</option>
                                         <option value="padrino">Padrino</option>
                                         <option value="entrenador">Entrenador</option>
                                         <option value="admin">Administrador</option>

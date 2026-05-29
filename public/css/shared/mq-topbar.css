@@ -297,16 +297,17 @@
 }
 
 .mqx-popover{
-    position: absolute;
-    top: calc(100% + 10px);
-    right: 0;
+    position: fixed;
+    top: 82px;
+    right: 18px;
     width: 320px;
+    max-width: calc(100vw - 36px);
     background: var(--mqx-card);
     border-radius: 22px;
     border: 1px solid var(--mqx-border);
     box-shadow: var(--mqx-shadow);
     overflow: hidden;
-    z-index: 50;
+    z-index: 3000;
     opacity: 0;
     transform: translateY(-6px);
     pointer-events: none;
@@ -321,7 +322,7 @@
 
 .mqx-popover--wide{
     width: 460px;
-    max-width: calc(100vw - 24px);
+    max-width: calc(100vw - 36px);
 }
 
 .mqx-popover-head{
@@ -341,12 +342,14 @@
     font-weight: 900;
     font-size: 24px;
     line-height: 1.05;
+    overflow-wrap: anywhere;
 }
 
 .mqx-popover-role{
     margin-top: 4px;
     font-size: 20px;
     opacity: 0.92;
+    overflow-wrap: anywhere;
 }
 
 .mqx-popover-action{
@@ -373,6 +376,12 @@
     color: rgba(15, 23, 42, 0.82);
     font-size: 22px;
     transition: background .15s ease;
+    min-width: 0;
+}
+
+.mqx-popover-item span{
+    min-width: 0;
+    overflow-wrap: anywhere;
 }
 
 .mqx-popover-item:hover{
@@ -406,6 +415,12 @@
     color: #dc2626;
     cursor: pointer;
     transition: background .15s ease;
+    min-width: 0;
+}
+
+.mqx-popover-logout span{
+    min-width: 0;
+    overflow-wrap: anywhere;
 }
 
 .mqx-popover-logout button:hover{

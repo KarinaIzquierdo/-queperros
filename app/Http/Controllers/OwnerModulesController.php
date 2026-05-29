@@ -159,9 +159,10 @@ class OwnerModulesController extends Controller
             && Schema::hasColumn('mascotas', 'id_dueno')
         ) {
             $reservaKey = Schema::hasColumn('reservas', 'id_reserva') ? 'id_reserva' : 'id';
+            $mascotaKey = Schema::hasColumn('mascotas', 'id_mascota') ? 'id_mascota' : 'id';
 
             $facturas = DB::table('reservas as r')
-                ->join('mascotas as m', 'm.id', '=', 'r.id_mascota')
+                ->join('mascotas as m', "m.$mascotaKey", '=', 'r.id_mascota')
                 ->leftJoin('servicios as s', 's.id', '=', 'r.id_actividad')
                 ->where('m.id_dueno', (int) $user->id)
                 ->whereIn('r.estado', ['Confirmada', 'Finalizada'])
@@ -217,12 +218,15 @@ class OwnerModulesController extends Controller
             ]);
         }
 
+        $reservaKey = Schema::hasColumn('reservas', 'id_reserva') ? 'id_reserva' : 'id';
+        $mascotaKey = Schema::hasColumn('mascotas', 'id_mascota') ? 'id_mascota' : 'id';
+
         $row = DB::table('reservas as r')
-            ->join('mascotas as m', 'm.id', '=', 'r.id_mascota')
-            ->where('r.' . (Schema::hasColumn('reservas', 'id_reserva') ? 'id_reserva' : 'id'), (int) $reserva)
+            ->join('mascotas as m', "m.$mascotaKey", '=', 'r.id_mascota')
+            ->where("r.$reservaKey", (int) $reserva)
             ->where('m.id_dueno', (int) $user->id)
             ->select([
-                'r.' . (Schema::hasColumn('reservas', 'id_reserva') ? 'id_reserva' : 'id') . ' as id',
+                "r.$reservaKey as id",
                 'r.estado',
             ])
             ->first();
@@ -249,7 +253,7 @@ class OwnerModulesController extends Controller
         }
 
         DB::table('reservas')
-            ->where(Schema::hasColumn('reservas', 'id_reserva') ? 'id_reserva' : 'id', (int) $row->id)
+            ->where($reservaKey, (int) $row->id)
             ->update($payload);
 
         return redirect()->route('owner.pagos')->with('success', 'Pago registrado correctamente.');
@@ -258,10 +262,49 @@ class OwnerModulesController extends Controller
     public function planPadrino()
     {
         $user = Auth::user();
+        $dogs = \App\Models\SponsorDog::query()
+            ->where('publicado', true)
+            ->where('estado', 'Disponible')
+            ->orderByDesc('id')
+            ->get();
+
+        $sponsorships = \App\Models\Sponsorship::query()
+            ->where('user_id', (int) $user->id)
+            ->orderByDesc('id')
+            ->get()
+            ->keyBy('sponsor_dog_id');
 
         return view('dueños.planpadrino', [
             'user' => $user,
+            'dogs' => $dogs,
+            'sponsorships' => $sponsorships,
         ]);
+    }
+
+    public function storePadrinazgo(Request $request, \App\Models\SponsorDog $dog)
+    {
+        $validated = $request->validate([
+            'plan' => ['required', 'string', 'in:basico,cuidador,protector'],
+        ]);
+
+        $amount = match ($validated['plan']) {
+            'cuidador' => 50000,
+            'protector' => 100000,
+            default => 30000,
+        };
+
+        \App\Models\Sponsorship::query()->updateOrCreate([
+            'user_id' => (int) Auth::id(),
+            'sponsor_dog_id' => (int) $dog->id,
+        ], [
+            'plan' => $validated['plan'],
+            'monto_mensual' => $amount,
+            'estado' => 'Pendiente',
+        ]);
+
+        return redirect()
+            ->route('owner.planpadrino')
+            ->with('success', 'Tu solicitud de apadrinamiento fue registrada. Te contactaremos para coordinar el aporte.');
     }
 
     public function perfil()
@@ -404,13 +447,35 @@ class OwnerModulesController extends Controller
             'message' => ['required', 'string', 'max:1000'],
         ]);
 
+        $trainer = Schema::hasTable('users')
+            ? DB::table('users')->where('rol', 'entrenador')->orderBy('id')->first()
+            : null;
+
         // Guardar el mensaje en la base de datos
         \App\Models\ChatMessage::create([
             'sender_id' => Auth::id(),
+            'receiver_id' => $trainer->id ?? null,
             'message' => $validated['message'],
             'sender_type' => 'user',
             'is_read' => false,
         ]);
+
+        if ($trainer && Schema::hasTable('notificaciones')) {
+            DB::table('notificaciones')->updateOrInsert([
+                'user_id' => (int) $trainer->id,
+                'tipo' => 'chat',
+                'url' => route('entrenador.chat', [], false),
+            ], [
+                'user_id' => (int) $trainer->id,
+                'tipo' => 'chat',
+                'titulo' => 'Nuevo mensaje de chat',
+                'mensaje' => Auth::user()->name . ' te envió un mensaje.',
+                'url' => route('entrenador.chat', [], false),
+                'leida_en' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
 
         return response()->json(['success' => true]);
     }

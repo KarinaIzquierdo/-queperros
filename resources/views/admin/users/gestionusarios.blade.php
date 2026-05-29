@@ -144,8 +144,8 @@
                                         @php
                                             $roleText = match ($user->rol ?? '') {
                                                 'admin' => 'Administrador',
-                                                'empleado' => 'Cuidador',
-                                                'dueno' => 'Propietario',
+                                                'empleado' => 'Entrenador',
+                                                'dueno' => 'Dueño',
                                                 'padrino' => 'Padrino',
                                                 'entrenador' => 'Entrenador',
                                                 default => ucfirst((string) ($user->rol ?? 'Sin rol')),
@@ -313,7 +313,7 @@
                                     <select class="gu-input" name="rol" id="guEditRole">
                                         <option value="dueno">Dueño</option>
                                         <option value="admin">Administrador</option>
-                                        <option value="empleado">Cuidador</option>
+                                        <option value="empleado">Entrenador</option>
                                         <option value="padrino">Padrino</option>
                                         <option value="entrenador">Entrenador</option>
                                     </select>
@@ -367,7 +367,7 @@
                                     <span class="ad2-label">Rol</span>
                                     <select class="ad2-select" name="rol">
                                         <option value="admin">Administrador</option>
-                                        <option value="empleado">Cuidador</option>
+                                        <option value="empleado">Entrenador</option>
                                         <option value="dueno">Dueño</option>
                                         <option value="padrino">Padrino</option>
                                         <option value="entrenador">Entrenador</option>

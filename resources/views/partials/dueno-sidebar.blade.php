@@ -61,6 +61,15 @@
                 <span class="mq-side-active-dot" aria-hidden="true"></span>
             @endif
         </a>
+        <a href="{{ route('owner.services.my') }}" class="mq-side-item {{ request()->routeIs('owner.services.my') ? 'mq-side-item--active' : '' }}">
+            <span class="mq-side-left">
+                <i class="bi bi-list-check" aria-hidden="true"></i>
+                <span>Mis Servicios</span>
+            </span>
+            @if (request()->routeIs('owner.services.my'))
+                <span class="mq-side-active-dot" aria-hidden="true"></span>
+            @endif
+        </a>
         <a href="{{ route('owner.seguimiento') }}" class="mq-side-item {{ request()->routeIs('owner.seguimiento') ? 'mq-side-item--active' : '' }}">
             <span class="mq-side-left">
                 <i class="bi bi-graph-up" aria-hidden="true"></i>

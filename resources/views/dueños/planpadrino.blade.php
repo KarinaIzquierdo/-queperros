@@ -53,40 +53,111 @@
                             </div>
                         </div>
 
+                        @if (session('success'))
+                            <div class="pp-spon-card" style="margin-top: 16px;">
+                                <div class="pp-spon-name">{{ session('success') }}</div>
+                            </div>
+                        @endif
+
                         <div class="pp-tabs" role="tablist" aria-label="Plan Padrino">
-                            <button class="pp-tab pp-tab--active" type="button" role="tab" aria-selected="true" data-pp-tab="dogs">Perros Disponibles (0)</button>
-                            <button class="pp-tab" type="button" role="tab" aria-selected="false" data-pp-tab="mine">Mis Padrinazgos (0)</button>
+                            <button class="pp-tab pp-tab--active" type="button" role="tab" aria-selected="true" data-pp-tab="dogs">Perros Disponibles ({{ ($dogs ?? collect())->count() }})</button>
+                            <button class="pp-tab" type="button" role="tab" aria-selected="false" data-pp-tab="mine">Mis Padrinazgos ({{ ($sponsorships ?? collect())->count() }})</button>
                         </div>
                     </div>
 
                     <div class="pp-panels">
                         <div data-pp-panel="dogs">
                             <div class="pp-grid">
-                                <article class="pp-card">
-                                    <div class="pp-card-body">
-                                        <h3 class="pp-dog-name">No hay perros disponibles</h3>
-                                        <div class="pp-dog-meta"></div>
-                                        <p class="pp-dog-desc">
-                                            Cuando exista un perro disponible para apadrinar, aparecerá aquí.
-                                        </p>
-                                    </div>
-                                </article>
+                                @forelse (($dogs ?? collect()) as $dog)
+                                    @php
+                                        $needs = collect(explode(',', (string) ($dog->necesidades ?? '')))->map(fn ($need) => trim($need))->filter()->values();
+                                        $photo = $dog->foto ? asset('storage/' . ltrim($dog->foto, '/')) : asset('img/pet.png');
+                                        $meta = trim(collect([$dog->raza, $dog->edad ? $dog->edad . ' años' : null, $dog->sexo])->filter()->implode(' • '));
+                                    @endphp
+                                    <article class="pp-card">
+                                        <div class="pp-card-media">
+                                            <img src="{{ $photo }}" alt="{{ $dog->nombre }}">
+                                            <span class="pp-chip"><i class="bi bi-heart-fill" aria-hidden="true"></i>{{ $dog->estado }}</span>
+                                        </div>
+                                        <div class="pp-card-body">
+                                            <h3 class="pp-dog-name">{{ $dog->nombre }}</h3>
+                                            <div class="pp-dog-meta">{{ $meta }}</div>
+                                            <p class="pp-dog-desc">{{ $dog->historia ?: 'Este perrito está esperando una persona que ayude a cubrir sus cuidados.' }}</p>
+                                            @if ($needs->isNotEmpty())
+                                                <div class="pp-needs">
+                                                    <div class="pp-needs-label">NECESIDADES</div>
+                                                    <div class="pp-needs-row">
+                                                        @foreach ($needs->take(3) as $need)
+                                                            <span class="pp-pill">{{ $need }}</span>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        </div>
+                                        <div class="pp-card-actions">
+                                            <form action="{{ route('payment.sponsorship.create', $dog) }}" method="POST">
+                                                @csrf
+                                                <button
+                                                    class="pp-sponsor-btn"
+                                                    type="submit"
+                                                    data-pp-name="{{ $dog->nombre }}"
+                                                    data-pp-meta="{{ $meta }}"
+                                                    data-pp-img="{{ $photo }}"
+                                                    data-pp-story="{{ $dog->historia }}"
+                                                >
+                                                    <i class="bi bi-credit-card" style="margin-right: 8px;"></i>
+                                                    Apadrinar con MercadoPago
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </article>
+                                @empty
+                                    <article class="pp-card">
+                                        <div class="pp-card-body">
+                                            <h3 class="pp-dog-name">No hay perros disponibles</h3>
+                                            <div class="pp-dog-meta"></div>
+                                            <p class="pp-dog-desc">
+                                                Cuando exista un perro disponible para apadrinar, aparecerá aquí.
+                                            </p>
+                                        </div>
+                                    </article>
+                                @endforelse
                             </div>
                         </div>
 
                         <div data-pp-panel="mine" hidden>
-                            <div class="pp-spon-card">
-                                <div class="pp-spon-row">
-                                    <div>
-                                        <div class="pp-spon-top">
-                                            <h3 class="pp-spon-name">No tienes padrinazgos</h3>
-                                        </div>
-                                        <div class="pp-spon-meta">
-                                            <span><i class="bi bi-heart" aria-hidden="true"></i>Cuando tengas un padrinazgo, aparecerá aquí.</span>
+                            @forelse (($sponsorships ?? collect()) as $sponsorship)
+                                @php
+                                    $dog = ($dogs ?? collect())->firstWhere('id', $sponsorship->sponsor_dog_id);
+                                @endphp
+                                <div class="pp-spon-card">
+                                    <div class="pp-spon-row">
+                                        <div>
+                                            <div class="pp-spon-top">
+                                                <h3 class="pp-spon-name">{{ $dog->nombre ?? 'Perrito apadrinado' }}</h3>
+                                            </div>
+                                            <div class="pp-spon-meta">
+                                                <span><i class="bi bi-heart" aria-hidden="true"></i>Plan {{ ucfirst($sponsorship->plan) }}</span>
+                                                <span>${{ number_format((int) $sponsorship->monto_mensual, 0, ',', '.') }}/mes</span>
+                                                <span>{{ $sponsorship->estado }}</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            @empty
+                                <div class="pp-spon-card">
+                                    <div class="pp-spon-row">
+                                        <div>
+                                            <div class="pp-spon-top">
+                                                <h3 class="pp-spon-name">No tienes padrinazgos</h3>
+                                            </div>
+                                            <div class="pp-spon-meta">
+                                                <span><i class="bi bi-heart" aria-hidden="true"></i>Cuando tengas un padrinazgo, aparecerá aquí.</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforelse
                         </div>
                     </div>
 
@@ -192,6 +263,7 @@
                 const sponsorBtns = Array.from(document.querySelectorAll('[data-pp-sponsor]'));
                 const sponsorModal = document.getElementById('ppSponsorModal');
                 const thanksModal = document.getElementById('ppThanksModal');
+                let currentAction = '';
 
                 const modalImg = sponsorModal ? sponsorModal.querySelector('[data-pp-modal-img]') : null;
                 const modalName = sponsorModal ? sponsorModal.querySelector('[data-pp-modal-name]') : null;
@@ -274,6 +346,7 @@
                             img: btn.getAttribute('data-pp-img') || '',
                             story: btn.getAttribute('data-pp-story') || ''
                         };
+                        currentAction = btn.getAttribute('data-pp-action') || '';
                         openSponsor(data);
                     });
                 });
@@ -300,9 +373,18 @@
 
                     if (confirmBtn) {
                         confirmBtn.addEventListener('click', () => {
-                            const dogName = modalName ? modalName.textContent.trim() : '';
-                            closeSponsor();
-                            openThanks(dogName);
+                            const selected = sponsorModal.querySelector('input[name="ppPlan"]:checked');
+                            if (!currentAction || !selected) return;
+
+                            const form = document.createElement('form');
+                            form.method = 'POST';
+                            form.action = currentAction;
+                            form.innerHTML = `
+                                <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                <input type="hidden" name="plan" value="${selected.value}">
+                            `;
+                            document.body.appendChild(form);
+                            form.submit();
                         });
                     }
                 }

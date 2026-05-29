@@ -201,6 +201,15 @@ class TrainerModulesController extends Controller
     {
         $user = Auth::user();
 
+        // Marcar automáticamente como finalizadas las reservas pasadas
+        if (Schema::hasTable('reservas')) {
+            DB::table('reservas')
+                ->where('id_empleado', $user->id)
+                ->where('fecha', '<', now()->toDateString())
+                ->where('estado', 'Confirmada')
+                ->update(['estado' => 'Finalizada']);
+        }
+
         // Get trainer availability from database
         $availability = DB::table('trainer_availability')
             ->where('trainer_id', $user->id)
@@ -229,11 +238,16 @@ class TrainerModulesController extends Controller
             // Get reservations for this day
             $reservationIdColumn = Schema::hasColumn('reservas', 'id') ? 'id' : 'id_reserva';
 
-            $reservations = DB::table('reservas')
-                ->where('id_empleado', $user->id)
-                ->where('fecha', $date->format('Y-m-d'))
-                ->orderBy($reservationIdColumn)
-                ->get();
+            $reservations = collect();
+            // Solo mostrar reservas si la fecha es hoy o futura
+            if ($date->greaterThanOrEqualTo(now()->startOfDay())) {
+                $reservations = DB::table('reservas')
+                    ->where('id_empleado', $user->id)
+                    ->where('fecha', $date->format('Y-m-d'))
+                    ->whereNotIn('estado', ['Finalizada', 'Cancelada'])
+                    ->orderBy($reservationIdColumn)
+                    ->get();
+            }
 
             $items = [];
             foreach ($reservations as $r) {
@@ -525,11 +539,57 @@ class TrainerModulesController extends Controller
     {
         $user = Auth::user();
 
-        $conversations = [];
-        $active = null;
+        $ownerIds = \App\Models\ChatMessage::query()
+            ->where('sender_type', 'user')
+            ->orderByDesc('created_at')
+            ->pluck('sender_id')
+            ->unique()
+            ->values();
 
-        // Cargar mensajes desde la base de datos
-        $dbMessages = \App\Models\ChatMessage::orderBy('created_at', 'asc')->get();
+        $owners = Schema::hasTable('users')
+            ? DB::table('users')->whereIn('id', $ownerIds)->get()->keyBy('id')
+            : collect();
+
+        $activeOwnerId = $ownerIds->first();
+
+        $conversations = $ownerIds->map(function ($ownerId) use ($owners, $activeOwnerId) {
+            $owner = $owners->get($ownerId);
+            $name = (string) (($owner->name ?? null) ?: 'Dueño');
+            $lastMessage = \App\Models\ChatMessage::query()
+                ->where(function ($query) use ($ownerId) {
+                    $query->where('sender_id', $ownerId)
+                        ->orWhere('receiver_id', $ownerId);
+                })
+                ->orderByDesc('created_at')
+                ->first();
+
+            return [
+                'initial' => mb_substr($name, 0, 1),
+                'name' => $name,
+                'subtitle' => (string) ($lastMessage->message ?? ''),
+                'active' => (int) $ownerId === (int) $activeOwnerId,
+            ];
+        })->toArray();
+
+        $activeOwner = $activeOwnerId ? $owners->get($activeOwnerId) : null;
+        $active = $activeOwnerId ? [
+            'name' => (string) (($activeOwner->name ?? null) ?: 'Dueño'),
+            'subtitle' => 'Conversación con dueño',
+        ] : null;
+
+        $dbMessages = $activeOwnerId
+            ? \App\Models\ChatMessage::query()
+                ->where(function ($query) use ($activeOwnerId, $user) {
+                    $query->where('sender_id', $activeOwnerId)
+                        ->orWhere(function ($query) use ($activeOwnerId, $user) {
+                            $query->where('sender_id', $user->id)
+                                ->where('receiver_id', $activeOwnerId);
+                        });
+                })
+                ->orderBy('created_at', 'asc')
+                ->get()
+            : collect();
+
         $messages = $dbMessages->map(function ($msg) use ($user) {
             return [
                 'from' => $msg->sender_id === $user->id ? 'trainer' : 'owner',
@@ -551,13 +611,36 @@ class TrainerModulesController extends Controller
             'message' => ['required', 'string', 'max:1000'],
         ]);
 
+        $ownerId = \App\Models\ChatMessage::query()
+            ->where('sender_type', 'user')
+            ->orderByDesc('created_at')
+            ->value('sender_id');
+
         // Guardar el mensaje en la base de datos
         \App\Models\ChatMessage::create([
             'sender_id' => Auth::id(),
+            'receiver_id' => $ownerId,
             'message' => $validated['message'],
             'sender_type' => 'trainer',
             'is_read' => false,
         ]);
+
+        if ($ownerId && Schema::hasTable('notificaciones')) {
+            DB::table('notificaciones')->updateOrInsert([
+                'user_id' => (int) $ownerId,
+                'tipo' => 'chat',
+                'url' => route('owner.chat', [], false),
+            ], [
+                'user_id' => (int) $ownerId,
+                'tipo' => 'chat',
+                'titulo' => 'Nuevo mensaje del entrenador',
+                'mensaje' => Auth::user()->name . ' te envió un mensaje.',
+                'url' => route('owner.chat', [], false),
+                'leida_en' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
 
         return response()->json(['success' => true]);
     }
@@ -566,11 +649,19 @@ class TrainerModulesController extends Controller
     {
         $user = Auth::user();
 
-        $notifications = [];
+        $notifications = collect();
+
+        if (Schema::hasTable('notificaciones')) {
+            $notifications = DB::table('notificaciones')
+                ->where('user_id', (int) $user->id)
+                ->orderByDesc('created_at')
+                ->get();
+        }
 
         return view('entrenador.notificaciones', [
             'user' => $user,
             'notifications' => $notifications,
+            'unreadCount' => $notifications->whereNull('leida_en')->count(),
         ]);
     }
 
@@ -590,6 +681,18 @@ class TrainerModulesController extends Controller
             'specialty' => '',
             'title' => '',
         ];
+
+        if (Schema::hasTable('empleados')) {
+            $employee = DB::table('empleados')
+                ->where('id_empleado', (int) $user->id)
+                ->first();
+
+            if ($employee) {
+                $profile['phone'] = (string) ($employee->telefono ?? '');
+                $profile['specialty'] = (string) ($employee->especialidad ?? '');
+                $profile['title'] = (string) ($employee->cargo ?? 'Entrenador');
+            }
+        }
 
         return view('entrenador.perfil', [
             'user' => $user,
@@ -616,12 +719,15 @@ class TrainerModulesController extends Controller
             $user->email = $validated['email'];
             $user->save();
 
-            if (Schema::hasTable('entrenadores')) {
-                $cols = Schema::getColumnListing('entrenadores');
+            if (Schema::hasTable('empleados')) {
+                $cols = Schema::getColumnListing('empleados');
 
                 $payload = [];
                 if (in_array('nombre', $cols, true)) {
                     $payload['nombre'] = $fullName;
+                }
+                if (in_array('cargo', $cols, true)) {
+                    $payload['cargo'] = $validated['especialidad'] ?: 'entrenador';
                 }
                 if (in_array('telefono', $cols, true)) {
                     $payload['telefono'] = $validated['telefono'] ?? null;
@@ -631,16 +737,20 @@ class TrainerModulesController extends Controller
                 }
 
                 if (!empty($payload)) {
-                    $exists = DB::table('entrenadores')->where('id_entrenador', (int) $user->id)->exists();
+                    if (in_array('updated_at', $cols, true)) {
+                        $payload['updated_at'] = now();
+                    }
+
+                    $exists = DB::table('empleados')->where('id_empleado', (int) $user->id)->exists();
 
                     if ($exists) {
-                        DB::table('entrenadores')->where('id_entrenador', (int) $user->id)->update($payload);
+                        DB::table('empleados')->where('id_empleado', (int) $user->id)->update($payload);
                     } else {
-                        DB::table('entrenadores')->insert(array_merge($payload, [
-                            'id_entrenador' => $user->id,
-                            'created_at' => now(),
-                            'updated_at' => now(),
-                        ]));
+                        $payload['id_empleado'] = $user->id;
+                        if (in_array('created_at', $cols, true)) {
+                            $payload['created_at'] = now();
+                        }
+                        DB::table('empleados')->insert($payload);
                     }
                 }
             }

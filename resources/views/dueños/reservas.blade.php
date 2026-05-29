@@ -128,6 +128,15 @@
                                         <p><strong>Entrenador:</strong> {{ $r->profesional_nombre ?? 'N/A' }}</p>
                                         <p><strong>Fecha:</strong> {{ $r->fecha ?? 'N/A' }}</p>
                                         <p><strong>Estado:</strong> {{ $r->estado ?? 'N/A' }}</p>
+                                        @if($r->estado === 'Confirmada' || $r->estado === 'confirmada')
+                                            <form action="{{ route('payment.reservation.create', $r->id) }}" method="POST" style="margin-top: 10px;">
+                                                @csrf
+                                                <button type="submit" style="background: #009ee3; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer;">
+                                                    <i class="bi bi-credit-card" style="margin-right: 5px;"></i>
+                                                    Pagar con MercadoPago
+                                                </button>
+                                            </form>
+                                        @endif
                                     </div>
                                 @endforeach
                             @else

@@ -210,12 +210,12 @@
                                 <div class="ad2-row-2col">
                                     <label class="ad2-field">
                                         <span class="ad2-label">Precio (COP)</span>
-                                        <input class="ad2-input" type="number" name="price" placeholder="50000" min="0" step="1" />
+                                        <input class="ad2-input" type="number" name="price" placeholder="50000" min="0" step="1" required />
                                     </label>
 
                                     <label class="ad2-field">
                                         <span class="ad2-label">Duracion</span>
-                                        <input class="ad2-input" type="number" name="duration" placeholder="30" min="1" step="1" />
+                                        <input class="ad2-input" type="number" name="duration" placeholder="30" min="1" step="1" required />
                                     </label>
                                 </div>
 

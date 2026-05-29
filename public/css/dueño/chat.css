@@ -96,6 +96,8 @@
     overflow: auto;
     padding: 6px 4px;
     display: grid;
+    align-content: start;
+    align-items: start;
     gap: 18px;
 }
 

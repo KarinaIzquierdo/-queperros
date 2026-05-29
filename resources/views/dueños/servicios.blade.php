@@ -278,16 +278,18 @@
                     modalServiceName.textContent = card.dataset.serviceName || 'Servicio';
                     modalPrice.textContent = card.dataset.servicePrice || '-';
 
-                    // Lógica para cambiar texto de Entrenador según categoría
-                    // Categoría 1 es Entrenamiento
-                    if (categoryId === 1) {
+                    // Lógica para mostrar/ocultar campo de entrenador según categoría
+                    // Categoría 2 es Entrenamiento (basado en la base de datos)
+                    if (categoryId === 2) {
                         trainerLabel.textContent = 'Entrenador';
                         trainerPlaceholder.textContent = 'Selecciona un entrenador';
                         trainerSelect.required = true;
+                        trainerField.style.display = 'block';
                     } else {
-                        trainerLabel.textContent = 'Personal de apoyo';
-                        trainerPlaceholder.textContent = 'Selecciona personal de apoyo';
-                        trainerSelect.required = true;
+                        // Para servicios que no son de entrenamiento, ocultar el campo
+                        trainerField.style.display = 'none';
+                        trainerSelect.required = false;
+                        trainerSelect.value = ''; // Limpiar selección
                     }
 
                     modal.classList.add('is-open');

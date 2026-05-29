@@ -27,14 +27,15 @@
             @include("partials.dueno-sidebar")
 
             <main class="mq-dashboard-main">
-                @include('partials.mq-topbar', ['user' => Auth::user(), 'user' => Auth::user(), 
-                    'user' => $user,
+                @include('partials.mq-topbar', [
+                    'mqTopbarUser' => $user,
+                    'mqTopbarName' => $user->name,
                     'roleLabel' => 'Propietario',
                     'profileUrl' => route('owner.perfil'),
                     'settingsUrl' => route('owner.perfil'),
                     'helpUrl' => route('owner.chat'),
                     'notificationsUrl' => route('owner.notificaciones'),
-                    'notifCount' => 2,
+                    'notifCount' => $unreadCount ?? 0,
                 ])
 
                 <div class="mq-dashboard-content">
@@ -44,7 +45,10 @@
                             <h1 class="nt-title">Notificaciones</h1>
                             <p class="nt-sub">{{ $unreadCount ?? 0 }} sin leer</p>
                         </div>
-                        <a href="#" class="nt-mark-all">Marcar todas como leídas</a>
+                        <form action="{{ route('owner.notifications.markAllRead') }}" method="POST" style="display: inline;">
+                            @csrf
+                            <button type="submit" class="nt-mark-all">Marcar todas como leídas</button>
+                        </form>
                     </div>
 
                     <div class="nt-filters" role="tablist">
@@ -60,21 +64,30 @@
                         @forelse (($notifications ?? []) as $notification)
                             @php
                                 $type = (string) ($notification->tipo ?? 'general');
-                                $icon = $type === 'pago' ? 'bi-credit-card' : ($type === 'cita' ? 'bi-calendar-check' : 'bi-bell');
-                                $color = $type === 'pago' ? 'blue' : ($type === 'cita' ? 'green' : 'gray');
+                                $icon = $type === 'servicio_aprobado' ? 'bi-check-circle' : 
+                                       ($type === 'servicio_rechazado' ? 'bi-x-circle' : 
+                                       ($type === 'nueva_aprobacion_servicio' ? 'bi-bell' : 'bi-bell'));
+                                $color = $type === 'servicio_aprobado' ? 'green' : 
+                                        ($type === 'servicio_rechazado' ? 'red' : 'gray');
                             @endphp
-                            <article class="nt-item {{ empty($notification->leida_en) ? 'nt-item--unread' : '' }}">
+                            <article class="nt-item {{ !$notification->leido ? 'nt-item--unread' : '' }}">
                                 <div class="nt-ico-wrap nt-ico--{{ $color }}">
                                     <i class="bi {{ $icon }}" aria-hidden="true"></i>
                                 </div>
                                 <div class="nt-main">
                                     <div class="nt-top-row">
-                                        <h2 class="nt-item-title">{{ $notification->titulo }}</h2>
+                                        <h2 class="nt-item-title">{{ ucfirst(str_replace('_', ' ', $notification->tipo ?? 'Notificación')) }}</h2>
                                     </div>
                                     <p class="nt-desc">{{ $notification->mensaje }}</p>
-                                    <div class="nt-time">{{ optional($notification->created_at ? \Carbon\Carbon::parse($notification->created_at) : null)->diffForHumans() }}</div>
+                                    <div class="nt-time">{{ \Carbon\Carbon::parse($notification->created_at)->diffForHumans() }}</div>
                                     @if(!empty($notification->url))
                                         <a class="nt-mark-all" href="{{ $notification->url }}">Ver detalle</a>
+                                    @endif
+                                    @if(!$notification->leido)
+                                        <form action="{{ route('owner.notifications.markRead', $notification->id) }}" method="POST" style="display: inline; margin-left: 10px;">
+                                            @csrf
+                                            <button type="submit" class="nt-mark-all">Marcar como leída</button>
+                                        </form>
                                     @endif
                                 </div>
                             </article>

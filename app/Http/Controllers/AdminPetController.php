@@ -31,7 +31,7 @@ class AdminPetController extends Controller
             ->values();
 
         $petRows = Mascota::query()
-            ->orderByDesc('id')
+            ->orderByDesc((new Mascota())->getKeyName())
             ->get();
 
         $ownerIds = $petRows
@@ -127,7 +127,7 @@ class AdminPetController extends Controller
                 'status' => (string) (($p->estado_actual ?? $p->tipo) ?? 'En Casa'),
                 'tags' => $tags,
                 'depart' => (string) ($p->fecha_ultima_desparasitacion ?? ''),
-                'last' => (string) ($p->fecha_ultima_vacuna_tos ?? ''),
+                'last' => (string) (($p->fecha_vacuna_tos_perreras ?? $p->fecha_ultima_vacuna_tos) ?? ''),
                 'program' => (string) ($p->servicio_requerido ?? ''),
                 'trainer' => '',
                 'progress' => null,
@@ -178,7 +178,7 @@ class AdminPetController extends Controller
 
             'vacunas' => ['nullable', 'string', 'max:1000'],
             'fecha_ultima_desparasitacion' => ['nullable', 'date'],
-            'fecha_ultima_vacuna_tos' => ['nullable', 'date'],
+            'fecha_vacuna_tos_perreras' => ['nullable', 'date'],
 
             'telefono' => ['nullable', 'string', 'max:60'],
 
@@ -247,7 +247,7 @@ class AdminPetController extends Controller
             'foto' => $fotoPath,
             'vacunas' => $validated['vacunas'] ?? null,
             'fecha_ultima_desparasitacion' => $validated['fecha_ultima_desparasitacion'] ?? null,
-            'fecha_ultima_vacuna_tos' => $validated['fecha_ultima_vacuna_tos'] ?? null,
+            'fecha_vacuna_tos_perreras' => $validated['fecha_vacuna_tos_perreras'] ?? null,
             'nombre_tutor' => $ownerName,
             'telefono' => $validated['telefono'] ?? null,
             'informacion_adicional' => $validated['info_adicional'] ?? null,
@@ -279,7 +279,7 @@ class AdminPetController extends Controller
             'sexo' => ['nullable', 'string', 'max:50'],
             'vacunas' => ['nullable'],
             'fecha_ultima_desparasitacion' => ['nullable', 'date'],
-            'fecha_ultima_vacuna_tos' => ['nullable', 'date'],
+            'fecha_vacuna_tos_perreras' => ['nullable', 'date'],
             'info_adicional' => ['nullable', 'string', 'max:3000'],
             'servicio_requerido' => ['nullable', 'string', 'max:255'],
             'estado_actual' => ['nullable', 'string', 'max:255'],
@@ -352,7 +352,7 @@ class AdminPetController extends Controller
             'sexo' => $validated['sexo'] ?? null,
             'vacunas' => $vacunasNormalized,
             'fecha_ultima_desparasitacion' => $validated['fecha_ultima_desparasitacion'] ?? null,
-            'fecha_ultima_vacuna_tos' => $validated['fecha_ultima_vacuna_tos'] ?? null,
+            'fecha_vacuna_tos_perreras' => $validated['fecha_vacuna_tos_perreras'] ?? null,
             'informacion_adicional' => $validated['info_adicional'] ?? null,
             'servicio_requerido' => $validated['servicio_requerido'] ?? null,
             'estado_actual' => $validated['estado_actual'] ?? null,

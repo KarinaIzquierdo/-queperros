@@ -1,7 +1,15 @@
 /* ================= SIDEBAR BASE ================= */
 
 .admin-sidebar{
-  position:relative;
+  position:fixed;
+  min-height:100vh;
+  min-height:100dvh;
+  height:100vh;
+  height:100dvh;
+}
+
+.admin-sidebar-spacer{
+  flex:1 1 auto;
 }
 
 /* ================= SIDEBAR FOOTER ================= */
@@ -51,7 +59,7 @@
 /* ================= LOGOUT ================= */
 
 .admin-logout{
-  margin-top:.25rem;
+  margin-top:auto;
 }
 
 .admin-logout button{

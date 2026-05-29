@@ -48,9 +48,27 @@
         <a href="{{ route('admin.pets') }}" class="admin-menu-item {{ request()->routeIs('admin.pets') ? 'admin-menu-item--active' : '' }}">
             <span class="admin-menu-left">
                 <div class="admin-menu-icon-wrapper">
-                    <i class="admin-menu-icon fa-sharp fa-solid fa-shield-dog"  aria-hidden="true"></i>
+                    <i class="admin-menu-icon fa-solid fa-shield-dog" aria-hidden="true"></i>
                 </div>
                 <span>Gestión de mascotas</span>
+            </span>
+            <span class="admin-menu-right"></span>
+        </a>
+        <a href="{{ route('admin.planpadrino') }}" class="admin-menu-item {{ request()->routeIs('admin.planpadrino*') ? 'admin-menu-item--active' : '' }}">
+            <span class="admin-menu-left">
+                <div class="admin-menu-icon-wrapper">
+                    <i class="admin-menu-icon bi bi-heart-fill" aria-hidden="true"></i>
+                </div>
+                <span>Plan Padrino</span>
+            </span>
+            <span class="admin-menu-right"></span>
+        </a>
+        <a href="{{ route('admin.approvals.index') }}" class="admin-menu-item {{ request()->routeIs('admin.approvals.*') ? 'admin-menu-item--active' : '' }}">
+            <span class="admin-menu-left">
+                <div class="admin-menu-icon-wrapper">
+                    <i class="admin-menu-icon bi bi-check-square" aria-hidden="true"></i>
+                </div>
+                <span>Aprobación de Servicios</span>
             </span>
             <span class="admin-menu-right"></span>
         </a>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ServiceApproval;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -16,7 +17,7 @@ class OwnerReservaController extends Controller
         $validated = $request->validate([
             'servicio_id' => ['required', 'integer'],
             'mascota_id' => ['required', 'integer'],
-            'profesional_id' => ['required', 'integer'],
+            'profesional_id' => ['nullable', 'integer'],
             'fecha' => ['required', 'date'],
             'hora' => ['required', 'date_format:H:i'],
             'comentarios' => ['nullable', 'string', 'max:3000'],
@@ -53,37 +54,115 @@ class OwnerReservaController extends Controller
             ]);
         }
 
-        $serviceExists = $hasServicios
-            ? DB::table('servicios')->where('id', (int) $validated['servicio_id'])->exists()
-            : DB::table('actividades')->where('id_actividad', (int) $validated['servicio_id'])->exists();
+        // Obtener información del servicio para determinar si es de entrenamiento
+        $service = null;
+        if ($hasServicios) {
+            $service = DB::table('servicios')
+                ->where('id', (int) $validated['servicio_id'])
+                ->first();
+        }
 
-        if (!$serviceExists) {
+        if (!$service) {
             return redirect()->back()->withInput()->withErrors([
                 'servicio_id' => 'El servicio seleccionado no existe.',
             ]);
         }
 
-        if ($hasServicios && Schema::hasTable('actividades')) {
-            $service = DB::table('servicios')
-                ->where('id', (int) $validated['servicio_id'])
+        // Verificar si el servicio es de entrenamiento
+        $isTrainingService = false;
+        if ($service && Schema::hasTable('categorias_servicio')) {
+            $category = DB::table('categorias_servicio')
+                ->where('id', $service->categoria_id)
                 ->first();
-
-            if ($service) {
-                DB::table('actividades')->updateOrInsert(
-                    ['id_actividad' => (int) $validated['servicio_id']],
-                    [
-                        'tipo_actividad' => (string) $service->nombre,
-                        'horario' => '08:00-18:00',
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]
-                );
-            }
+            
+            $isTrainingService = $category && strtolower($category->nombre) === 'entrenamiento';
         }
 
-        if (!Schema::hasTable('users')) {
+        // Log para depuración
+        \Log::info('Service check - Service ID: ' . $service->id . ', Category: ' . ($category ? $category->nombre : 'null'));
+        \Log::info('Is training service: ' . ($isTrainingService ? 'true' : 'false'));
+
+        // Si no es un servicio de entrenamiento, crear solicitud de aprobación
+        if (!$isTrainingService) {
+            \Log::info('Creating service approval for non-training service');
+            return $this->createServiceApproval($validated, $user, $service);
+        }
+
+        // Si es entrenamiento, continuar con el flujo normal de reservas
+        \Log::info('Creating training reservation');
+        return $this->createTrainingReservation($validated, $user, $service);
+    }
+
+    private function createServiceApproval($validated, $user, $service)
+    {
+        \Log::info('createServiceApproval called with data:', [
+            'user_id' => $user->id,
+            'mascota_id' => $validated['mascota_id'],
+            'servicio_id' => $validated['servicio_id'],
+            'fecha' => $validated['fecha'],
+            'comentarios' => $validated['comentarios'] ?? null
+        ]);
+
+        // Crear solicitud de aprobación
+        $approval = ServiceApproval::create([
+            'id_usuario' => $user->id,
+            'id_mascota' => $validated['mascota_id'],
+            'id_servicio' => $validated['servicio_id'],
+            'fecha_solicitada' => $validated['fecha'],
+            'notas_cliente' => $validated['comentarios'] ?? null,
+            'estado' => 'pendiente',
+        ]);
+
+        \Log::info('Service approval created with ID: ' . $approval->id);
+
+        // Crear notificación para el admin
+        if (Schema::hasTable('notifications')) {
+            \Log::info('Creating notification for admin');
+            $adminId = DB::table('users')->where('rol', 'admin')->first()->id ?? 1;
+            \Log::info('Admin ID found: ' . $adminId);
+            
+            $mascotaNombre = $approval->mascota->nombre ?? 'una mascota';
+            
+            try {
+                DB::table('notifications')->insert([
+                    'id_usuario' => $adminId,
+                    'tipo' => 'nueva_aprobacion_servicio',
+                    'mensaje' => "Nueva solicitud de servicio: '{$service->nombre}' para {$mascotaNombre}",
+                    'url' => '/admin/approvals',
+                    'leido' => false,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+                \Log::info('Notification created successfully');
+            } catch (\Exception $e) {
+                \Log::error('Error creating notification: ' . $e->getMessage());
+            }
+        } else {
+            \Log::info('Notifications table does not exist');
+        }
+
+        return redirect()->route('owner.services.my')->with('success', 'Solicitud de servicio enviada para aprobación. Puedes ver el estado en la pestaña de Mis Servicios.');
+    }
+
+    private function createTrainingReservation($validated, $user, $service)
+    {
+        // Continuar con el flujo original para servicios de entrenamiento
+        if (Schema::hasTable('actividades')) {
+            DB::table('actividades')->updateOrInsert(
+                ['id_actividad' => (int) $validated['servicio_id']],
+                [
+                    'tipo_actividad' => (string) $service->nombre,
+                    'horario' => '08:00-18:00',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]
+            );
+        }
+
+        // Para servicios de entrenamiento, validar que se haya seleccionado un entrenador
+        if (empty($validated['profesional_id'])) {
             return redirect()->back()->withInput()->withErrors([
-                'profesional_id' => 'No se pudo validar el entrenador. Verifica la estructura de la base de datos.',
+                'profesional_id' => 'Debes seleccionar un entrenador para los servicios de entrenamiento.',
             ]);
         }
 
@@ -159,7 +238,7 @@ class OwnerReservaController extends Controller
             ]);
         }
 
-        return redirect()->route('owner.reservas')->with('success', 'Reserva creada correctamente.');
+        return redirect()->route('owner.reservas')->with('success', 'Reserva de entrenamiento creada correctamente.');
     }
 
     public function update(Request $request, $reserva)

@@ -19,6 +19,13 @@ class TrainerDashboardController extends Controller
         $monthlyIncome = 0;
 
         if (Schema::hasTable('reservas')) {
+            // Marcar automáticamente como finalizadas las reservas pasadas
+            DB::table('reservas')
+                ->where('id_empleado', (int) $user->id)
+                ->where('fecha', '<', now()->toDateString())
+                ->where('estado', 'Confirmada')
+                ->update(['estado' => 'Finalizada']);
+
             $reservaKey = Schema::hasColumn('reservas', 'id_reserva') ? 'id_reserva' : 'id';
             $hasMascotas = Schema::hasTable('mascotas');
             $mascotaKey = $hasMascotas && Schema::hasColumn('mascotas', 'id_mascota') ? 'id_mascota' : 'id';
@@ -98,6 +105,13 @@ class TrainerDashboardController extends Controller
             'user' => $user,
             'kpis' => $kpis,
             'pendingReservations' => $pendingReservations,
+            'debug' => [
+                'user_id' => $user->id,
+                'user_name' => $user->name,
+                'user_role' => $user->rol,
+                'pending_count' => $pendingCount,
+                'confirmed_count' => $confirmedCount,
+            ],
         ]);
     }
 }

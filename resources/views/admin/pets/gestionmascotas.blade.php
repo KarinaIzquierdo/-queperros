@@ -341,7 +341,7 @@
                                     </div>
                                     <div class="gm-field">
                                         <label class="gm-label">Fecha ultima vacuna tos de perreras</label>
-                                        <input class="gm-input" name="fecha_ultima_vacuna_tos" id="gmEditLast" type="date" />
+                                        <input class="gm-input" name="fecha_vacuna_tos_perreras" id="gmEditLast" type="date" />
                                     </div>
                                 </div>
                             </div>

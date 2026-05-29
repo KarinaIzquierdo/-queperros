@@ -181,6 +181,32 @@
                 </div>
             </section>
 
+            @if (($sponsorDogs ?? collect())->isNotEmpty())
+                <section class="mq-sponsor-home" id="plan-padrino">
+                    <div class="mq-container">
+                        <h2 class="mq-title mq-title--xl mq-title--light">APADRINA UN PERRITO</h2>
+                        <p class="mq-sponsor-home-sub">Ayuda a cubrir alimentación, salud y cuidado de perros rescatados.</p>
+                        <div class="mq-sponsor-home-grid">
+                            @foreach (($sponsorDogs ?? collect()) as $dog)
+                                @php
+                                    $photo = $dog->foto ? asset('storage/' . ltrim($dog->foto, '/')) : asset('img/pet.png');
+                                    $meta = collect([$dog->raza, $dog->edad ? $dog->edad . ' años' : null, $dog->sexo])->filter()->implode(' • ');
+                                @endphp
+                                <article class="mq-sponsor-home-card">
+                                    <img src="{{ $photo }}" alt="{{ $dog->nombre }}">
+                                    <div class="mq-sponsor-home-body">
+                                        <h3>{{ $dog->nombre }}</h3>
+                                        <div>{{ $meta }}</div>
+                                        <p>{{ \Illuminate\Support\Str::limit($dog->historia ?: 'Este perrito necesita apoyo para cubrir sus cuidados.', 120) }}</p>
+                                        <a href="{{ Route::has('login') ? route('login') : '#' }}">Quiero apadrinar</a>
+                                    </div>
+                                </article>
+                            @endforeach
+                        </div>
+                    </div>
+                </section>
+            @endif
+
             <section class="mq-why" id="por-que-elegirnos" aria-label="Por qué elegirnos">
                 <div class="mq-container">
                     <h2 class="mq-title mq-title--xl mq-title--light">¿POR QUÉ ELEGIRNOS?</h2>

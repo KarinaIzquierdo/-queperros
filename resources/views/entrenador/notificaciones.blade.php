@@ -38,17 +38,19 @@
                 <section class="nt-list" aria-label="Notificaciones">
                     @forelse (($notifications ?? []) as $n)
                         @php
-                            $color = (string) ($n['color'] ?? 'blue');
-                            $unread = (bool) ($n['unread'] ?? false);
+                            $type = (string) ($n->tipo ?? 'general');
+                            $color = $type === 'pago' ? 'blue' : ($type === 'cita' ? 'green' : 'gray');
+                            $unread = empty($n->leida_en);
+                            $icon = $type === 'pago' ? 'bi-credit-card' : ($type === 'cita' ? 'bi-calendar-check' : 'bi-bell');
                         @endphp
                         <article class="nt-item nt-item--{{ $color }} {{ $unread ? 'nt-item--unread' : '' }}">
                             <div class="nt-left">
                                 <div class="nt-ico nt-ico--{{ $color }}" aria-hidden="true">
-                                    <i class="bi bi-bell"></i>
+                                    <i class="bi {{ $icon }}"></i>
                                 </div>
                                 <div class="nt-meta">
-                                    <div class="nt-text">{{ $n['title'] ?? '' }}</div>
-                                    <div class="nt-time">{{ $n['time'] ?? '' }}</div>
+                                    <div class="nt-text">{{ $n->titulo ?? 'Notificación' }}</div>
+                                    <div class="nt-time">{{ $n->created_at ? \Carbon\Carbon::parse($n->created_at)->diffForHumans() : '' }}</div>
                                 </div>
                             </div>
                             @if ($unread)

@@ -122,6 +122,8 @@
     padding: 16px;
     overflow: auto;
     display: grid;
+    align-content: start;
+    align-items: start;
     gap: 14px;
     background: #fff;
 }
@@ -129,6 +131,7 @@
 .ch-msg-row{
     display: flex;
     justify-content: flex-start;
+    align-items: flex-start;
 }
 
 .ch-msg-row--me{

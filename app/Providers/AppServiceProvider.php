@@ -22,7 +22,12 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         View::composer('auth.partials.login-footer', function ($view) {
-            $view->with('settings', Setting::query()->first());
+            try {
+                $view->with('settings', \App\Models\Setting::query()->first());
+            } catch (\Exception $e) {
+                // If database connection fails, return null
+                $view->with('settings', null);
+            }
         });
     }
 }

@@ -9,6 +9,7 @@ use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AdminServiceController;
 use App\Http\Controllers\AdminPetController;
+use App\Http\Controllers\AdminSponsorDogController;
 use App\Http\Controllers\OwnerPetController;
 use App\Http\Controllers\OwnerServiceController;
 use App\Http\Controllers\OwnerReservaController;
@@ -17,10 +18,23 @@ use App\Http\Controllers\CaregiverDashboardController;
 use App\Http\Controllers\TrainerDashboardController;
 use App\Http\Controllers\TrainerModulesController;
 use App\Http\Controllers\AdminSettingsController;
+use App\Http\Controllers\PaymentController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    try {
+        $sponsorDogs = \App\Models\SponsorDog::query()
+            ->where('publicado', true)
+            ->where('estado', 'Disponible')
+            ->orderByDesc('id')
+            ->limit(3)
+            ->get();
+    } catch (\Exception $e) {
+        // If database connection fails, return empty collection
+        $sponsorDogs = collect();
+    }
+
+    return view('welcome', ['sponsorDogs' => $sponsorDogs]);
 });
 
 Route::get('/galeria', [\App\Http\Controllers\AdminGalleryController::class, 'publicGallery'])->name('galeria');
@@ -103,6 +117,10 @@ Route::get('/dashboard/plan-padrino', [OwnerModulesController::class, 'planPadri
     ->middleware('auth')
     ->name('owner.planpadrino');
 
+Route::post('/dashboard/plan-padrino/{dog}/apadrinar', [OwnerModulesController::class, 'storePadrinazgo'])
+    ->middleware('auth')
+    ->name('owner.planpadrino.store');
+
 Route::get('/dashboard/mi-perfil', [OwnerModulesController::class, 'perfil'])
     ->middleware('auth')
     ->name('owner.perfil');
@@ -123,9 +141,17 @@ Route::post('/dashboard/chat-entrenador', [OwnerModulesController::class, 'sendM
     ->middleware('auth')
     ->name('owner.chat.send');
 
-Route::get('/dashboard/notificaciones', [OwnerModulesController::class, 'notificaciones'])
+Route::get('/dashboard/notificaciones', [OwnerNotificationController::class, 'index'])
     ->middleware('auth')
     ->name('owner.notificaciones');
+
+Route::post('/dashboard/notificaciones/{id}/mark-read', [OwnerNotificationController::class, 'markAsRead'])
+    ->middleware('auth')
+    ->name('owner.notifications.markRead');
+
+Route::post('/dashboard/notificaciones/mark-all-read', [OwnerNotificationController::class, 'markAllAsRead'])
+    ->middleware('auth')
+    ->name('owner.notifications.markAllRead');
 
 Route::get('/dashboard/galeria', [OwnerModulesController::class, 'galeria'])
     ->middleware('auth')
@@ -135,6 +161,15 @@ Route::post('/dashboard/galeria/upload', [OwnerModulesController::class, 'upload
     ->middleware('auth')
     ->name('owner.galeria.upload');
 
+// Mis Servicios
+Route::get('/dashboard/mis-servicios', [OwnerServiceController::class, 'myServices'])
+    ->middleware('auth')
+    ->name('owner.services.my');
+
+Route::post('/dashboard/servicios/{approval}/pagar', [OwnerServiceController::class, 'processPayment'])
+    ->middleware('auth')
+    ->name('owner.services.payment');
+
 Route::delete('/dashboard/galeria/{photo}', [OwnerModulesController::class, 'destroyPhoto'])
     ->middleware('auth')
     ->name('owner.galeria.destroy');
@@ -142,6 +177,13 @@ Route::delete('/dashboard/galeria/{photo}', [OwnerModulesController::class, 'des
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])
         ->name('admin.dashboard');
+
+    Route::get('/admin/notificaciones', [AdminDashboardController::class, 'notificaciones'])
+        ->name('admin.notificaciones');
+    Route::post('/admin/notificaciones/{id}/mark-read', [AdminDashboardController::class, 'markNotificationAsRead'])
+        ->name('admin.notifications.markRead');
+    Route::post('/admin/notificaciones/mark-all-read', [AdminDashboardController::class, 'markAllNotificationsAsRead'])
+        ->name('admin.notifications.markAllRead');
 
     Route::get('/admin/users', [AdminUserController::class, 'index'])
         ->name('admin.users');
@@ -151,6 +193,18 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     Route::get('/admin/pets', [AdminPetController::class, 'index'])
         ->name('admin.pets');
+
+    Route::get('/admin/plan-padrino', [AdminSponsorDogController::class, 'index'])
+        ->name('admin.planpadrino');
+
+    Route::post('/admin/plan-padrino', [AdminSponsorDogController::class, 'store'])
+        ->name('admin.planpadrino.store');
+
+    Route::put('/admin/plan-padrino/{dog}', [AdminSponsorDogController::class, 'update'])
+        ->name('admin.planpadrino.update');
+
+    Route::delete('/admin/plan-padrino/{dog}', [AdminSponsorDogController::class, 'destroy'])
+        ->name('admin.planpadrino.destroy');
 
     Route::post('/admin/pets', [AdminPetController::class, 'store'])
         ->name('admin.pets.store');
@@ -184,6 +238,19 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     Route::delete('/admin/users/{id}', [AdminUserController::class, 'destroy'])
         ->name('admin.users.destroy');
+
+    // Aprobación de Servicios
+    Route::get('/admin/approvals', [AdminDashboardController::class, 'approvals'])
+        ->name('admin.approvals.index');
+    
+    Route::post('/admin/approvals/{approval}/approve', [AdminDashboardController::class, 'approveService'])
+        ->name('admin.approvals.approve');
+    
+    Route::post('/admin/approvals/{approval}/reject', [AdminDashboardController::class, 'rejectService'])
+        ->name('admin.approvals.reject');
+    
+    Route::post('/admin/approvals/{approval}/confirm-payment', [AdminDashboardController::class, 'confirmPayment'])
+        ->name('admin.approvals.confirmPayment');
 
     Route::get('/admin/settings', [AdminSettingsController::class, 'index'])
         ->name('admin.settings');
@@ -259,3 +326,42 @@ Route::get('/entrenador/perfil', [TrainerModulesController::class, 'perfil'])
 Route::post('/entrenador/perfil', [TrainerModulesController::class, 'updatePerfil'])
     ->middleware('auth')
     ->name('entrenador.perfil.update');
+
+// Rutas de pagos con MercadoPago
+Route::middleware('auth')->group(function () {
+    // Crear pago de apadrinamiento
+    Route::post('/payment/sponsorship/{sponsorDog}', [PaymentController::class, 'createSponsorshipPayment'])
+        ->name('payment.sponsorship.create');
+    
+    // Crear pago de servicio
+    Route::post('/payment/service/{serviceApproval}', [PaymentController::class, 'createServicePayment'])
+        ->name('payment.service.create');
+    
+    // Crear pago de reserva de entrenamiento
+    Route::post('/payment/reservation/{reservation}', [PaymentController::class, 'createReservationPayment'])
+        ->name('payment.reservation.create');
+    
+    // Respuestas de MercadoPago
+    Route::get('/payment/success/{type}/{id}', [PaymentController::class, 'success'])
+        ->name('payment.success');
+    
+    Route::get('/payment/failure/{type}/{id}', [PaymentController::class, 'failure'])
+        ->name('payment.failure');
+    
+    Route::get('/payment/pending/{type}/{id}', [PaymentController::class, 'pending'])
+        ->name('payment.pending');
+    
+    // Respuestas de MercadoPago para reservas
+    Route::get('/payment/reservation/success/{id}', [PaymentController::class, 'reservationSuccess'])
+        ->name('payment.reservation.success');
+    
+    Route::get('/payment/reservation/failure/{id}', [PaymentController::class, 'reservationFailure'])
+        ->name('payment.reservation.failure');
+    
+    Route::get('/payment/reservation/pending/{id}', [PaymentController::class, 'reservationPending'])
+        ->name('payment.reservation.pending');
+    
+    // Webhook de MercadoPago (sin auth para recibir notificaciones externas)
+    Route::post('/payment/webhook', [PaymentController::class, 'webhook'])
+        ->name('payment.webhook');
+});

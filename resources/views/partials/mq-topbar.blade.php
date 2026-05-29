@@ -4,16 +4,23 @@
     $mqTopbarName = Str::before($mqTopbarUser->name ?? 'Usuario', ' ');
     $mqTopbarRoleLabel = $roleLabel ?? '';
     $mqTopbarNotifications = collect();
-    if (\Illuminate\Support\Facades\Schema::hasTable('notificaciones') && $mqTopbarUser) {
-        $mqTopbarNotifications = \Illuminate\Support\Facades\DB::table('notificaciones')
-            ->where('user_id', (int) $mqTopbarUser->id)
+    
+    // Usar la tabla 'notifications' que es la que estamos usando para el flujo de aprobaciones
+    if (\Illuminate\Support\Facades\Schema::hasTable('notifications') && $mqTopbarUser) {
+        $mqTopbarNotifications = \Illuminate\Support\Facades\DB::table('notifications')
+            ->where('id_usuario', (int) $mqTopbarUser->id)
+            ->where('leido', false) // Solo mostrar las no leídas en el menú rápido
             ->orderByDesc('created_at')
             ->limit(5)
             ->get();
+            
+        $mqTopbarNotifCount = \Illuminate\Support\Facades\DB::table('notifications')
+            ->where('id_usuario', (int) $mqTopbarUser->id)
+            ->where('leido', false)
+            ->count();
+    } else {
+        $mqTopbarNotifCount = $notifCount ?? 0;
     }
-    $mqTopbarNotifCount = \Illuminate\Support\Facades\Schema::hasTable('notificaciones') && $mqTopbarUser
-        ? \Illuminate\Support\Facades\DB::table('notificaciones')->where('user_id', (int) $mqTopbarUser->id)->whereNull('leida_en')->count()
-        : ($notifCount ?? 0);
 
     $mqTopbarProfileUrl = $profileUrl ?? '#';
     $mqTopbarSettingsUrl = $settingsUrl ?? '#';
@@ -68,9 +75,11 @@
     </div>
 
     <div class="mqx-topbar-right">
-        <button class="mqx-topbar-icon" type="button" aria-label="Notificaciones" data-mqx-toggle="notifications">
+        <button class="mqx-topbar-icon" type="button" aria-label="Notificaciones" data-mqx-toggle="notifications" onclick="clearNotifBadge()">
             <i class="bi bi-bell" aria-hidden="true"></i>
-            <span class="mqx-topbar-dot" aria-hidden="true">{{ $mqTopbarNotifCount }}</span>
+            @if($mqTopbarNotifCount > 0)
+                <span class="mqx-topbar-dot" aria-hidden="true" id="mqxNotifBadge">{{ $mqTopbarNotifCount }}</span>
+            @endif
         </button>
 
         <button class="mqx-topbar-user" type="button" aria-label="Menú de usuario" data-mqx-toggle="user">
@@ -117,26 +126,39 @@
     <div class="mqx-popover mqx-popover--wide" data-mqx-popover="notifications" aria-hidden="true">
         <div class="mqx-popover-head mqx-popover-head--row">
             <div class="mqx-popover-name">Notificaciones</div>
-            <button class="mqx-popover-action" type="button">Marcar todo como leido</button>
+            @php
+                $markAllReadUrl = auth()->user()->rol_id == 1 
+                    ? route('admin.notifications.markAllRead')
+                    : route('owner.notifications.markAllRead');
+            @endphp
+            <button class="mqx-popover-action" type="button" onclick="markAllAsRead('{{ $markAllReadUrl }}')">Marcar todo como leido</button>
         </div>
 
         <div class="mqx-notif-list">
             @forelse ($mqTopbarNotifications as $notification)
                 @php
                     $mqTopbarNotifIcon = match($notification->tipo ?? '') {
-                        'pago' => 'bi-credit-card',
-                        'cita' => 'bi-calendar-check',
+                        'pago_confirmado' => 'bi-credit-card-check',
+                        'pago_pendiente' => 'bi-credit-card',
+                        'servicio_aprobado' => 'bi-check-circle-fill',
+                        'servicio_rechazado' => 'bi-x-circle-fill',
                         default => 'bi-bell',
                     };
+                    
+                    // Determinar la ruta de marcado como leído según el rol
+                    $markReadUrl = auth()->user()->rol_id == 1 
+                        ? route('admin.notifications.markRead', $notification->id)
+                        : route('owner.notifications.markRead', $notification->id);
                 @endphp
-                <a class="mqx-notif-item" href="{{ $notification->url ?: $mqTopbarNotificationsUrl }}">
+                <a class="mqx-notif-item" href="{{ $notification->url ?: $mqTopbarNotificationsUrl }}" 
+                   onclick="event.preventDefault(); markAsReadAndRedirect('{{ $markReadUrl }}', '{{ $notification->url ?: $mqTopbarNotificationsUrl }}')">
                     <div class="mqx-notif-icon">
                         <i class="bi {{ $mqTopbarNotifIcon }}" aria-hidden="true"></i>
                     </div>
                     <div class="mqx-notif-body">
-                        <div class="mqx-notif-title">{{ $notification->titulo }}</div>
+                        <div class="mqx-notif-title">{{ ucfirst(str_replace('_', ' ', $notification->tipo ?? 'Notificación')) }}</div>
                         <div class="mqx-notif-sub">{{ $notification->mensaje }}</div>
-                        <div class="mqx-notif-time">{{ optional($notification->created_at ? \Carbon\Carbon::parse($notification->created_at) : null)->diffForHumans() }}</div>
+                        <div class="mqx-notif-time">{{ \Carbon\Carbon::parse($notification->created_at)->diffForHumans() }}</div>
                     </div>
                 </a>
             @empty
@@ -155,3 +177,56 @@
 </header>
 
 <script src="{{ asset('js/shared/mq-topbar.js') }}?v={{ time() }}" defer></script>
+<script>
+    function clearNotifBadge() {
+        const badge = document.getElementById('mqxNotifBadge');
+        if (badge) {
+            badge.style.display = 'none';
+        }
+    }
+
+    function markAsReadAndRedirect(url, redirectUrl) {
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        }).then(response => {
+            window.location.href = redirectUrl;
+        }).catch(error => {
+            console.error('Error marking notification as read:', error);
+            window.location.href = redirectUrl;
+        });
+    }
+
+    function markAllAsRead(url) {
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        }).then(response => {
+            if (response.ok) {
+                clearNotifBadge();
+                const notifList = document.querySelector('.mqx-notif-list');
+                if (notifList) {
+                    notifList.innerHTML = `
+                        <div class="mqx-notif-item mqx-notif-item--plain">
+                            <div class="mqx-notif-body">
+                                <div class="mqx-notif-title">No tienes notificaciones</div>
+                                <div class="mqx-notif-sub">Cuando recibas una notificación, aparecerá aquí.</div>
+                                <div class="mqx-notif-time"></div>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+        }).catch(error => {
+            console.error('Error marking all notifications as read:', error);
+        });
+    }
+</script>
