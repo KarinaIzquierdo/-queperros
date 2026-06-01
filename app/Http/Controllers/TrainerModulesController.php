@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 
 class TrainerModulesController extends Controller
@@ -365,6 +366,7 @@ class TrainerModulesController extends Controller
     public function reservas()
     {
         $user = Auth::user();
+        Log::info('Trainer reservas method called', ['user_id' => $user->id]);
 
         $reservas = collect();
         $counts = [
@@ -392,9 +394,9 @@ class TrainerModulesController extends Controller
             }
 
             $counts = [
-                'pendientes' => (clone $base)->where('r.estado', 'Pendiente')->count(),
-                'confirmadas' => (clone $base)->where('r.estado', 'Confirmada')->count(),
-                'canceladas' => (clone $base)->where('r.estado', 'Cancelada')->count(),
+                'pendientes' => (clone $base)->whereIn('r.estado', ['Pendiente', 'Pendiente de Evaluación', 'Cita de Evaluación Asignada'])->count(),
+                'confirmadas' => (clone $base)->whereIn('r.estado', ['Confirmada', 'Cotizado / Pendiente de Aprobación', 'Aceptada / Esperando Pago', 'Pagada', 'Pagado / En Curso'])->count(),
+                'canceladas' => (clone $base)->whereIn('r.estado', ['Cancelada', 'Rechazada por el Cliente'])->count(),
                 'total' => (clone $base)->count(),
             ];
 
@@ -424,19 +426,37 @@ class TrainerModulesController extends Controller
                     DB::raw($hasServicios ? 'COALESCE(s.precio, 0) as price' : '0 as price'),
                     DB::raw('COALESCE(r.estado, "") as status'),
                     DB::raw($hasComentarios ? 'COALESCE(r.comentarios, "") as comments' : '"" as comments'),
+                    DB::raw('COALESCE(r.fecha_evaluacion, "") as fecha_evaluacion'),
+                    DB::raw('COALESCE(r.hora_evaluacion, "") as hora_evaluacion'),
+                    DB::raw('COALESCE(r.precio, 0) as precio_cotizado'),
+                    DB::raw('COALESCE(r.duracion, 0) as duracion'),
+                    DB::raw('COALESCE(r.observaciones, "") as observaciones'),
                 ])
                 ->get()
-                ->map(fn ($r) => [
-                    'id' => $r->id,
-                    'pet' => $r->pet,
-                    'owner' => $r->owner,
-                    'service' => $r->service,
-                    'date' => $r->date,
-                    'time' => $r->time,
-                    'price' => $r->price,
-                    'status' => mb_strtolower((string) $r->status),
-                    'comments' => $r->comments,
-                ]);
+                ->map(function ($r) {
+                    $status = mb_strtolower((string) $r->status);
+                    Log::info('Reserva status debug', [
+                        'id' => $r->id,
+                        'original_status' => $r->status,
+                        'lowercase_status' => $status,
+                    ]);
+                    return [
+                        'id' => $r->id,
+                        'pet' => $r->pet,
+                        'owner' => $r->owner,
+                        'service' => $r->service,
+                        'date' => $r->date,
+                        'time' => $r->time,
+                        'price' => $r->price,
+                        'status' => $status,
+                        'comments' => $r->comments,
+                        'fecha_evaluacion' => $r->fecha_evaluacion ?? '',
+                        'hora_evaluacion' => $r->hora_evaluacion ?? '',
+                        'precio_cotizado' => $r->precio_cotizado ?? 0,
+                        'duracion' => $r->duracion ?? 0,
+                        'observaciones' => $r->observaciones ?? '',
+                    ];
+                });
         }
 
         return view('entrenador.reservas', [
@@ -533,6 +553,148 @@ class TrainerModulesController extends Controller
         }
 
         return redirect()->back()->with('success', 'Estado de la reserva actualizado correctamente.');
+    }
+
+    /**
+     * Asignar cita de evaluación para servicio especial
+     */
+    public function asignarCitaEvaluacion(Request $request, $reserva)
+    {
+        $user = Auth::user();
+
+        $validated = $request->validate([
+            'fecha_evaluacion' => ['required', 'date', 'after:today'],
+            'hora_evaluacion' => ['required', 'date_format:H:i'],
+        ]);
+
+        if (!Schema::hasTable('reservas')) {
+            return redirect()->back()->withErrors(['error' => 'No existe la tabla reservas.']);
+        }
+
+        $reservaKey = Schema::hasColumn('reservas', 'id_reserva') ? 'id_reserva' : 'id';
+
+        $row = DB::table('reservas')
+            ->where($reservaKey, (int) $reserva)
+            ->first();
+
+        if (!$row) {
+            return redirect()->back()->withErrors(['error' => 'La reserva no existe.']);
+        }
+
+        $payload = [
+            'fecha_evaluacion' => $validated['fecha_evaluacion'],
+            'hora_evaluacion' => $validated['hora_evaluacion'],
+            'estado' => 'Cita de Evaluación Asignada',
+            'updated_at' => now(),
+        ];
+
+        $columns = Schema::getColumnListing('reservas');
+        $payload = array_filter(
+            $payload,
+            fn ($_, $key) => in_array($key, $columns, true),
+            ARRAY_FILTER_USE_BOTH
+        );
+
+        DB::table('reservas')->where($reservaKey, (int) $reserva)->update($payload);
+
+        // Enviar notificación al dueño
+        if (Schema::hasTable('notificaciones') && Schema::hasTable('mascotas')) {
+            $mascotaKey = Schema::hasColumn('mascotas', 'id_mascota') ? 'id_mascota' : 'id';
+            $mascota = DB::table('mascotas')
+                ->where($mascotaKey, (int) $row->id_mascota)
+                ->first();
+
+            if ($mascota && isset($mascota->id_dueno)) {
+                try {
+                    DB::table('notificaciones')->insert([
+                        'user_id' => $mascota->id_dueno,
+                        'tipo' => 'cita_evaluacion',
+                        'titulo' => 'Cita de Evaluación Asignada',
+                        'mensaje' => "Cita de evaluación asignada para el servicio de Formación y Crianza. Fecha: {$validated['fecha_evaluacion']} a las {$validated['hora_evaluacion']}",
+                        'url' => '/dashboard/reservas',
+                        'leida_en' => null,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                } catch (\Exception $e) {
+                    Log::error('Error creating notification: ' . $e->getMessage());
+                }
+            }
+        }
+
+        return redirect()->back()->with('success', 'Cita de evaluación asignada exitosamente.');
+    }
+
+    /**
+     * Registrar diagnóstico y cotización después de la evaluación
+     */
+    public function registrarDiagnostico(Request $request, $reserva)
+    {
+        $user = Auth::user();
+
+        $validated = $request->validate([
+            'precio' => ['required', 'numeric', 'min:0'],
+            'duracion' => ['required', 'integer', 'min:1'],
+            'observaciones' => ['nullable', 'string', 'max:2000'],
+        ]);
+
+        if (!Schema::hasTable('reservas')) {
+            return redirect()->back()->withErrors(['error' => 'No existe la tabla reservas.']);
+        }
+
+        $reservaKey = Schema::hasColumn('reservas', 'id_reserva') ? 'id_reserva' : 'id';
+
+        $row = DB::table('reservas')
+            ->where($reservaKey, (int) $reserva)
+            ->first();
+
+        if (!$row) {
+            return redirect()->back()->withErrors(['error' => 'La reserva no existe.']);
+        }
+
+        $payload = [
+            'precio' => $validated['precio'],
+            'duracion' => $validated['duracion'],
+            'observaciones' => $validated['observaciones'] ?? null,
+            'estado' => 'Cotizado / Pendiente de Aprobación',
+            'updated_at' => now(),
+        ];
+
+        $columns = Schema::getColumnListing('reservas');
+        $payload = array_filter(
+            $payload,
+            fn ($_, $key) => in_array($key, $columns, true),
+            ARRAY_FILTER_USE_BOTH
+        );
+
+        DB::table('reservas')->where($reservaKey, (int) $reserva)->update($payload);
+
+        // Enviar notificación al dueño
+        if (Schema::hasTable('notificaciones') && Schema::hasTable('mascotas')) {
+            $mascotaKey = Schema::hasColumn('mascotas', 'id_mascota') ? 'id_mascota' : 'id';
+            $mascota = DB::table('mascotas')
+                ->where($mascotaKey, (int) $row->id_mascota)
+                ->first();
+
+            if ($mascota && isset($mascota->id_dueno)) {
+                try {
+                    DB::table('notificaciones')->insert([
+                        'user_id' => $mascota->id_dueno,
+                        'tipo' => 'cotizacion',
+                        'titulo' => 'Cotización Disponible',
+                        'mensaje' => "Cotización disponible para el servicio de Formación y Crianza. Precio: {$validated['precio']} COP. Duración: {$validated['duracion']} días.",
+                        'url' => '/dashboard/reservas',
+                        'leida_en' => null,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                } catch (\Exception $e) {
+                    Log::error('Error creating notification: ' . $e->getMessage());
+                }
+            }
+        }
+
+        return redirect()->back()->with('success', 'Diagnóstico y cotización registrados exitosamente.');
     }
 
     public function chat()
@@ -663,6 +825,34 @@ class TrainerModulesController extends Controller
             'notifications' => $notifications,
             'unreadCount' => $notifications->whereNull('leida_en')->count(),
         ]);
+    }
+
+    public function markNotificationAsRead($id)
+    {
+        if (Schema::hasTable('notificaciones')) {
+            DB::table('notificaciones')
+                ->where('id', $id)
+                ->where('user_id', Auth::id())
+                ->update([
+                    'leida_en' => now(),
+                ]);
+        }
+
+        return response()->json(['success' => true]);
+    }
+
+    public function markAllNotificationsAsRead()
+    {
+        if (Schema::hasTable('notificaciones')) {
+            DB::table('notificaciones')
+                ->where('user_id', Auth::id())
+                ->whereNull('leida_en')
+                ->update([
+                    'leida_en' => now(),
+                ]);
+        }
+
+        return response()->json(['success' => true]);
     }
 
     public function perfil()

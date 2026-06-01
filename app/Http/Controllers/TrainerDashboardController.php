@@ -40,8 +40,8 @@ class TrainerDashboardController extends Controller
                 $base->leftJoin('actividades as af', 'af.id_actividad', '=', 'r.id_actividad');
             }
 
-            $pendingCount = (clone $base)->where('r.estado', 'Pendiente')->count();
-            $confirmedCount = (clone $base)->where('r.estado', 'Confirmada')->count();
+            $pendingCount = (clone $base)->whereIn('r.estado', ['Pendiente', 'Pendiente de Evaluación', 'Cita de Evaluación Asignada'])->count();
+            $confirmedCount = (clone $base)->whereIn('r.estado', ['Confirmada', 'Cotizado / Pendiente de Aprobación', 'Aceptada / Esperando Pago', 'Pagada'])->count();
             $weeklyCount = (clone $base)
                 ->whereBetween('r.fecha', [now()->startOfWeek()->toDateString(), now()->endOfWeek()->toDateString()])
                 ->count();
@@ -70,7 +70,7 @@ class TrainerDashboardController extends Controller
             }
 
             $pendingReservations = $query
-                ->where('r.estado', 'Pendiente')
+                ->whereIn('r.estado', ['Pendiente', 'Pendiente de Evaluación', 'Cita de Evaluación Asignada'])
                 ->orderByDesc("r.$reservaKey")
                 ->limit(3)
                 ->select([

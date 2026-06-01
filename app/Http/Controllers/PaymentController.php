@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Schema;
 
 class PaymentController extends Controller
 {
@@ -385,23 +386,44 @@ class PaymentController extends Controller
     public function reservationSuccess(Request $request, $id)
     {
         $paymentId = $request->get('preference_id') ?? $request->get('payment_id');
-        
+
         if ($paymentId) {
             $payment = Payment::where('mercado_pago_id', $paymentId)->first();
-            
+
             if ($payment) {
                 $payment->update([
                     'status' => 'approved',
                     'payment_date' => now(),
                 ]);
-                
+
+                // Obtener la reserva para enviar notificación al entrenador
+                $reserva = DB::table('reservas')->where('id', $id)->first();
+
                 // Actualizar estado de la reserva
                 DB::table('reservas')
                     ->where('id', $id)
                     ->update(['estado' => 'Pagada']);
+
+                // Enviar notificación al entrenador
+                if ($reserva && Schema::hasTable('notificaciones') && isset($reserva->id_empleado)) {
+                    try {
+                        DB::table('notificaciones')->insert([
+                            'user_id' => $reserva->id_empleado,
+                            'tipo' => 'pago_realizado',
+                            'titulo' => 'Pago Realizado',
+                            'mensaje' => "El cliente ha realizado el pago del servicio. La reserva está confirmada.",
+                            'url' => '/entrenador/reservas',
+                            'leida_en' => null,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]);
+                    } catch (\Exception $e) {
+                        \Log::error('Error creating notification: ' . $e->getMessage());
+                    }
+                }
             }
         }
-        
+
         return redirect()->route('owner.reservas')
             ->with('status', '¡Pago exitoso! Tu reserva de entrenamiento ha sido confirmada.');
     }

@@ -70,17 +70,22 @@ class OwnerReservaController extends Controller
 
         // Verificar si el servicio es de entrenamiento
         $isTrainingService = false;
+        $isSpecialService = false; // Servicio especial que requiere evaluación
         if ($service && Schema::hasTable('categorias_servicio')) {
             $category = DB::table('categorias_servicio')
                 ->where('id', $service->categoria_id)
                 ->first();
-            
+
             $isTrainingService = $category && strtolower($category->nombre) === 'entrenamiento';
+            
+            // Verificar si es el servicio especial de Formación y Crianza
+            $isSpecialService = $isTrainingService && stripos($service->nombre, 'Formación y Crianza') !== false;
         }
 
         // Log para depuración
         \Log::info('Service check - Service ID: ' . $service->id . ', Category: ' . ($category ? $category->nombre : 'null'));
         \Log::info('Is training service: ' . ($isTrainingService ? 'true' : 'false'));
+        \Log::info('Is special service (Formación y Crianza): ' . ($isSpecialService ? 'true' : 'false'));
 
         // Si no es un servicio de entrenamiento, crear solicitud de aprobación
         if (!$isTrainingService) {
@@ -90,7 +95,7 @@ class OwnerReservaController extends Controller
 
         // Si es entrenamiento, continuar con el flujo normal de reservas
         \Log::info('Creating training reservation');
-        return $this->createTrainingReservation($validated, $user, $service);
+        return $this->createTrainingReservation($validated, $user, $service, $isSpecialService);
     }
 
     private function createServiceApproval($validated, $user, $service)
@@ -144,7 +149,7 @@ class OwnerReservaController extends Controller
         return redirect()->route('owner.services.my')->with('success', 'Solicitud de servicio enviada para aprobación. Puedes ver el estado en la pestaña de Mis Servicios.');
     }
 
-    private function createTrainingReservation($validated, $user, $service)
+    private function createTrainingReservation($validated, $user, $service, $isSpecialService = false)
     {
         // Continuar con el flujo original para servicios de entrenamiento
         if (Schema::hasTable('actividades')) {
@@ -213,7 +218,7 @@ class OwnerReservaController extends Controller
             'id_actividad' => (int) $validated['servicio_id'],
             'id_empleado' => (int) $validated['profesional_id'],
             'fecha' => $validated['fecha'],
-            'estado' => 'Pendiente',
+            'estado' => $isSpecialService ? 'Pendiente de Evaluación' : 'Pendiente',
             'created_at' => now(),
             'updated_at' => now(),
         ];
@@ -239,6 +244,126 @@ class OwnerReservaController extends Controller
         }
 
         return redirect()->route('owner.reservas')->with('success', 'Reserva de entrenamiento creada correctamente.');
+    }
+
+    /**
+     * Aceptar cotización del servicio especial
+     */
+    public function aceptarCotizacion($reserva)
+    {
+        $user = Auth::user();
+
+        if (!Schema::hasTable('reservas')) {
+            return redirect()->back()->withErrors(['error' => 'No existe la tabla reservas.']);
+        }
+
+        $reservaKey = Schema::hasColumn('reservas', 'id_reserva') ? 'id_reserva' : 'id';
+
+        $row = DB::table('reservas')
+            ->where($reservaKey, (int) $reserva)
+            ->first();
+
+        if (!$row) {
+            return redirect()->back()->withErrors(['error' => 'La reserva no existe.']);
+        }
+
+        // Verificar que la reserva pertenezca al usuario
+        if (Schema::hasTable('mascotas')) {
+            $mascotaKey = Schema::hasColumn('mascotas', 'id_mascota') ? 'id_mascota' : 'id';
+            $mascota = DB::table('mascotas')
+                ->where($mascotaKey, (int) $row->id_mascota)
+                ->first();
+
+            if (!$mascota || $mascota->id_dueno != $user->id) {
+                return redirect()->back()->withErrors(['error' => 'No tienes permiso para modificar esta reserva.']);
+            }
+        }
+
+        $payload = [
+            'cliente_aceptado' => true,
+            'estado' => 'Aceptada / Esperando Pago',
+            'updated_at' => now(),
+        ];
+
+        $columns = Schema::getColumnListing('reservas');
+        $payload = array_filter(
+            $payload,
+            fn ($_, $key) => in_array($key, $columns, true),
+            ARRAY_FILTER_USE_BOTH
+        );
+
+        DB::table('reservas')->where($reservaKey, (int) $reserva)->update($payload);
+
+        // Enviar notificación al entrenador
+        if (Schema::hasTable('notificaciones') && isset($row->id_empleado)) {
+            try {
+                DB::table('notificaciones')->insert([
+                    'user_id' => $row->id_empleado,
+                    'tipo' => 'cotizacion_aceptada',
+                    'titulo' => 'Cotización Aceptada',
+                    'mensaje' => "El cliente ha aceptado la cotización del servicio. Esperando pago.",
+                    'url' => '/entrenador/reservas',
+                    'leida_en' => null,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            } catch (\Exception $e) {
+                \Log::error('Error creating notification: ' . $e->getMessage());
+            }
+        }
+
+        return redirect()->back()->with('success', 'Cotización aceptada. Ahora puedes proceder con el pago.');
+    }
+
+    /**
+     * Rechazar cotización del servicio especial
+     */
+    public function rechazarCotizacion($reserva)
+    {
+        $user = Auth::user();
+
+        if (!Schema::hasTable('reservas')) {
+            return redirect()->back()->withErrors(['error' => 'No existe la tabla reservas.']);
+        }
+
+        $reservaKey = Schema::hasColumn('reservas', 'id_reserva') ? 'id_reserva' : 'id';
+
+        $row = DB::table('reservas')
+            ->where($reservaKey, (int) $reserva)
+            ->first();
+
+        if (!$row) {
+            return redirect()->back()->withErrors(['error' => 'La reserva no existe.']);
+        }
+
+        // Verificar que la reserva pertenezca al usuario
+        if (Schema::hasTable('mascotas')) {
+            $mascotaKey = Schema::hasColumn('mascotas', 'id_mascota') ? 'id_mascota' : 'id';
+            $mascota = DB::table('mascotas')
+                ->where($mascotaKey, (int) $row->id_mascota)
+                ->first();
+
+            if (!$mascota || $mascota->id_dueno != $user->id) {
+                return redirect()->back()->withErrors(['error' => 'No tienes permiso para modificar esta reserva.']);
+            }
+        }
+
+        $payload = [
+            'cliente_aceptado' => false,
+            'estado' => 'Rechazada por el Cliente',
+            'updated_at' => now(),
+        ];
+
+        $columns = Schema::getColumnListing('reservas');
+        $payload = array_filter(
+            $payload,
+            fn ($_, $key) => in_array($key, $columns, true),
+            ARRAY_FILTER_USE_BOTH
+        );
+
+        DB::table('reservas')->where($reservaKey, (int) $reserva)->update($payload);
+
+        return redirect()->back()->with('success', 'Cotización rechazada. El proceso ha sido cancelado.');
     }
 
     public function update(Request $request, $reserva)

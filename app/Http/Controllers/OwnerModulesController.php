@@ -36,6 +36,11 @@ class OwnerModulesController extends Controller
                     'r.id_empleado as profesional_id',
                     'r.fecha',
                     'r.estado',
+                    'r.fecha_evaluacion',
+                    'r.hora_evaluacion',
+                    'r.precio',
+                    'r.duracion',
+                    'r.observaciones',
                     'm.nombre as mascota_nombre',
                     's.nombre as servicio_nombre',
                     'u.name as profesional_nombre',
@@ -52,13 +57,13 @@ class OwnerModulesController extends Controller
 
         foreach ($reservas as $r) {
             $estado = mb_strtolower((string) ($r->estado ?? ''));
-            if ($estado === 'pendiente') {
+            if ($estado === 'pendiente' || $estado === 'pendiente de evaluación' || $estado === 'cita de evaluación asignada') {
                 $pendientes->push($r);
-            } elseif ($estado === 'confirmada') {
+            } elseif ($estado === 'confirmada' || $estado === 'cotizado / pendiente de aprobación' || $estado === 'pagado / en curso' || $estado === 'aceptada / esperando pago') {
                 $confirmadas->push($r);
             } elseif ($estado === 'finalizada') {
                 $completadas->push($r);
-            } elseif ($estado === 'cancelada') {
+            } elseif ($estado === 'cancelada' || $estado === 'rechazada por el cliente') {
                 $canceladas->push($r);
             }
         }

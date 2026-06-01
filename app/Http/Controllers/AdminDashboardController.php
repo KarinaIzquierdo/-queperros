@@ -101,9 +101,9 @@ class AdminDashboardController extends Controller
         $user = Auth::user();
         $notifications = collect();
 
-        if (Schema::hasTable('notifications')) {
-            $notifications = DB::table('notifications')
-                ->where('id_usuario', (int) $user->id)
+        if (Schema::hasTable('notificaciones')) {
+            $notifications = DB::table('notificaciones')
+                ->where('user_id', (int) $user->id)
                 ->orderByDesc('created_at')
                 ->get();
         }
@@ -111,19 +111,18 @@ class AdminDashboardController extends Controller
         return view('admin.notificaciones', [
             'user' => $user,
             'notifications' => $notifications,
-            'unreadCount' => $notifications->where('leido', false)->count(),
+            'unreadCount' => $notifications->whereNull('leida_en')->count(),
         ]);
     }
 
     public function markNotificationAsRead($id)
     {
-        if (Schema::hasTable('notifications')) {
-            DB::table('notifications')
+        if (Schema::hasTable('notificaciones')) {
+            DB::table('notificaciones')
                 ->where('id', $id)
-                ->where('id_usuario', Auth::id())
+                ->where('user_id', Auth::id())
                 ->update([
-                    'leido' => true,
-                    'updated_at' => now(),
+                    'leida_en' => now(),
                 ]);
         }
 
@@ -132,13 +131,12 @@ class AdminDashboardController extends Controller
 
     public function markAllNotificationsAsRead()
     {
-        if (Schema::hasTable('notifications')) {
-            DB::table('notifications')
-                ->where('id_usuario', Auth::id())
-                ->where('leido', false)
+        if (Schema::hasTable('notificaciones')) {
+            DB::table('notificaciones')
+                ->where('user_id', Auth::id())
+                ->whereNull('leida_en')
                 ->update([
-                    'leido' => true,
-                    'updated_at' => now(),
+                    'leida_en' => now(),
                 ]);
         }
 

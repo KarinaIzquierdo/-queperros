@@ -109,8 +109,20 @@
                                         <p><strong>Servicio:</strong> {{ $r->servicio_nombre ?? 'N/A' }}</p>
                                         <p><strong>Mascota:</strong> {{ $r->mascota_nombre ?? 'N/A' }}</p>
                                         <p><strong>Entrenador:</strong> {{ $r->profesional_nombre ?? 'N/A' }}</p>
-                                        <p><strong>Fecha:</strong> {{ $r->fecha ?? 'N/A' }}</p>
                                         <p><strong>Estado:</strong> {{ $r->estado ?? 'N/A' }}</p>
+
+                                        <div style="background: #f8f9fa; padding: 10px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #6c757d;">
+                                            <p style="margin: 0; color: #495057; font-size: 0.9em;"><strong>📅 Fecha de Solicitud:</strong> {{ $r->fecha ?? 'N/A' }}</p>
+                                        </div>
+
+                                        @if($r->fecha_evaluacion)
+                                            <div style="background: #e3f2fd; padding: 10px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #2196f3;">
+                                                <p style="margin: 0; color: #0d47a1; font-size: 0.9em;"><strong>🏥 Cita de Evaluación:</strong> {{ $r->fecha_evaluacion }}</p>
+                                                @if($r->hora_evaluacion)
+                                                    <p style="margin: 5px 0 0 0; color: #0d47a1; font-size: 0.9em;"><strong>⏰ Hora de Evaluación:</strong> {{ substr($r->hora_evaluacion, 0, 5) ?? 'N/A' }}</p>
+                                                @endif
+                                            </div>
+                                        @endif
                                     </div>
                                 @endforeach
                             @else
@@ -126,8 +138,76 @@
                                         <p><strong>Servicio:</strong> {{ $r->servicio_nombre ?? 'N/A' }}</p>
                                         <p><strong>Mascota:</strong> {{ $r->mascota_nombre ?? 'N/A' }}</p>
                                         <p><strong>Entrenador:</strong> {{ $r->profesional_nombre ?? 'N/A' }}</p>
-                                        <p><strong>Fecha:</strong> {{ $r->fecha ?? 'N/A' }}</p>
                                         <p><strong>Estado:</strong> {{ $r->estado ?? 'N/A' }}</p>
+                                        
+                                        <div style="background: #f8f9fa; padding: 10px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #6c757d;">
+                                            <p style="margin: 0; color: #495057; font-size: 0.9em;"><strong>📅 Fecha de Solicitud:</strong> {{ $r->fecha ?? 'N/A' }}</p>
+                                        </div>
+                                        
+                                        @if($r->fecha_evaluacion)
+                                            <div style="background: #e3f2fd; padding: 10px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #2196f3;">
+                                                <p style="margin: 0; color: #0d47a1; font-size: 0.9em;"><strong>🏥 Cita de Evaluación:</strong> {{ $r->fecha_evaluacion }}</p>
+                                                @if($r->hora_evaluacion)
+                                                    <p style="margin: 5px 0 0 0; color: #0d47a1; font-size: 0.9em;"><strong>⏰ Hora de Evaluación:</strong> {{ substr($r->hora_evaluacion, 0, 5) ?? 'N/A' }}</p>
+                                                @endif
+                                            </div>
+                                        @endif
+                                        
+                                        @if($r->precio && $r->estado === 'Cotizado / Pendiente de Aprobación')
+                                            <div style="background: #f0f8ff; padding: 10px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #009ee3;">
+                                                <p><strong>Precio Cotizado:</strong> $ {{ number_format($r->precio, 0, ',', '.') }} COP</p>
+                                                <p><strong>Duración:</strong> {{ $r->duracion ?? 'N/A' }} días</p>
+                                                @if($r->observaciones)
+                                                    <p><strong>Observaciones:</strong> {{ $r->observaciones }}</p>
+                                                @endif
+                                            </div>
+                                            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                                                <form action="{{ route('owner.reservas.aceptar-cotizacion', $r->id) }}" method="POST" style="flex: 1;">
+                                                    @csrf
+                                                    <button type="submit" style="width: 100%; background: #28a745; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer;">
+                                                        <i class="bi bi-check-lg" style="margin-right: 5px;"></i>
+                                                        Aceptar y Pagar
+                                                    </button>
+                                                </form>
+                                                <form action="{{ route('owner.reservas.rechazar-cotizacion', $r->id) }}" method="POST" style="flex: 1;">
+                                                    @csrf
+                                                    <button type="submit" style="width: 100%; background: #dc3545; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer;">
+                                                        <i class="bi bi-x-lg" style="margin-right: 5px;"></i>
+                                                        Rechazar
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        @endif
+
+                                        @if($r->estado === 'Aceptada / Esperando Pago')
+                                            <div style="background: #fff3cd; padding: 10px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #ffc107;">
+                                                <p style="margin: 0; color: #856404;"><strong>✅ Cotización Aceptada</strong> - Esperando pago</p>
+                                            </div>
+                                            <form action="{{ route('payment.reservation.create', $r->id) }}" method="POST" style="margin-top: 10px;">
+                                                @csrf
+                                                <button type="submit" style="width: 100%; background: #009ee3; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer;">
+                                                    <i class="bi bi-credit-card" style="margin-right: 5px;"></i>
+                                                    Pagar con MercadoPago
+                                                </button>
+                                            </form>
+                                        @endif
+
+                                        @if($r->estado === 'Pagada')
+                                            <div style="background: #d4edda; padding: 10px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #28a745;">
+                                                <p style="margin: 0; color: #155724;"><strong>💰 Pago Realizado</strong> - Servicio confirmado</p>
+                                            </div>
+                                        @endif
+                                        
+                                        @if($r->estado === 'Pagado / En Curso')
+                                            <form action="{{ route('payment.reservation.create', $r->id) }}" method="POST" style="margin-top: 10px;">
+                                                @csrf
+                                                <button type="submit" style="background: #009ee3; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer;">
+                                                    <i class="bi bi-credit-card" style="margin-right: 5px;"></i>
+                                                    Pagar con MercadoPago
+                                                </button>
+                                            </form>
+                                        @endif
+                                        
                                         @if($r->estado === 'Confirmada' || $r->estado === 'confirmada')
                                             <form action="{{ route('payment.reservation.create', $r->id) }}" method="POST" style="margin-top: 10px;">
                                                 @csrf
@@ -141,6 +221,39 @@
                                 @endforeach
                             @else
                                 <p>No hay reservas confirmadas</p>
+                            @endif
+                        </div>
+
+                        <div style="background: white; padding: 20px; border-radius: 10px; margin-top: 20px;">
+                            <h2>Reservas Canceladas/Rechazadas ({{ $canceladas->count() ?? 0 }})</h2>
+                            @if(($canceladas ?? collect())->isNotEmpty())
+                                @foreach($canceladas as $r)
+                                    <div style="border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 8px; background: #f8f9fa; opacity: 0.7;">
+                                        <p><strong>Servicio:</strong> {{ $r->servicio_nombre ?? 'N/A' }}</p>
+                                        <p><strong>Mascota:</strong> {{ $r->mascota_nombre ?? 'N/A' }}</p>
+                                        <p><strong>Entrenador:</strong> {{ $r->profesional_nombre ?? 'N/A' }}</p>
+                                        <p><strong>Estado:</strong> {{ $r->estado ?? 'N/A' }}</p>
+
+                                        <div style="background: #f8f9fa; padding: 10px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #6c757d;">
+                                            <p style="margin: 0; color: #495057; font-size: 0.9em;"><strong>📅 Fecha de Solicitud:</strong> {{ $r->fecha ?? 'N/A' }}</p>
+                                        </div>
+
+                                        @if($r->fecha_evaluacion)
+                                            <div style="background: #e3f2fd; padding: 10px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #2196f3;">
+                                                <p style="margin: 0; color: #0d47a1; font-size: 0.9em;"><strong>🏥 Cita de Evaluación:</strong> {{ $r->fecha_evaluacion }}</p>
+                                                @if($r->hora_evaluacion)
+                                                    <p style="margin: 5px 0 0 0; color: #0d47a1; font-size: 0.9em;"><strong>⏰ Hora de Evaluación:</strong> {{ substr($r->hora_evaluacion, 0, 5) ?? 'N/A' }}</p>
+                                                @endif
+                                            </div>
+                                        @endif
+
+                                        <div style="background: #f8d7da; padding: 10px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #dc3545;">
+                                            <p style="margin: 0; color: #721c24;"><strong>❌ Reserva Cancelada/Rechazada</strong></p>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @else
+                                <p>No hay reservas canceladas</p>
                             @endif
                         </div>
                     </div>

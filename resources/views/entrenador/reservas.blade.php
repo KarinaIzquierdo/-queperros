@@ -74,7 +74,12 @@
 
                     <div class="tr-list">
                         @forelse (($reservas ?? []) as $r)
-                            <article class="tr-card {{ $r['status'] === 'pendiente' ? 'tr-card--pending' : 'tr-card--confirmed' }}">
+                            <article class="tr-card {{ $r['status'] === 'pendiente' ? 'tr-card--pending' : 'tr-card--confirmed' }}"
+                                     data-eval-date="{{ $r['fecha_evaluacion'] }}"
+                                     data-eval-time="{{ $r['hora_evaluacion'] }}"
+                                     data-quoted-price="{{ $r['precio_cotizado'] }}"
+                                     data-duration="{{ $r['duracion'] }}"
+                                     data-observations="{{ $r['observaciones'] }}">
                                 <div class="tr-card-header">
                                     <div class="tr-card-pet">
                                         <span class="tr-card-avatar"><i class="bi bi-heart"></i></span>
@@ -115,7 +120,21 @@
                                 @endif
 
                                 <div class="tr-card-actions">
-                                    @if($r['status'] !== 'confirmada')
+                                    @if(str_contains($r['status'], 'pendiente de evaluación'))
+                                        <button class="tr-btn tr-btn--confirm" type="button" onclick="showCitaModal({{ $r['id'] }}, '{{ $r['service'] }}', '{{ $r['pet'] }}')">
+                                            <i class="bi bi-calendar-plus"></i> Asignar Cita
+                                        </button>
+                                    @elseif(str_contains($r['status'], 'cita de evaluación asignada'))
+                                        <button class="tr-btn tr-btn--confirm" type="button" onclick="showDiagnosticoModal({{ $r['id'] }}, '{{ $r['service'] }}', '{{ $r['pet'] }}')">
+                                            <i class="bi bi-clipboard-check"></i> Registrar Diagnóstico
+                                        </button>
+                                    @elseif(str_contains($r['status'], 'cotizado') || str_contains($r['status'], 'aprobación'))
+                                        <span class="tr-card-waiting">Esperando aprobación del cliente</span>
+                                    @elseif(str_contains($r['status'], 'aceptada') || str_contains($r['status'], 'esperando pago'))
+                                        <span class="tr-card-waiting" style="color: #856404;">✅ Cotización Aceptada - Esperando pago</span>
+                                    @elseif(str_contains($r['status'], 'pagada'))
+                                        <span class="tr-card-waiting" style="color: #155724;">💰 Pago Realizado - Servicio confirmado</span>
+                                    @elseif(!str_contains($r['status'], 'confirmada') && !str_contains($r['status'], 'pagado') && !str_contains($r['status'], 'curso') && !str_contains($r['status'], 'evaluación'))
                                         <form action="{{ route('entrenador.reservas.estado', $r['id']) }}" method="POST">
                                             @csrf
                                             <input type="hidden" name="estado" value="Confirmada">
@@ -163,5 +182,195 @@
                 </section>
             </main>
         </div>
+
+        <!-- Modal para asignar cita de evaluación -->
+        <div class="tr-modal" id="citaModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+            <div style="background: white; padding: 30px; border-radius: 10px; max-width: 400px; width: 90%;">
+                <h3 style="margin-bottom: 20px;">Asignar Cita de Evaluación</h3>
+                <p id="citaModalInfo" style="margin-bottom: 15px; color: #666;"></p>
+                <form id="citaForm" method="POST">
+                    @csrf
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500;">Fecha de Evaluación:</label>
+                        <input type="date" name="fecha_evaluacion" id="fechaEvaluacion" required 
+                               style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500;">Hora de Evaluación:</label>
+                        <input type="time" name="hora_evaluacion" id="horaEvaluacion" required 
+                               style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                    </div>
+                    <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                        <button type="button" onclick="closeCitaModal()" 
+                                style="padding: 10px 20px; background: #e0e0e0; border: none; border-radius: 5px; cursor: pointer;">
+                            Cancelar
+                        </button>
+                        <button type="submit" 
+                                style="padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                            Asignar Cita
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal para registrar diagnóstico y cotización -->
+        <div class="tr-modal" id="diagnosticoModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+            <div style="background: white; padding: 30px; border-radius: 10px; max-width: 500px; width: 90%;">
+                <h3 style="margin-bottom: 20px;">Registrar Diagnóstico y Cotización</h3>
+                <p id="diagnosticoModalInfo" style="margin-bottom: 15px; color: #666;"></p>
+                <form id="diagnosticoForm" method="POST">
+                    @csrf
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500;">Precio Final (COP):</label>
+                        <input type="number" name="precio" id="diagnosticoPrecio" placeholder="200000" min="0" step="1000" required 
+                               style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500;">Duración del Servicio (días):</label>
+                        <input type="number" name="duracion" id="diagnosticoDuracion" placeholder="60" min="1" required 
+                               style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500;">Observaciones del Diagnóstico:</label>
+                        <textarea name="observaciones" id="diagnosticoObservaciones" rows="4" placeholder="Describe el diagnóstico y las observaciones de la evaluación..."
+                               style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; resize: vertical;"></textarea>
+                    </div>
+                    <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                        <button type="button" onclick="closeDiagnosticoModal()" 
+                                style="padding: 10px 20px; background: #e0e0e0; border: none; border-radius: 5px; cursor: pointer;">
+                            Cancelar
+                        </button>
+                        <button type="submit" 
+                                style="padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                            Registrar Cotización
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal para ver detalles -->
+        <div class="tr-modal" id="detallesModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+            <div style="background: white; padding: 30px; border-radius: 10px; max-width: 500px; width: 90%;">
+                <h3 style="margin-bottom: 20px;">Detalles de la Reserva</h3>
+                <div id="detallesContent" style="margin-bottom: 20px;"></div>
+                <button type="button" onclick="closeDetallesModal()" 
+                        style="padding: 10px 20px; background: #e0e0e0; border: none; border-radius: 5px; cursor: pointer;">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+
+        <script>
+            function showCitaModal(reservaId, service, pet) {
+                document.getElementById('citaModalInfo').textContent = `Servicio: ${service} - Mascota: ${pet}`;
+                document.getElementById('citaForm').action = `/entrenador/reservas/${reservaId}/cita-evaluacion`;
+                document.getElementById('citaModal').style.display = 'flex';
+            }
+
+            function closeCitaModal() {
+                document.getElementById('citaModal').style.display = 'none';
+                document.getElementById('fechaEvaluacion').value = '';
+                document.getElementById('horaEvaluacion').value = '';
+            }
+
+            function showDiagnosticoModal(reservaId, service, pet) {
+                document.getElementById('diagnosticoModalInfo').textContent = `Servicio: ${service} - Mascota: ${pet}`;
+                document.getElementById('diagnosticoForm').action = `/entrenador/reservas/${reservaId}/diagnostico`;
+                document.getElementById('diagnosticoModal').style.display = 'flex';
+            }
+
+            function closeDiagnosticoModal() {
+                document.getElementById('diagnosticoModal').style.display = 'none';
+                document.getElementById('diagnosticoPrecio').value = '';
+                document.getElementById('diagnosticoDuracion').value = '';
+                document.getElementById('diagnosticoObservaciones').value = '';
+            }
+
+            // Cerrar modales al hacer clic fuera
+            document.getElementById('citaModal').addEventListener('click', function(e) {
+                if (e.target === this) closeCitaModal();
+            });
+
+            document.getElementById('diagnosticoModal').addEventListener('click', function(e) {
+                if (e.target === this) closeDiagnosticoModal();
+            });
+
+            document.getElementById('detallesModal').addEventListener('click', function(e) {
+                if (e.target === this) closeDetallesModal();
+            });
+
+            // Manejar botón Ver detalles
+            document.addEventListener('click', function(e) {
+                const btn = e.target.closest('.tr-btn--view[data-id]');
+                if (btn) {
+                    const reservaId = btn.getAttribute('data-id');
+                    const card = btn.closest('.tr-card');
+                    if (card) {
+                        const pet = card.querySelector('.tr-card-pet-name')?.textContent || 'N/A';
+                        const owner = card.querySelector('.tr-card-owner')?.textContent || 'N/A';
+                        const service = card.querySelector('.tr-card-detail:nth-child(1) span')?.textContent || 'N/A';
+                        const date = card.querySelector('.tr-card-detail:nth-child(2) span')?.textContent || 'N/A';
+                        const time = card.querySelector('.tr-card-detail:nth-child(3) span')?.textContent || 'N/A';
+                        const price = card.querySelector('.tr-card-detail:nth-child(4) span')?.textContent || 'N/A';
+                        const status = card.querySelector('.tr-card-status')?.textContent || 'N/A';
+                        const comments = card.querySelector('.tr-card-comments')?.textContent || '';
+
+                        let detallesHTML = `
+                            <p><strong>Mascota:</strong> ${pet}</p>
+                            <p><strong>Dueño:</strong> ${owner}</p>
+                            <p><strong>Servicio:</strong> ${service}</p>
+                            <p><strong>Fecha de Reserva:</strong> ${date}</p>
+                            <p><strong>Hora de Reserva:</strong> ${time}</p>
+                            <p><strong>Precio Base:</strong> ${price}</p>
+                            <p><strong>Estado:</strong> ${status}</p>
+                        `;
+
+                        if (comments) {
+                            detallesHTML += `<p><strong>Comentarios:</strong> ${comments}</p>`;
+                        }
+
+                        // Mostrar información específica del flujo de evaluación
+                        if (status.toLowerCase().includes('cita de evaluación') || status.toLowerCase().includes('cotizado') || status.toLowerCase().includes('aprobación')) {
+                            detallesHTML += `<hr style="margin: 15px 0; border: none; border-top: 1px solid #ddd;">`;
+                            detallesHTML += `<h4 style="margin-bottom: 10px;">Información de Evaluación</h4>`;
+                            
+                            // Leer datos de evaluación directamente de la tarjeta
+                            const evalDate = card.getAttribute('data-eval-date');
+                            const evalTime = card.getAttribute('data-eval-time');
+                            const quotedPrice = card.getAttribute('data-quoted-price');
+                            const duration = card.getAttribute('data-duration');
+                            const observations = card.getAttribute('data-observations');
+
+                            if (evalDate) {
+                                detallesHTML += `<p><strong>Fecha de Evaluación:</strong> ${evalDate}</p>`;
+                            }
+                            if (evalTime) {
+                                // Formatear la hora para mostrar solo HH:MM
+                                const formattedTime = evalTime.substring(0, 5);
+                                detallesHTML += `<p><strong>Hora de Evaluación:</strong> ${formattedTime}</p>`;
+                            }
+                            if (quotedPrice && quotedPrice !== '0') {
+                                detallesHTML += `<p><strong>Precio Cotizado:</strong> $${parseInt(quotedPrice).toLocaleString('es-CO')} COP</p>`;
+                            }
+                            if (duration && duration !== '0') {
+                                detallesHTML += `<p><strong>Duración:</strong> ${duration} días</p>`;
+                            }
+                            if (observations) {
+                                detallesHTML += `<p><strong>Observaciones:</strong> ${observations}</p>`;
+                            }
+                        }
+
+                        document.getElementById('detallesContent').innerHTML = detallesHTML;
+                        document.getElementById('detallesModal').style.display = 'flex';
+                    }
+                }
+            });
+
+            function closeDetallesModal() {
+                document.getElementById('detallesModal').style.display = 'none';
+            }
+        </script>
     </body>
 </html>

@@ -97,6 +97,14 @@ Route::post('/dashboard/reservas/{reserva}/cancel', [OwnerReservaController::cla
     ->middleware('auth')
     ->name('owner.reservas.cancel');
 
+Route::post('/dashboard/reservas/{reserva}/aceptar-cotizacion', [OwnerReservaController::class, 'aceptarCotizacion'])
+    ->middleware('auth')
+    ->name('owner.reservas.aceptar-cotizacion');
+
+Route::post('/dashboard/reservas/{reserva}/rechazar-cotizacion', [OwnerReservaController::class, 'rechazarCotizacion'])
+    ->middleware('auth')
+    ->name('owner.reservas.rechazar-cotizacion');
+
 Route::get('/dashboard/reservas', [OwnerModulesController::class, 'reservas'])
     ->middleware('auth')
     ->name('owner.reservas');
@@ -307,6 +315,14 @@ Route::post('/entrenador/reservas/{reserva}/estado', [TrainerModulesController::
     ->middleware('auth')
     ->name('entrenador.reservas.estado');
 
+Route::post('/entrenador/reservas/{reserva}/cita-evaluacion', [TrainerModulesController::class, 'asignarCitaEvaluacion'])
+    ->middleware('auth')
+    ->name('entrenador.reservas.cita-evaluacion');
+
+Route::post('/entrenador/reservas/{reserva}/diagnostico', [TrainerModulesController::class, 'registrarDiagnostico'])
+    ->middleware('auth')
+    ->name('entrenador.reservas.diagnostico');
+
 Route::get('/entrenador/chat', [TrainerModulesController::class, 'chat'])
     ->middleware('auth')
     ->name('entrenador.chat');
@@ -318,6 +334,14 @@ Route::post('/entrenador/chat', [TrainerModulesController::class, 'sendMessage']
 Route::get('/entrenador/notificaciones', [TrainerModulesController::class, 'notificaciones'])
     ->middleware('auth')
     ->name('entrenador.notificaciones');
+
+Route::post('/entrenador/notificaciones/{id}/mark-read', [TrainerModulesController::class, 'markNotificationAsRead'])
+    ->middleware('auth')
+    ->name('entrenador.notifications.markRead');
+
+Route::post('/entrenador/notificaciones/mark-all-read', [TrainerModulesController::class, 'markAllNotificationsAsRead'])
+    ->middleware('auth')
+    ->name('entrenador.notifications.markAllRead');
 
 Route::get('/entrenador/perfil', [TrainerModulesController::class, 'perfil'])
     ->middleware('auth')
