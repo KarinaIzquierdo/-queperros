@@ -352,8 +352,38 @@ Route::post('/entrenador/perfil', [TrainerModulesController::class, 'updatePerfi
     ->name('entrenador.perfil.update');
 
 // Rutas de pagos con MercadoPago
+// Estas rutas de respuesta deben ser públicas para que MercadoPago pueda redirigir
+Route::get('/payment/success/{type}/{id}', [PaymentController::class, 'success'])
+    ->name('payment.success');
+
+Route::get('/payment/failure/{type}/{id}', [PaymentController::class, 'failure'])
+    ->name('payment.failure');
+
+Route::get('/payment/pending/{type}/{id}', [PaymentController::class, 'pending'])
+    ->name('payment.pending');
+
+// Respuestas de MercadoPago para reservas
+Route::get('/payment/reservation/success/{id}', [PaymentController::class, 'reservationSuccess'])
+    ->name('payment.reservation.success');
+
+Route::get('/payment/reservation/failure/{id}', [PaymentController::class, 'reservationFailure'])
+    ->name('payment.reservation.failure');
+
+Route::get('/payment/reservation/pending/{id}', [PaymentController::class, 'reservationPending'])
+    ->name('payment.reservation.pending');
+
+// Webhook de MercadoPago (sin auth para recibir notificaciones externas)
+Route::post('/payment/webhook', [PaymentController::class, 'webhook'])
+    ->name('payment.webhook');
+
+// Rutas públicas de apadrinamiento para invitados
+Route::get('/apadrinar/{dog}', [\App\Http\Controllers\PublicPadrinoController::class, 'form'])
+    ->name('public.padrino.form');
+Route::post('/apadrinar/{dog}/procesar', [\App\Http\Controllers\PublicPadrinoController::class, 'process'])
+    ->name('public.padrino.process');
+
 Route::middleware('auth')->group(function () {
-    // Crear pago de apadrinamiento
+    // Crear pago de apadrinamiento (para usuarios logueados)
     Route::post('/payment/sponsorship/{sponsorDog}', [PaymentController::class, 'createSponsorshipPayment'])
         ->name('payment.sponsorship.create');
     
@@ -364,28 +394,4 @@ Route::middleware('auth')->group(function () {
     // Crear pago de reserva de entrenamiento
     Route::post('/payment/reservation/{reservation}', [PaymentController::class, 'createReservationPayment'])
         ->name('payment.reservation.create');
-    
-    // Respuestas de MercadoPago
-    Route::get('/payment/success/{type}/{id}', [PaymentController::class, 'success'])
-        ->name('payment.success');
-    
-    Route::get('/payment/failure/{type}/{id}', [PaymentController::class, 'failure'])
-        ->name('payment.failure');
-    
-    Route::get('/payment/pending/{type}/{id}', [PaymentController::class, 'pending'])
-        ->name('payment.pending');
-    
-    // Respuestas de MercadoPago para reservas
-    Route::get('/payment/reservation/success/{id}', [PaymentController::class, 'reservationSuccess'])
-        ->name('payment.reservation.success');
-    
-    Route::get('/payment/reservation/failure/{id}', [PaymentController::class, 'reservationFailure'])
-        ->name('payment.reservation.failure');
-    
-    Route::get('/payment/reservation/pending/{id}', [PaymentController::class, 'reservationPending'])
-        ->name('payment.reservation.pending');
-    
-    // Webhook de MercadoPago (sin auth para recibir notificaciones externas)
-    Route::post('/payment/webhook', [PaymentController::class, 'webhook'])
-        ->name('payment.webhook');
 });

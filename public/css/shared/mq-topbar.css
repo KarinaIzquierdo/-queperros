@@ -146,7 +146,7 @@
 }
 
 .mqx-sidebar-toggle-wrapper {
-    display: flex;
+    display: none; /* Oculto por defecto en escritorio */
     align-items: center;
 }
 
@@ -560,6 +560,10 @@
         opacity: 1;
         position: relative;
         z-index: 1301;
+        background: #fff;
+        padding: 6px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
 
     .toggle,

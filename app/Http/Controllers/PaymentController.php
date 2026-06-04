@@ -14,11 +14,15 @@ use Illuminate\Support\Facades\Schema;
 class PaymentController extends Controller
 {
     /**
-     * Crear una preferencia de pago para apadrinamiento
+     * Preparar datos para el pago de apadrinamiento con MercadoPago
      */
     public function createSponsorshipPayment(Request $request, $sponsorDogId)
     {
         $sponsorDog = SponsorDog::findOrFail($sponsorDogId);
+        $amount = (int)($sponsorDog->meta_mensual ?: 50000);
+        $reference = 'SPONSOR-' . $sponsorDogId . '-' . time() . '-' . (Auth::id() ?: 'GUEST');
+        
+        $baseUrl = 'https://masqueperros.com.co';
         
         $preferenceData = [
             'items' => [
@@ -26,211 +30,208 @@ class PaymentController extends Controller
                     'title' => "Apadrinamiento de {$sponsorDog->nombre}",
                     'quantity' => 1,
                     'currency_id' => 'COP',
-                    'unit_price' => $sponsorDog->meta_mensual ?: 50000,
+                    'unit_price' => (float)$amount,
                 ]
             ],
             'back_urls' => [
-                'success' => route('payment.success', ['type' => 'sponsorship', 'id' => $sponsorDogId]),
-                'failure' => route('payment.failure', ['type' => 'sponsorship', 'id' => $sponsorDogId]),
-                'pending' => route('payment.pending', ['type' => 'sponsorship', 'id' => $sponsorDogId]),
+                'success' => $baseUrl . "/payment/success/sponsorship/" . $sponsorDogId,
+                'failure' => $baseUrl . "/payment/failure/sponsorship/" . $sponsorDogId,
+                'pending' => $baseUrl . "/payment/pending/sponsorship/" . $sponsorDogId,
             ],
             'auto_return' => 'approved',
+            'external_reference' => $reference,
             'metadata' => [
                 'sponsor_dog_id' => $sponsorDogId,
                 'user_id' => Auth::id(),
             ],
         ];
-        
+
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . env('MERCADOPAGO_ACCESS_TOKEN'),
             'Content-Type' => 'application/json',
         ])->post('https://api.mercadopago.com/checkout/preferences', $preferenceData);
-        
+
         if ($response->successful()) {
             $preference = $response->json();
-            
-            // Guardar el pago en la base de datos
-            $payment = Payment::create([
+
+            // Guardar el pago pendiente en la base de datos
+            Payment::create([
                 'user_id' => Auth::id(),
                 'payment_type' => 'sponsorship',
                 'paymentable_id' => $sponsorDogId,
                 'paymentable_type' => SponsorDog::class,
                 'mercado_pago_id' => $preference['id'],
-                'amount' => $preferenceData['items'][0]['unit_price'],
+                'amount' => $amount,
                 'currency' => 'COP',
                 'status' => 'pending',
                 'metadata' => [
                     'sponsor_dog_name' => $sponsorDog->nombre,
-                    'sponsor_dog_raza' => $sponsorDog->raza,
+                    'type' => 'sponsorship'
                 ],
             ]);
-            
-            $initPoint = env('MERCADOPAGO_ENVIRONMENT') === 'sandbox' 
-                ? $preference['sandbox_init_point'] 
+
+            $initPoint = env('MERCADOPAGO_ENVIRONMENT') === 'sandbox'
+                ? $preference['sandbox_init_point']
                 : $preference['init_point'];
-            
+
             return redirect($initPoint);
         }
-        
-        return back()->with('error', 'Error al crear la preferencia de pago.');
+
+        return back()->with('error', 'Error al crear la preferencia de pago en MercadoPago.');
     }
-    
+
     /**
-     * Crear una preferencia de pago para servicio
+     * Preparar datos para el pago de servicio con MercadoPago
      */
     public function createServicePayment(Request $request, $serviceApprovalId)
     {
         $serviceApproval = ServiceApproval::findOrFail($serviceApprovalId);
         
-        // Verificar que haya credenciales configuradas
-        if (!env('MERCADOPAGO_ACCESS_TOKEN')) {
-            return back()->with('error', 'Error: No se han configurado las credenciales de MercadoPago. Por favor configura MERCADOPAGO_ACCESS_TOKEN en el archivo .env');
+        // Asegurar que el precio sea un número válido y mayor a 0
+        $amount = (int)($serviceApproval->precio ?: 0);
+        if ($amount <= 0 && $serviceApproval->servicio) {
+            $amount = (int)($serviceApproval->servicio->precio ?: 0);
         }
+
+        if ($amount <= 0) {
+            return back()->with('error', 'El servicio no tiene un precio válido asignado.');
+        }
+
+        $reference = 'SERVICE-' . $serviceApprovalId . '-' . time() . '-' . Auth::id();
+        
+        $baseUrl = 'https://masqueperros.com.co';
         
         $preferenceData = [
             'items' => [
                 [
-                    'title' => "Servicio: {$serviceApproval->servicio}",
+                    'title' => "Servicio: " . ($serviceApproval->servicio->nombre ?? 'Servicio'),
                     'quantity' => 1,
                     'currency_id' => 'COP',
-                    'unit_price' => $serviceApproval->precio ?: 0,
+                    'unit_price' => (float)$amount,
                 ]
             ],
             'back_urls' => [
-                'success' => route('payment.success', ['type' => 'service', 'id' => $serviceApprovalId]),
-                'failure' => route('payment.failure', ['type' => 'service', 'id' => $serviceApprovalId]),
-                'pending' => route('payment.pending', ['type' => 'service', 'id' => $serviceApprovalId]),
+                'success' => $baseUrl . "/payment/success/service/" . $serviceApprovalId,
+                'failure' => $baseUrl . "/payment/failure/service/" . $serviceApprovalId,
+                'pending' => $baseUrl . "/payment/pending/service/" . $serviceApprovalId,
             ],
             'auto_return' => 'approved',
+            'external_reference' => $reference,
             'metadata' => [
                 'service_approval_id' => $serviceApprovalId,
                 'user_id' => Auth::id(),
             ],
         ];
-        
+
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . env('MERCADOPAGO_ACCESS_TOKEN'),
             'Content-Type' => 'application/json',
         ])->post('https://api.mercadopago.com/checkout/preferences', $preferenceData);
-        
+
         if ($response->successful()) {
             $preference = $response->json();
-            
-            // Guardar el pago en la base de datos
-            $payment = Payment::create([
+
+            Payment::create([
                 'user_id' => Auth::id(),
                 'payment_type' => 'service',
                 'paymentable_id' => $serviceApprovalId,
                 'paymentable_type' => ServiceApproval::class,
                 'mercado_pago_id' => $preference['id'],
-                'amount' => $preferenceData['items'][0]['unit_price'],
+                'amount' => $amount,
                 'currency' => 'COP',
                 'status' => 'pending',
                 'metadata' => [
-                    'service_name' => $serviceApproval->servicio,
-                    'pet_name' => $serviceApproval->mascota,
+                    'service_name' => $serviceApproval->servicio->nombre ?? 'Servicio',
+                    'pet_name' => $serviceApproval->mascota->nombre ?? 'Mascota',
+                    'type' => 'service'
                 ],
             ]);
-            
-            $initPoint = env('MERCADOPAGO_ENVIRONMENT') === 'sandbox' 
-                ? $preference['sandbox_init_point'] 
+
+            $initPoint = env('MERCADOPAGO_ENVIRONMENT') === 'sandbox'
+                ? $preference['sandbox_init_point']
                 : $preference['init_point'];
-            
+
             return redirect($initPoint);
         }
-        
-        // Mostrar error detallado de la API de MercadoPago
+
         $errorData = $response->json();
         $errorMessage = $errorData['message'] ?? 'Error al crear la preferencia de pago';
-        
         return back()->with('error', "Error de MercadoPago: $errorMessage");
     }
-    
+
     /**
-     * Crear una preferencia de pago para reserva de entrenamiento
+     * Preparar datos para el pago de reserva con MercadoPago
      */
     public function createReservationPayment(Request $request, $reservationId)
     {
-        // Verificar que haya credenciales configuradas
-        if (!env('MERCADOPAGO_ACCESS_TOKEN')) {
-            return back()->with('error', 'Error: No se han configurado las credenciales de MercadoPago. Por favor configura MERCADOPAGO_ACCESS_TOKEN en el archivo .env');
-        }
+        $reservaKey = Schema::hasColumn('reservas', 'id_reserva') ? 'id_reserva' : 'id';
+        $reserva = DB::table('reservas')->where($reservaKey, $reservationId)->first();
+        if (!$reserva) return back()->with('error', 'Reserva no encontrada');
+
+        $precio = (int)($reserva->precio ?: 150000);
+        $reference = 'RES-' . $reservationId . '-' . time() . '-' . Auth::id();
         
-        // Obtener la reserva
-        $reserva = DB::table('reservas')->where('id', $reservationId)->first();
-        
-        if (!$reserva) {
-            return back()->with('error', 'Reserva no encontrada');
-        }
-        
-        // Obtener información del servicio y mascota
+        $baseUrl = 'https://masqueperros.com.co';
+
         $servicio = DB::table('servicios')->where('id', $reserva->id_actividad)->first();
         $mascota = DB::table('mascotas')->where('id', $reserva->id_mascota)->first();
         
-        // Precio por defecto para entrenamiento
-        $precio = 150000; // Precio base para entrenamiento
-        
         $servicioNombre = $servicio ? $servicio->nombre : 'Servicio';
         $mascotaNombre = $mascota ? $mascota->nombre : 'Mascota';
-        
+
         $preferenceData = [
             'items' => [
                 [
                     'title' => "Entrenamiento: {$servicioNombre} para {$mascotaNombre}",
                     'quantity' => 1,
                     'currency_id' => 'COP',
-                    'unit_price' => $precio,
+                    'unit_price' => (float)$precio,
                 ]
             ],
             'back_urls' => [
-                'success' => route('payment.reservation.success', ['id' => $reservationId]),
-                'failure' => route('payment.reservation.failure', ['id' => $reservationId]),
-                'pending' => route('payment.reservation.pending', ['id' => $reservationId]),
+                'success' => $baseUrl . "/payment/reservation/success/" . $reservationId,
+                'failure' => $baseUrl . "/payment/reservation/failure/" . $reservationId,
+                'pending' => $baseUrl . "/payment/reservation/pending/" . $reservationId,
             ],
             'auto_return' => 'approved',
+            'external_reference' => $reference,
             'metadata' => [
                 'reservation_id' => $reservationId,
                 'user_id' => Auth::id(),
             ],
         ];
-        
+
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . env('MERCADOPAGO_ACCESS_TOKEN'),
             'Content-Type' => 'application/json',
         ])->post('https://api.mercadopago.com/checkout/preferences', $preferenceData);
-        
+
         if ($response->successful()) {
             $preference = $response->json();
-            
-            // Guardar el pago en la base de datos (usando paymentable_type null para reservas directas)
-            $payment = Payment::create([
+
+            Payment::create([
                 'user_id' => Auth::id(),
                 'payment_type' => 'reservation',
                 'paymentable_id' => $reservationId,
-                'paymentable_type' => null, // Reservas directas no tienen modelo polimórfico
+                'paymentable_type' => \App\Models\Reserva::class,
                 'mercado_pago_id' => $preference['id'],
                 'amount' => $precio,
                 'currency' => 'COP',
                 'status' => 'pending',
                 'metadata' => [
-                    'service_name' => $servicio->nombre ?? 'Servicio',
-                    'pet_name' => $mascota->nombre ?? 'Mascota',
                     'reservation_id' => $reservationId,
+                    'type' => 'reservation'
                 ],
             ]);
-            
-            $initPoint = env('MERCADOPAGO_ENVIRONMENT') === 'sandbox' 
-                ? $preference['sandbox_init_point'] 
+
+            $initPoint = env('MERCADOPAGO_ENVIRONMENT') === 'sandbox'
+                ? $preference['sandbox_init_point']
                 : $preference['init_point'];
-            
+
             return redirect($initPoint);
         }
-        
-        // Mostrar error detallado de la API de MercadoPago
-        $errorData = $response->json();
-        $errorMessage = $errorData['message'] ?? 'Error al crear la preferencia de pago';
-        
-        return back()->with('error', "Error de MercadoPago: $errorMessage");
+
+        return back()->with('error', 'Error al crear la preferencia de pago en MercadoPago.');
     }
     
     /**
@@ -238,86 +239,38 @@ class PaymentController extends Controller
      */
     public function success(Request $request, $type, $id)
     {
-        $paymentId = $request->get('preference_id') ?? $request->get('payment_id');
+        $preferenceId = $request->get('preference_id');
         
-        if ($paymentId) {
-            $payment = Payment::where('mercado_pago_id', $paymentId)->first();
+        if ($preferenceId) {
+            $payment = Payment::where('mercado_pago_id', $preferenceId)->first();
             
             if ($payment) {
-                // Actualizar estado del pago
                 $payment->update([
                     'status' => 'approved',
                     'payment_date' => now(),
                 ]);
                 
-                // Actualizar el modelo relacionado según el tipo
                 if ($type === 'sponsorship') {
-                    $sponsorDog = SponsorDog::find($id);
-                    if ($sponsorDog) {
-                        // Aquí puedes agregar lógica adicional para el apadrinamiento
-                        // Por ejemplo, incrementar contador de padrinos
+                    if (isset($payment->metadata['sponsorship_id'])) {
+                        $sponsorship = \App\Models\Sponsorship::find($payment->metadata['sponsorship_id']);
+                        if ($sponsorship) $sponsorship->update(['estado' => 'Activo']);
                     }
-                    
-                    return redirect()->route('owner.planpadrino')
-                        ->with('status', '¡Pago exitoso! Gracias por apadrinar a este perrito.');
+
+                    if (Auth::check()) {
+                        return redirect()->route('owner.planpadrino')->with('status', '¡Pago exitoso! Gracias por apadrinar.');
+                    } else {
+                        $sponsorDog = SponsorDog::find($id);
+                        return redirect('/')->with('status', '¡Pago exitoso! Gracias por apadrinar a ' . ($sponsorDog->nombre ?? 'este perrito') . '.');
+                    }
                 } elseif ($type === 'service') {
                     $serviceApproval = ServiceApproval::find($id);
-                    if ($serviceApproval) {
-                        $serviceApproval->update([
-                            'estado' => 'pagado',
-                        ]);
-                        
-                        // Crear la reserva automáticamente
-                        // Aquí iría la lógica para crear la reserva
-                    }
-                    
-                    return redirect()->route('owner.services.my')
-                        ->with('status', '¡Pago exitoso! Tu servicio ha sido confirmado.');
+                    if ($serviceApproval) $serviceApproval->update(['estado' => 'pagado']);
+                    return redirect()->route('owner.services.my')->with('status', '¡Pago exitoso! Tu servicio ha sido confirmado.');
                 }
             }
         }
         
-        return redirect()->back()->with('error', 'No se pudo procesar el pago.');
-    }
-    
-    /**
-     * Manejar respuesta fallida de MercadoPago
-     */
-    public function failure(Request $request, $type, $id)
-    {
-        $paymentId = $request->get('preference_id') ?? $request->get('payment_id');
-        
-        if ($paymentId) {
-            $payment = Payment::where('mercado_pago_id', $paymentId)->first();
-            
-            if ($payment) {
-                $payment->update([
-                    'status' => 'rejected',
-                ]);
-            }
-        }
-        
-        return redirect()->back()->with('error', 'El pago fue rechazado. Por favor intenta nuevamente.');
-    }
-    
-    /**
-     * Manejar respuesta pendiente de MercadoPago
-     */
-    public function pending(Request $request, $type, $id)
-    {
-        $paymentId = $request->get('preference_id') ?? $request->get('payment_id');
-        
-        if ($paymentId) {
-            $payment = Payment::where('mercado_pago_id', $paymentId)->first();
-            
-            if ($payment) {
-                $payment->update([
-                    'status' => 'pending',
-                ]);
-            }
-        }
-        
-        return redirect()->back()->with('status', 'El pago está pendiente de procesamiento.');
+        return redirect('/')->with('error', 'No se pudo verificar el pago o fue rechazado.');
     }
     
     /**
@@ -338,8 +291,12 @@ class PaymentController extends Controller
             if ($response->successful()) {
                 $paymentInfo = $response->json();
                 
-                // Buscar el pago local
-                $payment = Payment::where('mercado_pago_id', $paymentId)->first();
+                $reference = $paymentInfo['external_reference'] ?? null;
+                $preferenceId = $paymentInfo['preference_id'] ?? null;
+                
+                $payment = Payment::where('mercado_pago_id', $preferenceId)
+                    ->orWhere('mercado_pago_id', $reference)
+                    ->first();
                 
                 if ($payment) {
                     $statusMap = [
@@ -353,7 +310,6 @@ class PaymentController extends Controller
                     
                     $payment->update([
                         'status' => $newStatus,
-                        'payment_method' => $paymentInfo['payment_method_id'] ?? null,
                         'payment_date' => $paymentInfo['date_approved'] ? now() : null,
                     ]);
                     
@@ -367,10 +323,15 @@ class PaymentController extends Controller
                                 ]);
                             }
                         } elseif ($payment->payment_type === 'reservation') {
-                            // Actualizar estado de la reserva
+                            $reservaKey = Schema::hasColumn('reservas', 'id_reserva') ? 'id_reserva' : 'id';
                             DB::table('reservas')
-                                ->where('id', $payment->paymentable_id)
+                                ->where($reservaKey, $payment->paymentable_id)
                                 ->update(['estado' => 'Pagada']);
+                        } elseif ($payment->payment_type === 'sponsorship') {
+                            if (isset($payment->metadata['sponsorship_id'])) {
+                                $sponsorship = \App\Models\Sponsorship::find($payment->metadata['sponsorship_id']);
+                                if ($sponsorship) $sponsorship->update(['estado' => 'Activo']);
+                            }
                         }
                     }
                 }
@@ -385,88 +346,61 @@ class PaymentController extends Controller
      */
     public function reservationSuccess(Request $request, $id)
     {
-        $paymentId = $request->get('preference_id') ?? $request->get('payment_id');
+        $preferenceId = $request->get('preference_id');
 
-        if ($paymentId) {
-            $payment = Payment::where('mercado_pago_id', $paymentId)->first();
+        if ($preferenceId) {
+            $payment = Payment::where('mercado_pago_id', $preferenceId)->first();
 
             if ($payment) {
-                $payment->update([
-                    'status' => 'approved',
-                    'payment_date' => now(),
-                ]);
-
-                // Obtener la reserva para enviar notificación al entrenador
-                $reserva = DB::table('reservas')->where('id', $id)->first();
-
-                // Actualizar estado de la reserva
-                DB::table('reservas')
-                    ->where('id', $id)
-                    ->update(['estado' => 'Pagada']);
-
-                // Enviar notificación al entrenador
-                if ($reserva && Schema::hasTable('notificaciones') && isset($reserva->id_empleado)) {
-                    try {
-                        DB::table('notificaciones')->insert([
-                            'user_id' => $reserva->id_empleado,
-                            'tipo' => 'pago_realizado',
-                            'titulo' => 'Pago Realizado',
-                            'mensaje' => "El cliente ha realizado el pago del servicio. La reserva está confirmada.",
-                            'url' => '/entrenador/reservas',
-                            'leida_en' => null,
-                            'created_at' => now(),
-                            'updated_at' => now(),
-                        ]);
-                    } catch (\Exception $e) {
-                        \Log::error('Error creating notification: ' . $e->getMessage());
-                    }
+                $payment->update(['status' => 'approved', 'payment_date' => now()]);
+                
+                $reservaKey = Schema::hasColumn('reservas', 'id_reserva') ? 'id_reserva' : 'id';
+                DB::table('reservas')->where($reservaKey, $id)->update(['estado' => 'Pagada']);
+                
+                // Notificar entrenador
+                $reserva = DB::table('reservas')->where($reservaKey, $id)->first();
+                if ($reserva && isset($reserva->id_empleado)) {
+                    DB::table('notificaciones')->insert([
+                        'user_id' => $reserva->id_empleado,
+                        'tipo' => 'pago_realizado',
+                        'titulo' => 'Pago Realizado',
+                        'mensaje' => "El cliente ha realizado el pago del servicio.",
+                        'url' => '/entrenador/reservas',
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
                 }
+
+                return redirect()->route('owner.reservas')->with('status', '¡Pago exitoso! Reserva confirmada.');
             }
         }
 
-        return redirect()->route('owner.reservas')
-            ->with('status', '¡Pago exitoso! Tu reserva de entrenamiento ha sido confirmada.');
+        return redirect()->route('owner.reservas')->with('error', 'El pago no pudo ser verificado.');
     }
-    
+
     /**
-     * Manejar respuesta fallida de pago de reserva
+     * Manejar respuesta fallida de pago
      */
-    public function reservationFailure(Request $request, $id)
+    public function failure(Request $request)
     {
-        $paymentId = $request->get('preference_id') ?? $request->get('payment_id');
-        
-        if ($paymentId) {
-            $payment = Payment::where('mercado_pago_id', $paymentId)->first();
-            
-            if ($payment) {
-                $payment->update([
-                    'status' => 'rejected',
-                ]);
-            }
-        }
-        
-        return redirect()->route('owner.reservas')
-            ->with('error', 'El pago fue rechazado. Por favor intenta nuevamente.');
+        return redirect('/')->with('error', 'El pago fue rechazado o cancelado.');
     }
-    
+
     /**
-     * Manejar respuesta pendiente de pago de reserva
+     * Manejar respuesta pendiente de pago
      */
-    public function reservationPending(Request $request, $id)
+    public function pending(Request $request)
     {
-        $paymentId = $request->get('preference_id') ?? $request->get('payment_id');
-        
-        if ($paymentId) {
-            $payment = Payment::where('mercado_pago_id', $paymentId)->first();
-            
-            if ($payment) {
-                $payment->update([
-                    'status' => 'pending',
-                ]);
-            }
-        }
-        
-        return redirect()->route('owner.reservas')
-            ->with('status', 'El pago está pendiente de procesamiento.');
+        return redirect('/')->with('status', 'El pago está pendiente de confirmación.');
+    }
+
+    public function reservationFailure(Request $request)
+    {
+        return redirect()->route('owner.reservas')->with('error', 'El pago de la reserva fue rechazado.');
+    }
+
+    public function reservationPending(Request $request)
+    {
+        return redirect()->route('owner.reservas')->with('status', 'El pago de la reserva está pendiente.');
     }
 }

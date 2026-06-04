@@ -34,6 +34,20 @@
                     'notifCount' => DB::table('notifications')->where('id_usuario', $user->id)->where('leido', false)->count(),
                 ])
 
+                @if(session('status'))
+                    <div class="alert-modern alert-modern--success">
+                        <i class="bi bi-check-circle"></i>
+                        <span>{{ session('status') }}</span>
+                    </div>
+                @endif
+
+                @if(session('error'))
+                    <div class="alert-modern alert-modern--error">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        <span>{{ session('error') }}</span>
+                    </div>
+                @endif
+
                 <section class="page-header">
                     <h1 class="page-title">Mis Servicios</h1>
                     <p class="page-subtitle">Gestiona tus solicitudes de servicios y reservas</p>
@@ -181,7 +195,9 @@
             <div class="payment-card">
                 <div class="payment-header">
                     <h3>Confirmar Pago</h3>
-                    <button class="payment-close" onclick="closePaymentModal()">×</button>
+                    <button class="payment-close" onclick="closePaymentModal()">
+                        <i class="bi bi-x"></i>
+                    </button>
                 </div>
                 <div class="payment-body">
                     <div class="payment-summary">
@@ -190,7 +206,7 @@
                             <span class="payment-value" id="paymentServiceName">—</span>
                         </div>
                         <div class="payment-item">
-                            <span class="payment-label">Total:</span>
+                            <span class="payment-label">Total a pagar:</span>
                             <span class="payment-value payment-value--total" id="paymentAmount">$0</span>
                         </div>
                     </div>
@@ -200,22 +216,24 @@
                         <input type="hidden" name="approval_id" id="paymentApprovalId">
                         
                         <div class="form-group">
-                            <label class="form-label">Método de pago</label>
+                            <label class="form-label">Pasarela Segura</label>
                             <div class="payment-method-info">
-                                <i class="bi bi-credit-card"></i>
-                                <span>Pagar con MercadoPago</span>
-                                <small style="color: #6b7280; margin-left: 8px;">Acepta tarjetas, PSE, efectivo y más</small>
+                                <i class="bi bi-shield-check"></i>
+                                <div>
+                                    <span>Mercado Pago</span><br>
+                                    <small>PSE, Efecty y Tarjetas de Crédito</small>
+                                </div>
                             </div>
                         </div>
                         
                         <div class="form-group">
-                            <label class="form-label">Notas adicionales (opcional)</label>
-                            <textarea class="form-textarea" name="payment_notes" rows="3" placeholder="Agrega notas sobre el pago..."></textarea>
+                            <label class="form-label">Notas adicionales</label>
+                            <textarea class="form-textarea" name="payment_notes" rows="2" placeholder="Ej: Pago de guardería de Toby..."></textarea>
                         </div>
                         
                         <div class="payment-actions">
-                            <button type="button" class="btn btn--secondary" onclick="closePaymentModal()">Cancelar</button>
-                            <button type="submit" class="btn btn--primary">Confirmar Pago</button>
+                            <button type="button" class="btn-modal btn-modal--cancel" onclick="closePaymentModal()">Cancelar</button>
+                            <button type="submit" class="btn-modal btn-modal--confirm">Confirmar Pago</button>
                         </div>
                     </form>
                 </div>
@@ -253,58 +271,61 @@
             }
 
             // Payment form submission
-            document.getElementById('paymentForm').addEventListener('submit', async (e) => {
+            const paymentForm = document.getElementById('paymentForm');
+            const originalAction = paymentForm.action;
+
+            paymentForm.addEventListener('submit', function(e) {
                 e.preventDefault();
                 
-                const formData = new FormData(e.target);
-                const approvalId = formData.get('approval_id');
-                
-                console.log('Payment form submission:', { approvalId, formAction: e.target.action });
+                const approvalId = document.getElementById('paymentApprovalId').value;
                 
                 if (!approvalId) {
                     alert('Error: No se pudo obtener el ID del servicio');
                     return;
                 }
                 
-                // Update form action with dynamic approval ID
-                const form = e.target;
-                const newAction = form.action.replace(':id', approvalId);
-                form.action = newAction;
+                // Update form action with dynamic approval ID using the original template
+                this.action = originalAction.replace(':id', approvalId);
                 
-                console.log('Updated form action:', newAction);
-                
-                // Submit the form to redirect to MercadoPago
-                form.submit();
+                // Submit the form
+                this.submit();
             });
         </script>
 
         <style>
             .page-header {
-                margin-bottom: 2rem;
+                margin-bottom: 2.5rem;
+                text-align: center;
             }
 
             .page-title {
-                font-size: 2rem;
-                font-weight: 600;
-                color: #111827;
+                font-family: 'Lilita One', cursive;
+                font-size: 2.8rem;
+                color: #2c3e50;
                 margin-bottom: 0.5rem;
             }
 
             .page-subtitle {
-                color: #6b7280;
-                font-size: 1rem;
+                color: #64748b;
+                font-size: 1.1rem;
+                font-weight: 500;
             }
 
             .tabs-container {
                 background: white;
-                border-radius: 12px;
+                border-radius: 30px;
                 overflow: hidden;
-                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+                padding: 10px;
             }
 
             .tabs-nav {
                 display: flex;
-                border-bottom: 1px solid #e5e7eb;
+                gap: 10px;
+                background: #f8fafc;
+                padding: 8px;
+                border-radius: 25px;
+                margin-bottom: 2rem;
             }
 
             .tab-btn {
@@ -312,101 +333,95 @@
                 padding: 1rem;
                 background: none;
                 border: none;
-                font-size: 0.875rem;
-                font-weight: 500;
-                color: #6b7280;
+                font-family: 'Lilita One', cursive;
+                font-size: 1.1rem;
+                color: #64748b;
                 cursor: pointer;
-                transition: all 0.2s;
+                transition: all 0.3s;
+                border-radius: 22px;
+                text-transform: uppercase;
+                letter-spacing: 1px;
             }
 
             .tab-btn:hover {
-                color: #374151;
-                background: #f9fafb;
+                color: #5e94e2;
+                background: rgba(94, 148, 226, 0.05);
             }
 
             .tab-btn--active {
-                color: #3b82f6;
-                border-bottom: 2px solid #3b82f6;
-                background: #f0f9ff;
+                color: white;
+                background: #5e94e2;
+                box-shadow: 0 4px 15px rgba(94, 148, 226, 0.3);
             }
 
             .tab-content {
                 display: none;
-                padding: 1.5rem;
+                padding: 1rem;
             }
 
             .tab-content--active {
                 display: block;
+                animation: fadeIn 0.4s ease;
+            }
+
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(10px); }
+                to { opacity: 1; transform: translateY(0); }
             }
 
             .services-grid {
                 display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-                gap: 1.5rem;
+                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+                gap: 2rem;
             }
 
             .service-card {
-                border: 1px solid #e5e7eb;
-                border-radius: 12px;
+                background: white;
+                border: 2px solid #f1f5f9;
+                border-radius: 30px;
                 overflow: hidden;
-                transition: all 0.2s;
+                transition: all 0.3s ease;
+                display: flex;
+                flex-direction: column;
+                position: relative;
             }
 
             .service-card:hover {
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            }
-
-            .service-card--pendiente {
-                border-left: 4px solid #f59e0b;
-            }
-
-            .service-card--aprobado {
-                border-left: 4px solid #10b981;
-            }
-
-            .service-card--rechazado {
-                border-left: 4px solid #ef4444;
-            }
-
-            .service-card--pagado {
-                border-left: 4px solid #3b82f6;
+                transform: translateY(-8px);
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+                border-color: #5e94e2;
             }
 
             .service-card-header {
-                padding: 1rem;
-                background: #f9fafb;
+                padding: 1.8rem;
+                background: #f0f7ff;
                 display: flex;
                 justify-content: space-between;
-                align-items: center;
+                align-items: flex-start;
+                border-bottom: 2px dashed rgba(94, 148, 226, 0.1);
             }
 
             .service-name {
-                font-size: 1.125rem;
-                font-weight: 600;
-                color: #111827;
-                margin-bottom: 0.25rem;
+                font-family: 'Lilita One', cursive;
+                font-size: 1.4rem;
+                color: #2c3e50;
+                margin: 0 0 0.5rem 0;
             }
 
             .service-price {
-                color: #10b981;
-                font-weight: 600;
-                font-size: 1.125rem;
-            }
-
-            .service-trainer {
-                color: #6b7280;
-                font-size: 0.875rem;
-                display: flex;
-                align-items: center;
-                gap: 0.25rem;
+                color: #5e94e2;
+                font-family: 'Lilita One', cursive;
+                font-size: 1.3rem;
+                display: block;
             }
 
             .status-badge {
-                padding: 0.25rem 0.75rem;
-                border-radius: 9999px;
+                padding: 0.5rem 1rem;
+                border-radius: 999px;
                 font-size: 0.75rem;
-                font-weight: 500;
-                text-transform: lowercase;
+                font-weight: 800;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
             }
 
             .status-badge--pendiente {
@@ -415,8 +430,8 @@
             }
 
             .status-badge--aprobado {
-                background: #d1fae5;
-                color: #065f46;
+                background: #dcfce7;
+                color: #166534;
             }
 
             .status-badge--rechazado {
@@ -425,78 +440,130 @@
             }
 
             .status-badge--pagado {
-                background: #dbeafe;
-                color: #1e40af;
+                background: #e0f2fe;
+                color: #075985;
             }
 
             .service-card-body {
-                padding: 1rem;
+                padding: 1.8rem;
+                flex-grow: 1;
             }
 
             .service-details {
-                display: flex;
-                flex-direction: column;
-                gap: 0.5rem;
-                margin-bottom: 1rem;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+                margin-bottom: 1.5rem;
             }
 
             .detail-item {
                 display: flex;
                 align-items: center;
-                gap: 0.5rem;
-                color: #6b7280;
-                font-size: 0.875rem;
+                gap: 0.8rem;
+                color: #64748b;
+                font-size: 0.9rem;
+                font-weight: 600;
+            }
+
+            .detail-item i {
+                color: #5e94e2;
+                font-size: 1.1rem;
             }
 
             .service-notes {
-                background: #f9fafb;
-                padding: 0.75rem;
-                border-radius: 6px;
-                font-size: 0.875rem;
-                margin-bottom: 0.5rem;
+                background: #f8fafc;
+                padding: 1.2rem;
+                border-radius: 18px;
+                font-size: 0.85rem;
+                color: #475569;
+                line-height: 1.5;
+                margin-bottom: 0.8rem;
+                border: 1px solid #f1f5f9;
+            }
+
+            .service-notes strong {
+                display: block;
+                color: #2c3e50;
+                margin-bottom: 0.3rem;
+                text-transform: uppercase;
+                font-size: 0.75rem;
             }
 
             .service-notes--admin {
                 background: #eff6ff;
-                border-left: 3px solid #3b82f6;
+                border: 1px solid #dbeafe;
+                color: #1e40af;
+            }
+
+            .service-notes--admin strong {
+                color: #1e40af;
             }
 
             .service-card-footer {
-                padding: 1rem;
-                border-top: 1px solid #e5e7eb;
+                padding: 1.5rem 1.8rem 1.8rem;
+                border-top: none;
             }
 
-            .pending-message, .rejected-message, .paid-message {
+            .btn--primary {
+                width: 100%;
+                padding: 1rem;
+                background: #5e94e2;
+                color: white;
+                border: none;
+                border-radius: 999px;
+                font-family: 'Lilita One', cursive;
+                font-size: 1.1rem;
+                cursor: pointer;
+                box-shadow: 0 6px 0 rgba(0, 0, 0, 0.1);
+                transition: all 0.2s;
+                justify-content: center;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .btn--primary:hover {
+                background: #4a82d1;
+                transform: translateY(-2px);
+                box-shadow: 0 8px 0 rgba(0, 0, 0, 0.1);
+            }
+
+            .btn--primary:active {
+                transform: translateY(2px);
+                box-shadow: 0 4px 0 rgba(0, 0, 0, 0.1);
+            }
+
+            .paid-message, .rejected-message, .pending-message {
                 display: flex;
                 align-items: center;
-                gap: 0.5rem;
-                font-size: 0.875rem;
-                color: #6b7280;
+                gap: 0.8rem;
+                padding: 1rem;
+                border-radius: 15px;
+                font-weight: 700;
+                font-size: 0.9rem;
             }
 
-            .paid-message {
-                color: #10b981;
-                font-weight: 500;
-            }
-
-            .rejected-message {
-                color: #ef4444;
-            }
+            .paid-message { background: #f0fdf4; color: #15803d; }
+            .rejected-message { background: #fef2f2; color: #b91c1c; }
+            .pending-message { background: #fffbeb; color: #b45309; }
 
             .empty-state {
+                grid-column: 1 / -1;
                 text-align: center;
-                padding: 3rem 1rem;
-                color: #6b7280;
+                padding: 4rem 2rem;
+                background: #f8fafc;
+                border-radius: 30px;
+                border: 3px dashed #e2e8f0;
             }
 
             .empty-state i {
-                font-size: 3rem;
-                margin-bottom: 1rem;
-                opacity: 0.5;
+                font-size: 4rem;
+                color: #cbd5e1;
+                margin-bottom: 1.5rem;
             }
 
             .empty-state h3 {
-                font-size: 1.25rem;
+                font-family: 'Lilita One', cursive;
+                font-size: 1.8rem;
                 margin-bottom: 0.5rem;
                 color: #374151;
             }
@@ -516,12 +583,12 @@
             }
 
             .btn--primary {
-                background: #3b82f6;
+                background: #5e94e2;
                 color: white;
             }
 
             .btn--primary:hover {
-                background: #2563eb;
+                background: #4a82d1;
             }
 
             .btn--secondary {
@@ -533,7 +600,7 @@
                 background: #e5e7eb;
             }
 
-            /* Payment Modal */
+            /* Payment Modal Modernized */
             .payment-modal {
                 position: fixed;
                 top: 0;
@@ -544,6 +611,7 @@
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                padding: 1rem;
             }
 
             .payment-modal--hidden {
@@ -556,103 +624,212 @@
                 left: 0;
                 width: 100%;
                 height: 100%;
-                background: rgba(0, 0, 0, 0.5);
+                background: rgba(44, 62, 80, 0.4);
+                backdrop-filter: blur(4px);
             }
 
             .payment-card {
                 position: relative;
                 background: white;
-                border-radius: 12px;
+                border-radius: 30px;
                 max-width: 500px;
-                width: 90%;
+                width: 100%;
                 max-height: 90vh;
                 overflow-y: auto;
-                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+                border: none;
             }
 
             .payment-header {
-                padding: 1.5rem;
-                border-bottom: 1px solid #e5e7eb;
+                padding: 2rem 2rem 1rem;
+                border-bottom: none;
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
             }
 
             .payment-header h3 {
-                font-size: 1.25rem;
-                font-weight: 600;
-                color: #111827;
+                font-family: 'Lilita One', cursive;
+                font-size: 1.8rem;
+                color: #2c3e50;
+                margin: 0;
             }
 
             .payment-close {
-                background: none;
+                background: #f1f5f9;
                 border: none;
-                font-size: 1.5rem;
+                width: 35px;
+                height: 35px;
+                border-radius: 50%;
+                font-size: 1.2rem;
                 cursor: pointer;
-                color: #6b7280;
+                color: #64748b;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.2s;
+            }
+
+            .payment-close:hover {
+                background: #e2e8f0;
+                color: #0f172a;
             }
 
             .payment-body {
-                padding: 1.5rem;
+                padding: 0 2rem 2rem;
             }
 
             .payment-summary {
-                background: #f9fafb;
-                padding: 1rem;
-                border-radius: 8px;
-                margin-bottom: 1.5rem;
+                background: #f0f7ff;
+                padding: 1.5rem;
+                border-radius: 20px;
+                margin-bottom: 2rem;
+                border: 2px dashed #5e94e2;
             }
 
             .payment-item {
                 display: flex;
                 justify-content: space-between;
-                margin-bottom: 0.5rem;
+                margin-bottom: 0.8rem;
+                align-items: center;
+            }
+
+            .payment-item:last-child {
+                margin-bottom: 0;
+                padding-top: 0.8rem;
+                border-top: 1px solid rgba(94, 148, 226, 0.1);
             }
 
             .payment-label {
-                color: #6b7280;
-                font-size: 0.875rem;
+                color: #64748b;
+                font-size: 0.95rem;
+                font-weight: 500;
             }
 
             .payment-value {
-                font-weight: 500;
-                color: #111827;
+                font-weight: 700;
+                color: #2c3e50;
             }
 
             .payment-value--total {
-                font-size: 1.125rem;
-                color: #10b981;
+                font-family: 'Lilita One', cursive;
+                font-size: 1.5rem;
+                color: #5e94e2;
             }
 
             .form-group {
-                margin-bottom: 1rem;
+                margin-bottom: 1.5rem;
             }
 
             .form-label {
                 display: block;
-                margin-bottom: 0.5rem;
-                font-weight: 500;
-                color: #374151;
+                margin-bottom: 0.8rem;
+                font-weight: 800;
+                color: #2c3e50;
+                font-size: 0.9rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
             }
 
-            .form-select, .form-textarea {
-                width: 100%;
-                padding: 0.75rem;
-                border: 1px solid #d1d5db;
-                border-radius: 6px;
-                font-size: 0.875rem;
+            .payment-method-info {
+                background: white;
+                border: 2px solid #e2e8f0;
+                padding: 1rem;
+                border-radius: 15px;
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                transition: all 0.2s;
+            }
+
+            .payment-method-info i {
+                font-size: 1.5rem;
+                color: #5e94e2;
+            }
+
+            .payment-method-info span {
+                font-weight: 700;
+                color: #2c3e50;
+            }
+
+            .payment-method-info small {
+                color: #64748b;
             }
 
             .form-textarea {
-                resize: vertical;
-                min-height: 80px;
+                width: 100%;
+                padding: 1rem;
+                border: 2px solid #e2e8f0;
+                border-radius: 15px;
+                font-size: 0.95rem;
+                font-family: inherit;
+                transition: all 0.2s;
+                background: #f8fafc;
+            }
+
+            .form-textarea:focus {
+                outline: none;
+                border-color: #5e94e2;
+                background: white;
+                box-shadow: 0 0 0 4px rgba(94, 148, 226, 0.1);
             }
 
             .payment-actions {
-                display: flex;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
                 gap: 1rem;
-                justify-content: flex-end;
-                margin-top: 1.5rem;
+                margin-top: 2rem;
+            }
+
+            .btn-modal {
+                padding: 1rem;
+                border: none;
+                border-radius: 999px;
+                font-family: 'Lilita One', cursive;
+                font-size: 1.1rem;
+                cursor: pointer;
+                transition: all 0.2s;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.5rem;
+            }
+
+            .btn-modal--cancel {
+                background: #f1f5f9;
+                color: #64748b;
+            }
+
+            .btn-modal--cancel:hover {
+                background: #e2e8f0;
+                color: #0f172a;
+            }
+
+            .btn-modal--confirm {
+                background: #5e94e2;
+                color: white;
+                box-shadow: 0 4px 0 rgba(0, 0, 0, 0.1);
+            }
+
+            .btn-modal--confirm:hover {
+                background: #4a82d1;
+                transform: translateY(-2px);
+                box-shadow: 0 6px 0 rgba(0, 0, 0, 0.1);
+            }
+
+            .btn-modal--confirm:active {
+                transform: translateY(2px);
+                box-shadow: 0 2px 0 rgba(0, 0, 0, 0.1);
+            }
+
+            .btn-modal--confirm:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 0 rgba(0, 0, 0, 0.1);
+            }
+
+            .btn-modal--confirm:active {
+                transform: translateY(2px);
+                box-shadow: 0 2px 0 rgba(0, 0, 0, 0.1);
             }
 
             @media (max-width: 768px) {
@@ -667,6 +844,35 @@
                 .payment-actions {
                     flex-direction: column;
                 }
+            }
+
+            /* Modern Alerts */
+            .alert-modern {
+                margin: 1.5rem 2rem;
+                padding: 1rem 1.5rem;
+                border-radius: 15px;
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                font-weight: 600;
+                animation: slideDown 0.3s ease;
+            }
+
+            .alert-modern--success {
+                background: #f0fdf4;
+                color: #166534;
+                border: 1px solid #bbf7d0;
+            }
+
+            .alert-modern--error {
+                background: #fef2f2;
+                color: #991b1b;
+                border: 1px solid #fecaca;
+            }
+
+            @keyframes slideDown {
+                from { opacity: 0; transform: translateY(-10px); }
+                to { opacity: 1; transform: translateY(0); }
             }
         </style>
     </body>

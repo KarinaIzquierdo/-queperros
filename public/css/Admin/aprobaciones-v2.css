@@ -1,0 +1,420 @@
+/* Custom design enhancements for Aprobación de Servicios */
+
+/* Admin Page Base */
+.admin-page {
+    padding: 24px !important;
+}
+
+/* Page Header */
+.page-header {
+    margin-bottom: 24px !important;
+}
+
+.page-title {
+    font-family: 'Lilita One', cursive !important;
+    font-size: 36px !important;
+    color: #2b2740 !important;
+    letter-spacing: 0.02em !important;
+    margin-bottom: 6px !important;
+}
+
+.page-description {
+    color: #7b748f !important;
+    font-weight: 600 !important;
+    font-size: 15px !important;
+}
+
+/* Stats Cards Grid */
+.stats-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+    gap: 16px !important;
+    margin-bottom: 24px !important;
+}
+
+.stat-card {
+    background: #fff !important;
+    border: 1px solid rgba(15, 23, 42, 0.05) !important;
+    border-radius: 20px !important;
+    padding: 18px 22px !important;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.03) !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 16px !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.stat-card:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 12px 35px rgba(15, 23, 42, 0.06) !important;
+}
+
+/* Accent Card Borders */
+.stat-card--primary { border-left: 5px solid #3b82f6 !important; }
+.stat-card--success { border-left: 5px solid #10b981 !important; }
+.stat-card--danger { border-left: 5px solid #ef4444 !important; }
+.stat-card--info { border-left: 5px solid #7c3aed !important; }
+
+/* Stat Icons */
+.stat-icon {
+    width: 48px !important;
+    height: 48px !important;
+    border-radius: 14px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 1.3rem !important;
+}
+
+.stat-card--primary .stat-icon { background: #f0f7ff !important; color: #3b82f6 !important; }
+.stat-card--success .stat-icon { background: #ecfdf5 !important; color: #10b981 !important; }
+.stat-card--danger .stat-icon { background: #fef2f2 !important; color: #ef4444 !important; }
+.stat-card--info .stat-icon { background: #f1efff !important; color: #7c3aed !important; }
+
+.stat-number {
+    font-size: 1.6rem !important;
+    font-weight: 800 !important;
+    color: #2b2740 !important;
+    line-height: 1 !important;
+}
+
+.stat-label {
+    color: #8a84a3 !important;
+    font-weight: 700 !important;
+    font-size: 12px !important;
+    margin-top: 3px !important;
+}
+
+/* Filters */
+.filters-section {
+    margin-bottom: 24px !important;
+}
+
+.filter-group {
+    display: flex !important;
+    gap: 8px !important;
+    flex-wrap: wrap !important;
+}
+
+.filter-btn {
+    border: 1px solid rgba(15, 23, 42, 0.08) !important;
+    background: #fff !important;
+    color: #6d6b8b !important;
+    padding: 8px 16px !important;
+    border-radius: 12px !important;
+    font-weight: 800 !important;
+    font-size: 13px !important;
+    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.01) !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+}
+
+.filter-btn:hover {
+    border-color: rgba(124, 58, 237, 0.3) !important;
+    color: #7c3aed !important;
+    background: #faf9fe !important;
+}
+
+.filter-btn--active {
+    background: #7c3aed !important;
+    color: #fff !important;
+    border-color: #7c3aed !important;
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25) !important;
+}
+
+.filter-btn--active:hover {
+    background: #6d28d9 !important;
+    color: #fff !important;
+    border-color: #6d28d9 !important;
+}
+
+/* Approvals List & Cards */
+.approvals-list {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+}
+
+.approval-card {
+    background: #fff !important;
+    border: 1px solid rgba(15, 23, 42, 0.06) !important;
+    border-radius: 20px !important;
+    padding: 24px !important;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.03) !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.approval-card:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 15px 35px rgba(15, 23, 42, 0.05) !important;
+}
+
+/* Accent Card Left Border */
+.approval-card--pendiente { border-left: 5px solid #f59e0b !important; }
+.approval-card--aprobado { border-left: 5px solid #10b981 !important; }
+.approval-card--rejected { border-left: 5px solid #ef4444 !important; }
+.approval-card--paid { border-left: 5px solid #7c3aed !important; }
+
+.approval-header {
+    margin-bottom: 16px !important;
+}
+
+.approval-service {
+    font-size: 18px !important;
+    font-weight: 800 !important;
+    color: #2b2740 !important;
+    margin-bottom: 6px !important;
+}
+
+.approval-meta {
+    gap: 12px !important;
+}
+
+.approval-meta span {
+    font-size: 13px !important;
+    color: #7b748f !important;
+    font-weight: 600 !important;
+}
+
+.approval-meta i {
+    color: #8a84a3 !important;
+    font-size: 13px !important;
+    margin-right: 4px !important;
+}
+
+/* Status Badges */
+.status-badge {
+    border-radius: 8px !important;
+    padding: 4px 10px !important;
+    font-weight: 800 !important;
+    font-size: 11px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.03em !important;
+    border: none !important;
+}
+
+.status-badge--pendiente { background: #fff9db !important; color: #854d0e !important; }
+.status-badge--aprobado { background: #ecfdf5 !important; color: #047857 !important; }
+.status-badge--rechazado { background: #fef2f2 !important; color: #b91c1c !important; }
+.status-badge--pagado { background: #f0f7ff !important; color: #1d4ed8 !important; }
+
+/* Notes layouts */
+.approval-content {
+    margin-bottom: 16px !important;
+}
+
+.approval-notes {
+    background: #faf9fd !important;
+    border: 1px solid rgba(15, 23, 42, 0.05) !important;
+    border-radius: 12px !important;
+    padding: 14px !important;
+    margin-bottom: 8px !important;
+}
+
+.approval-notes--admin {
+    background: #ecfdf5 !important;
+    border-left: 4px solid #10b981 !important;
+    border-top: 1px solid rgba(4, 120, 87, 0.08) !important;
+    border-right: 1px solid rgba(4, 120, 87, 0.08) !important;
+    border-bottom: 1px solid rgba(4, 120, 87, 0.08) !important;
+}
+
+.approval-notes strong {
+    color: #2b2740 !important;
+    font-weight: 800 !important;
+    font-size: 12.5px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.03em !important;
+    margin-bottom: 6px !important;
+}
+
+.approval-notes p {
+    color: #4c4763 !important;
+    font-weight: 600 !important;
+    font-size: 13.5px !important;
+    line-height: 1.45 !important;
+}
+
+/* Actions Row Buttons */
+.approval-actions {
+    gap: 8px !important;
+}
+
+.btn {
+    border-radius: 10px !important;
+    padding: 8px 16px !important;
+    font-weight: 800 !important;
+    font-size: 13px !important;
+    transition: all 0.2s ease !important;
+    border: none !important;
+}
+
+.btn--sm {
+    padding: 8px 16px !important;
+    font-size: 13px !important;
+}
+
+.btn--success {
+    background: #ecfdf5 !important;
+    color: #047857 !important;
+}
+
+.btn--success:hover {
+    background: #10b981 !important;
+    color: #fff !important;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2) !important;
+}
+
+.btn--danger {
+    background: #fef2f2 !important;
+    color: #dc2626 !important;
+}
+
+.btn--danger:hover {
+    background: #ef4444 !important;
+    color: #fff !important;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2) !important;
+}
+
+.btn--secondary {
+    background: #f1f5f9 !important;
+    color: #475569 !important;
+}
+
+.btn--secondary:hover {
+    background: #cbd5e1 !important;
+    color: #1e293b !important;
+}
+
+.btn--primary {
+    background: #f1efff !important;
+    color: #6d28d9 !important;
+}
+
+.btn--primary:hover {
+    background: #7c3aed !important;
+    color: #fff !important;
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2) !important;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center !important;
+    padding: 48px !important;
+    background: #fff !important;
+    border-radius: 20px !important;
+    border: 1px dashed rgba(15, 23, 42, 0.08) !important;
+}
+
+.empty-state i {
+    font-size: 3rem !important;
+    color: #8a84a3 !important;
+    margin-bottom: 16px !important;
+    opacity: 0.5 !important;
+}
+
+.empty-state h3 {
+    color: #2b2740 !important;
+    font-size: 18px !important;
+    font-weight: 800 !important;
+    margin-bottom: 6px !important;
+}
+
+.empty-state p {
+    color: #7b748f !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+}
+
+/* Modal styling */
+.modal-backdrop {
+    background: rgba(15, 23, 42, 0.6) !important;
+    backdrop-filter: blur(4px) !important;
+}
+
+.modal-card {
+    border-radius: 24px !important;
+    border: none !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+    padding: 28px !important;
+    max-width: 500px !important;
+    background: #fff !important;
+}
+
+.modal-header {
+    border-bottom: 1px solid rgba(15, 23, 42, 0.06) !important;
+    padding: 0 0 16px 0 !important;
+    margin-bottom: 24px !important;
+}
+
+.modal-header h3 {
+    font-family: 'Lilita One', cursive !important;
+    font-size: 26px !important;
+    color: #2b2740 !important;
+}
+
+.modal-close {
+    font-size: 28px !important;
+    color: #8a84a3 !important;
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.2s ease !important;
+    border: none !important;
+    background: none !important;
+    cursor: pointer !important;
+}
+
+.modal-close:hover {
+    background: #fee2e2 !important;
+    color: #ef4444 !important;
+}
+
+.form-group {
+    margin-bottom: 16px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+}
+
+.form-group label {
+    font-size: 12px !important;
+    font-weight: 800 !important;
+    color: #6d6b8b !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+}
+
+.form-group textarea {
+    border: 1px solid rgba(15, 23, 42, 0.12) !important;
+    border-radius: 12px !important;
+    padding: 11px 14px !important;
+    font-weight: 600 !important;
+    background: #faf9fd !important;
+    color: #2b2740 !important;
+    outline: none !important;
+    font-size: 14px !important;
+    transition: all 0.2s ease !important;
+}
+
+.form-group textarea:hover {
+    border-color: rgba(124, 58, 237, 0.4) !important;
+    background: #fff !important;
+}
+
+.form-group textarea:focus {
+    border-color: #7c3aed !important;
+    background: #fff !important;
+    box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.15) !important;
+}
+
+.modal-footer {
+    padding: 16px 0 0 0 !important;
+    border-top: 1px solid rgba(15, 23, 42, 0.06) !important;
+    display: flex !important;
+    gap: 12px !important;
+    justify-content: flex-end !important;
+}

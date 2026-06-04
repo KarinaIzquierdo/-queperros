@@ -25,14 +25,14 @@
             @include('partials.entrenador-sidebar')
 
             <main class="mq-dashboard-main et-main">
-                @include('partials.mq-topbar', ['user' => Auth::user(), 'user' => Auth::user(), 
+                @include('partials.mq-topbar', [
                     'user' => $user,
                     'roleLabel' => 'Entrenador',
                     'profileUrl' => route('entrenador.perfil'),
                     'settingsUrl' => route('entrenador.perfil'),
                     'helpUrl' => route('entrenador.chat'),
                     'notificationsUrl' => route('entrenador.notificaciones'),
-                    'notifCount' => 2,
+                    'notifCount' => $unreadCount ?? 0,
                 ])
 
                 <section class="nt-list" aria-label="Notificaciones">

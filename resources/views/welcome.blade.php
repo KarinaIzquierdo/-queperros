@@ -198,7 +198,7 @@
                                         <h3>{{ $dog->nombre }}</h3>
                                         <div>{{ $meta }}</div>
                                         <p>{{ \Illuminate\Support\Str::limit($dog->historia ?: 'Este perrito necesita apoyo para cubrir sus cuidados.', 120) }}</p>
-                                        <a href="{{ Route::has('login') ? route('login') : '#' }}">Quiero apadrinar</a>
+                                        <a href="{{ route('public.padrino.form', $dog) }}">Quiero apadrinar</a>
                                     </div>
                                 </article>
                             @endforeach

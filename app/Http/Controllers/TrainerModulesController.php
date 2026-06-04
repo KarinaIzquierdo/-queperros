@@ -811,30 +811,96 @@ class TrainerModulesController extends Controller
     {
         $user = Auth::user();
 
+        // Marcar todas como leídas inmediatamente al abrir la sección (Opción A) en ambas tablas
+        if (Schema::hasTable('notificaciones')) {
+            DB::table('notificaciones')
+                ->where('user_id', (int) $user->id)
+                ->whereNull('leida_en')
+                ->update([
+                    'leida_en' => now(),
+                ]);
+        }
+        if (Schema::hasTable('notifications')) {
+            DB::table('notifications')
+                ->where('id_usuario', (int) $user->id)
+                ->where('leido', false)
+                ->update([
+                    'leido' => true,
+                    'leido_en' => now(),
+                ]);
+        }
+
         $notifications = collect();
 
         if (Schema::hasTable('notificaciones')) {
-            $notifications = DB::table('notificaciones')
+            $spanish = DB::table('notificaciones')
                 ->where('user_id', (int) $user->id)
-                ->orderByDesc('created_at')
-                ->get();
+                ->get()
+                ->map(function ($n) {
+                    return (object) [
+                        'id' => $n->id,
+                        'source' => 'notificaciones',
+                        'tipo' => $n->tipo,
+                        'titulo' => $n->titulo ?? ucfirst(str_replace('_', ' ', $n->tipo ?? 'notificacion')),
+                        'mensaje' => $n->mensaje,
+                        'url' => $n->url,
+                        'leido' => !empty($n->leida_en),
+                        'leida_en' => $n->leida_en,
+                        'created_at' => $n->created_at,
+                    ];
+                });
+            $notifications = $notifications->concat($spanish);
         }
+
+        if (Schema::hasTable('notifications')) {
+            $english = DB::table('notifications')
+                ->where('id_usuario', (int) $user->id)
+                ->get()
+                ->map(function ($n) {
+                    return (object) [
+                        'id' => $n->id,
+                        'source' => 'notifications',
+                        'tipo' => $n->tipo,
+                        'titulo' => $n->titulo ?? ucfirst(str_replace('_', ' ', $n->tipo ?? 'notificacion')),
+                        'mensaje' => $n->mensaje,
+                        'url' => $n->url,
+                        'leido' => (bool) ($n->leido || !empty($n->leido_en)),
+                        'leida_en' => $n->leido_en ?? ($n->leido ? now() : null),
+                        'created_at' => $n->created_at,
+                    ];
+                });
+            $notifications = $notifications->concat($english);
+        }
+
+        $notifications = $notifications->sortByDesc('created_at')->values();
 
         return view('entrenador.notificaciones', [
             'user' => $user,
             'notifications' => $notifications,
-            'unreadCount' => $notifications->whereNull('leida_en')->count(),
+            'unreadCount' => 0, // Todas acaban de ser marcadas como leídas
         ]);
     }
 
     public function markNotificationAsRead($id)
     {
+        $userId = Auth::id();
+
         if (Schema::hasTable('notificaciones')) {
             DB::table('notificaciones')
                 ->where('id', $id)
-                ->where('user_id', Auth::id())
+                ->where('user_id', $userId)
                 ->update([
                     'leida_en' => now(),
+                ]);
+        }
+
+        if (Schema::hasTable('notifications')) {
+            DB::table('notifications')
+                ->where('id', $id)
+                ->where('id_usuario', $userId)
+                ->update([
+                    'leido' => true,
+                    'leido_en' => now(),
                 ]);
         }
 
@@ -843,12 +909,24 @@ class TrainerModulesController extends Controller
 
     public function markAllNotificationsAsRead()
     {
+        $userId = Auth::id();
+
         if (Schema::hasTable('notificaciones')) {
             DB::table('notificaciones')
-                ->where('user_id', Auth::id())
+                ->where('user_id', $userId)
                 ->whereNull('leida_en')
                 ->update([
                     'leida_en' => now(),
+                ]);
+        }
+
+        if (Schema::hasTable('notifications')) {
+            DB::table('notifications')
+                ->where('id_usuario', $userId)
+                ->where('leido', false)
+                ->update([
+                    'leido' => true,
+                    'leido_en' => now(),
                 ]);
         }
 

@@ -50,6 +50,7 @@ class AdminSettingsController extends Controller
         $validated = $request->validate([
             'nombre_negocio' => 'nullable|string|max:255',
             'slogan' => 'nullable|string|max:255',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'direccion' => 'nullable|string|max:255',
             'telefono' => 'nullable|string|max:50',
             'email' => 'nullable|email|max:255',
@@ -73,6 +74,19 @@ class AdminSettingsController extends Controller
 
         $settings = Setting::first() ?: new Setting();
         
+        if ($request->hasFile('logo')) {
+            $file = $request->file('logo');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/logos'), $fileName);
+            
+            // Delete old logo if exists
+            if ($settings->logo_path && file_exists(public_path($settings->logo_path))) {
+                @unlink(public_path($settings->logo_path));
+            }
+            
+            $settings->logo_path = 'uploads/logos/' . $fileName;
+        }
+
         $checkboxes = [
             'atiende_fines_semana', 
             'notificaciones_email', 

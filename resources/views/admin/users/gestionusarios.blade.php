@@ -27,14 +27,14 @@
             @include('partials.admin-sidebar')
 
             <main class="admin-main">
-                @include('partials.mq-topbar', ['user' => Auth::user(), 'user' => Auth::user(), 
+                @include('partials.mq-topbar', [
                     'user' => $admin,
                     'roleLabel' => 'Administrador',
                     'profileUrl' => route('admin.settings'),
                     'settingsUrl' => route('admin.settings'),
                     'helpUrl' => route('admin.dashboard'),
-                    'notificationsUrl' => route('admin.dashboard'),
-                    'notifCount' => 2,
+                    'notificationsUrl' => route('admin.notificaciones'),
+                    'notifCount' => $unreadCount ?? 0,
                 ])
 
                 @php

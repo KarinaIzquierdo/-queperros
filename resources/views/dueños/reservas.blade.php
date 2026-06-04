@@ -10,7 +10,7 @@
         <link href="https://fonts.bunny.net/css?family=lilita-one:400" rel="stylesheet" />
 
         <link rel="stylesheet" href="{{ asset('css/shared/mq-topbar.css') }}">
-        <link rel="stylesheet" href="{{ asset('css/dueño/reservas.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/dueño/reservas.css') }}?v={{ time() }}">
         <link rel="stylesheet" href="{{ asset('css/dueño/panel.css') }}">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
         <link rel="stylesheet" href="{{ asset('css/Admin/admin-sidebar-extras.css') }}?v={{ time() }}">
@@ -101,160 +101,197 @@
                     </div>
 
                     <div class="rs-list" aria-label="Lista de reservas">
-                        <div style="background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-                            <h2>Reservas Pendientes ({{ $pendientes->count() ?? 0 }})</h2>
+                        <!-- SECCIÓN PENDIENTES -->
+                        <div class="rs-section-container">
+                            <h2 class="rs-section-title">Reservas Pendientes ({{ $pendientes->count() ?? 0 }})</h2>
+                            <div class="rs-grid">
                             @if(($pendientes ?? collect())->isNotEmpty())
                                 @foreach($pendientes as $r)
-                                    <div style="border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 8px;">
-                                        <p><strong>Servicio:</strong> {{ $r->servicio_nombre ?? 'N/A' }}</p>
-                                        <p><strong>Mascota:</strong> {{ $r->mascota_nombre ?? 'N/A' }}</p>
-                                        <p><strong>Entrenador:</strong> {{ $r->profesional_nombre ?? 'N/A' }}</p>
-                                        <p><strong>Estado:</strong> {{ $r->estado ?? 'N/A' }}</p>
-
-                                        <div style="background: #f8f9fa; padding: 10px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #6c757d;">
-                                            <p style="margin: 0; color: #495057; font-size: 0.9em;"><strong>📅 Fecha de Solicitud:</strong> {{ $r->fecha ?? 'N/A' }}</p>
-                                        </div>
-
-                                        @if($r->fecha_evaluacion)
-                                            <div style="background: #e3f2fd; padding: 10px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #2196f3;">
-                                                <p style="margin: 0; color: #0d47a1; font-size: 0.9em;"><strong>🏥 Cita de Evaluación:</strong> {{ $r->fecha_evaluacion }}</p>
-                                                @if($r->hora_evaluacion)
-                                                    <p style="margin: 5px 0 0 0; color: #0d47a1; font-size: 0.9em;"><strong>⏰ Hora de Evaluación:</strong> {{ substr($r->hora_evaluacion, 0, 5) ?? 'N/A' }}</p>
-                                                @endif
+                                    <div class="rs-card rs-card--pending">
+                                        <div class="rs-card-header">
+                                            <div class="rs-card-info">
+                                                <h3>{{ $r->servicio_nombre ?? 'N/A' }}</h3>
+                                                <span class="rs-card-price">$ {{ number_format($r->precio ?? 0, 0, ',', '.') }}</span>
                                             </div>
-                                        @endif
+                                            <span class="rs-status-badge rs-status-badge--pending">{{ $r->estado ?? 'N/A' }}</span>
+                                        </div>
+                                        <div class="rs-card-body">
+                                            <div class="rs-detail-row">
+                                                <div class="rs-detail-item">
+                                                    <i class="bi bi-heart"></i>
+                                                    <span>{{ $r->mascota_nombre ?? 'N/A' }}</span>
+                                                </div>
+                                                <div class="rs-detail-item">
+                                                    <i class="bi bi-person"></i>
+                                                    <span>{{ $r->profesional_nombre ?? 'N/A' }}</span>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="rs-meta-box">
+                                                <p>📅 <strong>Fecha de Solicitud:</strong> {{ $r->fecha ?? 'N/A' }}</p>
+                                            </div>
+
+                                            @if($r->fecha_evaluacion)
+                                                <div class="rs-meta-box rs-meta-box--eval">
+                                                    <p>🏥 <strong>Cita de Evaluación:</strong> {{ $r->fecha_evaluacion }}</p>
+                                                    @if($r->hora_evaluacion)
+                                                        <p>⏰ <strong>Hora:</strong> {{ substr($r->hora_evaluacion, 0, 5) ?? 'N/A' }}</p>
+                                                    @endif
+                                                </div>
+                                            @endif
+                                        </div>
                                     </div>
                                 @endforeach
                             @else
-                                <p>No hay reservas pendientes</p>
+                                <div class="rs-empty">No hay reservas pendientes</div>
                             @endif
+                            </div>
                         </div>
 
-                        <div style="background: white; padding: 20px; border-radius: 10px;">
-                            <h2>Reservas Confirmadas ({{ $confirmadas->count() ?? 0 }})</h2>
+                        <!-- SECCIÓN CONFIRMADAS -->
+                        <div class="rs-section-container">
+                            <h2 class="rs-section-title">Reservas Confirmadas ({{ $confirmadas->count() ?? 0 }})</h2>
+                            <div class="rs-grid">
                             @if(($confirmadas ?? collect())->isNotEmpty())
                                 @foreach($confirmadas as $r)
-                                    <div style="border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 8px;">
-                                        <p><strong>Servicio:</strong> {{ $r->servicio_nombre ?? 'N/A' }}</p>
-                                        <p><strong>Mascota:</strong> {{ $r->mascota_nombre ?? 'N/A' }}</p>
-                                        <p><strong>Entrenador:</strong> {{ $r->profesional_nombre ?? 'N/A' }}</p>
-                                        <p><strong>Estado:</strong> {{ $r->estado ?? 'N/A' }}</p>
-                                        
-                                        <div style="background: #f8f9fa; padding: 10px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #6c757d;">
-                                            <p style="margin: 0; color: #495057; font-size: 0.9em;"><strong>📅 Fecha de Solicitud:</strong> {{ $r->fecha ?? 'N/A' }}</p>
+                                    <div class="rs-card rs-card--confirmed">
+                                        <div class="rs-card-header">
+                                            <div class="rs-card-info">
+                                                <h3>{{ $r->servicio_nombre ?? 'N/A' }}</h3>
+                                                <span class="rs-card-price">$ {{ number_format($r->precio ?? 0, 0, ',', '.') }}</span>
+                                            </div>
+                                            <span class="rs-status-badge rs-status-badge--confirmed">{{ $r->estado ?? 'N/A' }}</span>
                                         </div>
-                                        
-                                        @if($r->fecha_evaluacion)
-                                            <div style="background: #e3f2fd; padding: 10px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #2196f3;">
-                                                <p style="margin: 0; color: #0d47a1; font-size: 0.9em;"><strong>🏥 Cita de Evaluación:</strong> {{ $r->fecha_evaluacion }}</p>
-                                                @if($r->hora_evaluacion)
-                                                    <p style="margin: 5px 0 0 0; color: #0d47a1; font-size: 0.9em;"><strong>⏰ Hora de Evaluación:</strong> {{ substr($r->hora_evaluacion, 0, 5) ?? 'N/A' }}</p>
-                                                @endif
+                                        <div class="rs-card-body">
+                                            <div class="rs-detail-row">
+                                                <div class="rs-detail-item">
+                                                    <i class="bi bi-heart"></i>
+                                                    <span>{{ $r->mascota_nombre ?? 'N/A' }}</span>
+                                                </div>
+                                                <div class="rs-detail-item">
+                                                    <i class="bi bi-person"></i>
+                                                    <span>{{ $r->profesional_nombre ?? 'N/A' }}</span>
+                                                </div>
                                             </div>
-                                        @endif
-                                        
-                                        @if($r->precio && $r->estado === 'Cotizado / Pendiente de Aprobación')
-                                            <div style="background: #f0f8ff; padding: 10px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #009ee3;">
-                                                <p><strong>Precio Cotizado:</strong> $ {{ number_format($r->precio, 0, ',', '.') }} COP</p>
-                                                <p><strong>Duración:</strong> {{ $r->duracion ?? 'N/A' }} días</p>
-                                                @if($r->observaciones)
-                                                    <p><strong>Observaciones:</strong> {{ $r->observaciones }}</p>
-                                                @endif
+                                            
+                                            <div class="rs-meta-box">
+                                                <p>📅 <strong>Fecha de Solicitud:</strong> {{ $r->fecha ?? 'N/A' }}</p>
                                             </div>
-                                            <div style="display: flex; gap: 10px; margin-top: 10px;">
-                                                <form action="{{ route('owner.reservas.aceptar-cotizacion', $r->id) }}" method="POST" style="flex: 1;">
+                                            
+                                            @if($r->fecha_evaluacion)
+                                                <div class="rs-meta-box rs-meta-box--eval">
+                                                    <p>🏥 <strong>Cita de Evaluación:</strong> {{ $r->fecha_evaluacion }}</p>
+                                                    @if($r->hora_evaluacion)
+                                                        <p>⏰ <strong>Hora:</strong> {{ substr($r->hora_evaluacion, 0, 5) ?? 'N/A' }}</p>
+                                                    @endif
+                                                </div>
+                                            @endif
+                                            
+                                            @if($r->precio && $r->estado === 'Cotizado / Pendiente de Aprobación')
+                                                <div class="rs-meta-box rs-meta-box--cotizado">
+                                                    <p>💰 <strong>Precio Cotizado:</strong> $ {{ number_format($r->precio, 0, ',', '.') }}</p>
+                                                    <p>⏱️ <strong>Duración:</strong> {{ $r->duracion ?? 'N/A' }} días</p>
+                                                    @if($r->observaciones)
+                                                        <p>📝 <strong>Notas:</strong> {{ $r->observaciones }}</p>
+                                                    @endif
+                                                </div>
+                                                <div class="rs-card-actions">
+                                                    <form action="{{ route('owner.reservas.aceptar-cotizacion', $r->id) }}" method="POST">
+                                                        @csrf
+                                                        <button type="submit" class="rs-btn-confirm">
+                                                            Aceptar y Pagar
+                                                        </button>
+                                                    </form>
+                                                    <form action="{{ route('owner.reservas.rechazar-cotizacion', $r->id) }}" method="POST">
+                                                        @csrf
+                                                        <button type="submit" class="rs-btn-reject">
+                                                            Rechazar
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            @endif
+
+                                            @if($r->estado === 'Aceptada / Esperando Pago')
+                                                <div class="rs-msg-box rs-meta-box--amber">
+                                                    <p>✅ <strong>Cotización Aceptada</strong> - Esperando pago</p>
+                                                </div>
+                                                <form action="{{ route('payment.reservation.create', $r->id) }}" method="POST" style="margin-top: 15px;">
                                                     @csrf
-                                                    <button type="submit" style="width: 100%; background: #28a745; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer;">
-                                                        <i class="bi bi-check-lg" style="margin-right: 5px;"></i>
-                                                        Aceptar y Pagar
+                                                    <button type="submit" class="rs-btn-mercadopago">
+                                                        <i class="bi bi-credit-card"></i> Pagar con MercadoPago
                                                     </button>
                                                 </form>
-                                                <form action="{{ route('owner.reservas.rechazar-cotizacion', $r->id) }}" method="POST" style="flex: 1;">
+                                            @endif
+
+                                            @if($r->estado === 'Pagada')
+                                                <div class="rs-msg-box rs-meta-box--success">
+                                                    <p>💰 <strong>Pago Realizado</strong> - Servicio confirmado</p>
+                                                </div>
+                                            @endif
+                                            
+                                            @if($r->estado === 'Pagado / En Curso')
+                                                <form action="{{ route('payment.reservation.create', $r->id) }}" method="POST" style="margin-top: 15px;">
                                                     @csrf
-                                                    <button type="submit" style="width: 100%; background: #dc3545; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer;">
-                                                        <i class="bi bi-x-lg" style="margin-right: 5px;"></i>
-                                                        Rechazar
+                                                    <button type="submit" class="rs-btn-mercadopago">
+                                                        <i class="bi bi-credit-card"></i> Pagar con MercadoPago
                                                     </button>
                                                 </form>
-                                            </div>
-                                        @endif
-
-                                        @if($r->estado === 'Aceptada / Esperando Pago')
-                                            <div style="background: #fff3cd; padding: 10px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #ffc107;">
-                                                <p style="margin: 0; color: #856404;"><strong>✅ Cotización Aceptada</strong> - Esperando pago</p>
-                                            </div>
-                                            <form action="{{ route('payment.reservation.create', $r->id) }}" method="POST" style="margin-top: 10px;">
-                                                @csrf
-                                                <button type="submit" style="width: 100%; background: #009ee3; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer;">
-                                                    <i class="bi bi-credit-card" style="margin-right: 5px;"></i>
-                                                    Pagar con MercadoPago
-                                                </button>
-                                            </form>
-                                        @endif
-
-                                        @if($r->estado === 'Pagada')
-                                            <div style="background: #d4edda; padding: 10px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #28a745;">
-                                                <p style="margin: 0; color: #155724;"><strong>💰 Pago Realizado</strong> - Servicio confirmado</p>
-                                            </div>
-                                        @endif
-                                        
-                                        @if($r->estado === 'Pagado / En Curso')
-                                            <form action="{{ route('payment.reservation.create', $r->id) }}" method="POST" style="margin-top: 10px;">
-                                                @csrf
-                                                <button type="submit" style="background: #009ee3; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer;">
-                                                    <i class="bi bi-credit-card" style="margin-right: 5px;"></i>
-                                                    Pagar con MercadoPago
-                                                </button>
-                                            </form>
-                                        @endif
-                                        
-                                        @if($r->estado === 'Confirmada' || $r->estado === 'confirmada')
-                                            <form action="{{ route('payment.reservation.create', $r->id) }}" method="POST" style="margin-top: 10px;">
-                                                @csrf
-                                                <button type="submit" style="background: #009ee3; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer;">
-                                                    <i class="bi bi-credit-card" style="margin-right: 5px;"></i>
-                                                    Pagar con MercadoPago
-                                                </button>
-                                            </form>
-                                        @endif
+                                            @endif
+                                            
+                                            @if($r->estado === 'Confirmada' || $r->estado === 'confirmada')
+                                                <form action="{{ route('payment.reservation.create', $r->id) }}" method="POST" style="margin-top: 15px;">
+                                                    @csrf
+                                                    <button type="submit" class="rs-btn-mercadopago">
+                                                        <i class="bi bi-credit-card"></i> Pagar con MercadoPago
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        </div>
                                     </div>
                                 @endforeach
                             @else
-                                <p>No hay reservas confirmadas</p>
+                                <div class="rs-empty">No hay reservas confirmadas</div>
                             @endif
+                            </div>
                         </div>
 
-                        <div style="background: white; padding: 20px; border-radius: 10px; margin-top: 20px;">
-                            <h2>Reservas Canceladas/Rechazadas ({{ $canceladas->count() ?? 0 }})</h2>
+                        <!-- SECCIÓN CANCELADAS -->
+                        <div class="rs-section-container">
+                            <h2 class="rs-section-title">Historial / Canceladas ({{ $canceladas->count() ?? 0 }})</h2>
+                            <div class="rs-grid">
                             @if(($canceladas ?? collect())->isNotEmpty())
                                 @foreach($canceladas as $r)
-                                    <div style="border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 8px; background: #f8f9fa; opacity: 0.7;">
-                                        <p><strong>Servicio:</strong> {{ $r->servicio_nombre ?? 'N/A' }}</p>
-                                        <p><strong>Mascota:</strong> {{ $r->mascota_nombre ?? 'N/A' }}</p>
-                                        <p><strong>Entrenador:</strong> {{ $r->profesional_nombre ?? 'N/A' }}</p>
-                                        <p><strong>Estado:</strong> {{ $r->estado ?? 'N/A' }}</p>
-
-                                        <div style="background: #f8f9fa; padding: 10px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #6c757d;">
-                                            <p style="margin: 0; color: #495057; font-size: 0.9em;"><strong>📅 Fecha de Solicitud:</strong> {{ $r->fecha ?? 'N/A' }}</p>
-                                        </div>
-
-                                        @if($r->fecha_evaluacion)
-                                            <div style="background: #e3f2fd; padding: 10px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #2196f3;">
-                                                <p style="margin: 0; color: #0d47a1; font-size: 0.9em;"><strong>🏥 Cita de Evaluación:</strong> {{ $r->fecha_evaluacion }}</p>
-                                                @if($r->hora_evaluacion)
-                                                    <p style="margin: 5px 0 0 0; color: #0d47a1; font-size: 0.9em;"><strong>⏰ Hora de Evaluación:</strong> {{ substr($r->hora_evaluacion, 0, 5) ?? 'N/A' }}</p>
-                                                @endif
+                                    <div class="rs-card rs-card--cancelled">
+                                        <div class="rs-card-header">
+                                            <div class="rs-card-info">
+                                                <h3>{{ $r->servicio_nombre ?? 'N/A' }}</h3>
                                             </div>
-                                        @endif
-
-                                        <div style="background: #f8d7da; padding: 10px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #dc3545;">
-                                            <p style="margin: 0; color: #721c24;"><strong>❌ Reserva Cancelada/Rechazada</strong></p>
+                                            <span class="rs-status-badge rs-status-badge--cancelled">{{ $r->estado ?? 'N/A' }}</span>
+                                        </div>
+                                        <div class="rs-card-body">
+                                            <div class="rs-detail-row">
+                                                <div class="rs-detail-item">
+                                                    <i class="bi bi-heart"></i>
+                                                    <span>{{ $r->mascota_nombre ?? 'N/A' }}</span>
+                                                </div>
+                                                <div class="rs-detail-item">
+                                                    <i class="bi bi-person"></i>
+                                                    <span>{{ $r->profesional_nombre ?? 'N/A' }}</span>
+                                                </div>
+                                            </div>
+                                            <div class="rs-meta-box">
+                                                <p>📅 <strong>Fecha:</strong> {{ $r->fecha ?? 'N/A' }}</p>
+                                            </div>
+                                            <div class="rs-msg-box rs-meta-box--error">
+                                                <p>❌ Reserva Cancelada/Rechazada</p>
+                                            </div>
                                         </div>
                                     </div>
                                 @endforeach
                             @else
-                                <p>No hay reservas canceladas</p>
+                                <div class="rs-empty">No hay historial para mostrar</div>
                             @endif
+                            </div>
                         </div>
                     </div>
                 </section>

@@ -5,19 +5,64 @@
     $mqTopbarRoleLabel = $roleLabel ?? '';
     $mqTopbarNotifications = collect();
 
-    // Usar la tabla 'notificaciones' con las columnas correctas
-    if (\Illuminate\Support\Facades\Schema::hasTable('notificaciones') && $mqTopbarUser) {
-        $mqTopbarNotifications = \Illuminate\Support\Facades\DB::table('notificaciones')
-            ->where('user_id', (int) $mqTopbarUser->id)
-            ->whereNull('leida_en') // Solo mostrar las no leídas en el menú rápido
-            ->orderByDesc('created_at')
-            ->limit(5)
-            ->get();
+    $mqTopbarIsAdmin = $mqTopbarUser && ($mqTopbarUser->rol_id == 1 || ($mqTopbarUser->rol ?? '') === 'admin');
+    $mqTopbarIsTrainer = $mqTopbarUser && ($mqTopbarUser->rol_id == 3 || in_array($mqTopbarUser->rol ?? '', ['entrenador', 'empleado', 'trainer']));
+    $mqTopbarIsOwner = $mqTopbarUser && ($mqTopbarUser->rol_id == 2 || ($mqTopbarUser->rol ?? '') === 'dueno');
 
-        $mqTopbarNotifCount = \Illuminate\Support\Facades\DB::table('notificaciones')
-            ->where('user_id', (int) $mqTopbarUser->id)
-            ->whereNull('leida_en')
-            ->count();
+    // Consultar y combinar notificaciones de ambas tablas ('notificaciones' y 'notifications') si existen
+    if ($mqTopbarUser) {
+        $hasSpanish = \Illuminate\Support\Facades\Schema::hasTable('notificaciones');
+        $hasEnglish = \Illuminate\Support\Facades\Schema::hasTable('notifications');
+
+        $list = collect();
+
+        if ($hasSpanish) {
+            $spanishNotifs = \Illuminate\Support\Facades\DB::table('notificaciones')
+                ->where('user_id', (int) $mqTopbarUser->id)
+                ->get()
+                ->map(function ($n) {
+                    return (object) [
+                        'id' => $n->id,
+                        'source_table' => 'notificaciones',
+                        'tipo' => $n->tipo,
+                        'titulo' => $n->titulo ?? ucfirst(str_replace('_', ' ', $n->tipo ?? 'notificacion')),
+                        'mensaje' => $n->mensaje,
+                        'url' => $n->url,
+                        'leido' => !empty($n->leida_en),
+                        'created_at' => $n->created_at,
+                    ];
+                });
+            $list = $list->concat($spanishNotifs);
+        }
+
+        if ($hasEnglish) {
+            $englishNotifs = \Illuminate\Support\Facades\DB::table('notifications')
+                ->where('id_usuario', (int) $mqTopbarUser->id)
+                ->get()
+                ->map(function ($n) {
+                    return (object) [
+                        'id' => $n->id,
+                        'source_table' => 'notifications',
+                        'tipo' => $n->tipo,
+                        'titulo' => $n->titulo ?? ucfirst(str_replace('_', ' ', $n->tipo ?? 'notificacion')),
+                        'mensaje' => $n->mensaje,
+                        'url' => $n->url,
+                        'leido' => (bool) ($n->leido || !empty($n->leido_en)),
+                        'created_at' => $n->created_at,
+                    ];
+                });
+            $list = $list->concat($englishNotifs);
+        }
+
+        // Ordenar todas por fecha de creación descendente
+        $sorted = $list->sortByDesc('created_at');
+
+        // Filtrar no leídas para la campana de la barra superior
+        $unread = $sorted->filter(fn($n) => !$n->leido);
+        $mqTopbarNotifCount = $unread->count();
+
+        // Mostrar las no leídas o, si no hay, las últimas 5 recibidas
+        $mqTopbarNotifications = $unread->count() > 0 ? $unread->take(5) : $sorted->take(5);
     } else {
         $mqTopbarNotifCount = $notifCount ?? 0;
     }
@@ -30,7 +75,7 @@
 
 <header class="mqx-topbar" aria-label="Barra superior">
     <div class="mqx-topbar-left">
-        @if(auth()->user() && auth()->user()->rol_id == 1) {{-- Admin --}}
+        @if($mqTopbarIsAdmin) {{-- Admin --}}
             <div class="mqx-sidebar-toggle-wrapper">
                 <input type="checkbox" id="checkbox" class="mqx-sidebar-checkbox" data-mqx-sidebar-toggle="true">
                 <label for="checkbox" class="toggle">
@@ -39,7 +84,7 @@
                     <div class="bars" id="bar3"></div>
                 </label>
             </div>
-        @elseif(auth()->user() && auth()->user()->rol_id == 2) {{-- Dueño --}}
+        @elseif($mqTopbarIsOwner) {{-- Dueño --}}
             <div class="mqx-sidebar-toggle-wrapper">
                 <input type="checkbox" id="checkbox2" class="mqx-sidebar-checkbox" data-mqx-sidebar-toggle="true">
                 <label for="checkbox2" class="toggle toggle2">
@@ -48,7 +93,7 @@
                     <div class="bars" id="bar6"></div>
                 </label>
             </div>
-        @elseif(auth()->user() && auth()->user()->rol_id == 3) {{-- Entrenador --}}
+        @elseif($mqTopbarIsTrainer) {{-- Entrenador --}}
             <div class="mqx-sidebar-toggle-wrapper">
                 <input type="checkbox" id="checkbox3" class="mqx-sidebar-checkbox" data-mqx-sidebar-toggle="true">
                 <label for="checkbox3" class="toggle toggle3">
@@ -127,9 +172,9 @@
         <div class="mqx-popover-head mqx-popover-head--row">
             <div class="mqx-popover-name">Notificaciones</div>
             @php
-                $markAllReadUrl = auth()->user()->rol_id == 1
+                $markAllReadUrl = $mqTopbarIsAdmin
                     ? route('admin.notifications.markAllRead')
-                    : (auth()->user()->rol_id == 3
+                    : ($mqTopbarIsTrainer
                         ? route('entrenador.notifications.markAllRead')
                         : route('owner.notifications.markAllRead'));
             @endphp
@@ -150,9 +195,9 @@
                     };
 
                     // Determinar la ruta de marcado como leído según el rol
-                    $markReadUrl = auth()->user()->rol_id == 1
+                    $markReadUrl = $mqTopbarIsAdmin
                         ? route('admin.notifications.markRead', $notification->id)
-                        : (auth()->user()->rol_id == 3
+                        : ($mqTopbarIsTrainer
                             ? route('entrenador.notifications.markRead', $notification->id)
                             : route('owner.notifications.markRead', $notification->id));
                 @endphp
@@ -242,9 +287,9 @@
         if (notifButton) {
             notifButton.addEventListener('click', function() {
                 @php
-                    $markAllReadUrl = auth()->user()->rol_id == 1
+                    $markAllReadUrl = $mqTopbarIsAdmin
                         ? route('admin.notifications.markAllRead')
-                        : (auth()->user()->rol_id == 3
+                        : ($mqTopbarIsTrainer
                             ? route('entrenador.notifications.markAllRead')
                             : route('owner.notifications.markAllRead'));
                 @endphp

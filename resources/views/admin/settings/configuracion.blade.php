@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="{{ asset('css/Admin/configuracion.css') }}">
 
 <div class="conf-container">
-    <form action="{{ route('admin.settings.update') }}" method="POST">
+    <form action="{{ route('admin.settings.update') }}" method="POST" enctype="multipart/form-data">
         @csrf
         <header class="conf-header">
             <div class="conf-title-group">
@@ -52,13 +52,19 @@
                     <p class="conf-section-sub">Datos principales de tu clinica veterinaria</p>
 
                     <div class="conf-logo-box">
-                        <div class="conf-logo-preview">
-                            <i class="bi bi-paw-fill"></i>
+                        <div class="conf-logo-preview" id="logoPreviewContainer">
+                            @if(!empty($settings->logo_path) && file_exists(public_path($settings->logo_path)))
+                                <img src="{{ asset($settings->logo_path) }}?v={{ time() }}" alt="Logo" id="logoPreview" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;">
+                            @else
+                                <i class="bi bi-paw-fill" id="logoIcon"></i>
+                                <img src="" alt="Logo" id="logoPreview" style="display: none; width: 100%; height: 100%; object-fit: cover; border-radius: inherit;">
+                            @endif
                         </div>
                         <div class="conf-logo-info">
                             <h4>Logo del negocio</h4>
                             <p>PNG o JPG, maximo 2MB</p>
-                            <button type="button" class="conf-logo-btn">Cambiar logo</button>
+                            <button type="button" class="conf-logo-btn" id="triggerLogoUpload">Cambiar logo</button>
+                            <input type="file" name="logo" id="logoInput" accept="image/*" style="display: none;">
                         </div>
                     </div>
 
@@ -257,6 +263,33 @@
                 row.classList.toggle('conf-day-row--off', !toggle.checked);
             });
         });
+
+        // Logo Upload Handling
+        const triggerBtn = document.getElementById('triggerLogoUpload');
+        const fileInput = document.getElementById('logoInput');
+        const logoPreview = document.getElementById('logoPreview');
+        const logoIcon = document.getElementById('logoIcon');
+
+        if (triggerBtn && fileInput) {
+            triggerBtn.addEventListener('click', () => fileInput.click());
+
+            fileInput.addEventListener('change', function () {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        if (logoPreview) {
+                            logoPreview.src = e.target.result;
+                            logoPreview.style.display = 'block';
+                        }
+                        if (logoIcon) {
+                            logoIcon.style.display = 'none';
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
     })();
 </script>
 @endsection

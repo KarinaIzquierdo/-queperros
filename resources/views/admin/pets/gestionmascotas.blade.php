@@ -14,6 +14,7 @@
         <link rel="stylesheet" href="{{ asset('css/Admin/admin-sidebar-extras.css') }}?v={{ time() }}">
         <link rel="stylesheet" href="{{ asset('css/Admin/dashboard-admin-v2.css') }}?v={{ time() }}">
         <link rel="stylesheet" href="{{ asset('css/Admin/gestionmascotas.css') }}?v={{ time() }}">
+        <link rel="stylesheet" href="{{ asset('css/Admin/gestionmascotas-v2.css') }}?v={{ time() }}">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
         <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -27,14 +28,14 @@
             @include('partials.admin-sidebar')
 
             <main class="admin-main">
-                @include('partials.mq-topbar', ['user' => Auth::user(), 'user' => Auth::user(), 
+                @include('partials.mq-topbar', [
                     'user' => $admin,
                     'roleLabel' => 'Administrador',
                     'profileUrl' => route('admin.settings'),
                     'settingsUrl' => route('admin.settings'),
                     'helpUrl' => route('admin.dashboard'),
-                    'notificationsUrl' => route('admin.dashboard'),
-                    'notifCount' => 2,
+                    'notificationsUrl' => route('admin.notificaciones'),
+                    'notifCount' => $unreadCount ?? 0,
                 ])
                 <div class="gm-top">
                     <div>

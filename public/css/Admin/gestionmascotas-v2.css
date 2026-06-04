@@ -1,0 +1,540 @@
+/* Custom design enhancements for Gestión de Mascotas */
+
+/* Body & spacing */
+.gm-top {
+    margin-top: 24px;
+    margin-bottom: 24px;
+}
+
+.gm-title {
+    font-family: 'Lilita One', cursive;
+    font-size: 36px;
+    color: #2b2740;
+    letter-spacing: 0.02em;
+}
+
+.gm-subtitle {
+    color: #7b748f;
+    font-weight: 600;
+    font-size: 15px;
+    margin-top: 6px;
+}
+
+/* Button Nueva Mascota */
+.gm-primary-btn {
+    background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%) !important;
+    box-shadow: 0 4px 14px rgba(124, 58, 237, 0.3) !important;
+    border-radius: 12px !important;
+    padding: 10px 20px !important;
+    font-weight: 800 !important;
+    font-size: 14px !important;
+    transition: all 0.25s ease !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    border: none !important;
+}
+
+.gm-primary-btn:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4) !important;
+}
+
+/* Stats Cards */
+.gm-stats {
+    margin-bottom: 24px;
+    gap: 16px;
+}
+
+.gm-stat {
+    border: 1px solid rgba(15, 23, 42, 0.05) !important;
+    border-radius: 20px !important;
+    padding: 18px 22px !important;
+    background: #fff !important;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.03) !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.gm-stat:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 12px 35px rgba(15, 23, 42, 0.06) !important;
+}
+
+.gm-stat-icon {
+    width: 48px !important;
+    height: 48px !important;
+    border-radius: 14px !important;
+    font-size: 1.3rem !important;
+}
+
+.gm-icon-purple {
+    background: #f1efff !important;
+    color: #6d28d9 !important;
+}
+
+.gm-icon-green {
+    background: #ecfdf5 !important;
+    color: #059669 !important;
+}
+
+.gm-icon-blue {
+    background: #f0f7ff !important;
+    color: #2563eb !important;
+}
+
+.gm-icon-yellow {
+    background: #fff6db !important;
+    color: #f59e0b !important;
+}
+
+.gm-stat-value {
+    font-size: 1.6rem !important;
+    font-weight: 800 !important;
+    color: #2b2740 !important;
+}
+
+.gm-stat-label {
+    color: #8a84a3 !important;
+    font-weight: 700 !important;
+    font-size: 12px !important;
+}
+
+/* Filters & Chips */
+.gm-controls {
+    margin-bottom: 24px;
+    gap: 16px;
+}
+
+.gm-search {
+    background: #fff !important;
+    border: 1px solid rgba(15, 23, 42, 0.08) !important;
+    border-radius: 14px !important;
+    padding: 10px 16px !important;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.02) !important;
+    transition: all 0.2s ease !important;
+}
+
+.gm-search:focus-within {
+    border-color: #7c3aed !important;
+    box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.12) !important;
+}
+
+.gm-search i {
+    color: #8a84a3 !important;
+    font-size: 14px !important;
+}
+
+.gm-search input {
+    font-weight: 600 !important;
+    color: #2b2740 !important;
+    font-size: 14px !important;
+}
+
+.gm-search input::placeholder {
+    color: #b0abc4 !important;
+}
+
+.gm-chips {
+    gap: 8px;
+}
+
+.gm-chip {
+    border: 1px solid rgba(15, 23, 42, 0.08) !important;
+    background: #fff !important;
+    color: #6d6b8b !important;
+    padding: 8px 16px !important;
+    border-radius: 12px !important;
+    font-weight: 800 !important;
+    font-size: 13px !important;
+    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.01) !important;
+    transition: all 0.2s ease !important;
+}
+
+.gm-chip:hover {
+    border-color: rgba(124, 58, 237, 0.3) !important;
+    color: #7c3aed !important;
+    background: #faf9fe !important;
+}
+
+.gm-chip--active {
+    background: #7c3aed !important;
+    color: #fff !important;
+    border-color: #7c3aed !important;
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25) !important;
+}
+
+.gm-chip--active:hover {
+    background: #6d28d9 !important;
+    color: #fff !important;
+    border-color: #6d28d9 !important;
+}
+
+/* Mascot Cards Grid */
+.gm-grid {
+    gap: 20px !important;
+}
+
+.gm-card {
+    border: 1px solid rgba(15, 23, 42, 0.06) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.03) !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+    background: #fff !important;
+}
+
+.gm-card:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 15px 35px rgba(15, 23, 42, 0.06) !important;
+}
+
+.gm-hero {
+    height: 180px !important;
+    border-radius: 20px 20px 0 0 !important;
+    overflow: hidden !important;
+}
+
+/* Badges styling */
+.gm-badge {
+    border-radius: 8px !important;
+    padding: 4px 10px !important;
+    font-weight: 800 !important;
+    font-size: 11px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.03em !important;
+    border: none !important;
+}
+
+.gm-badge--alert {
+    background: #fff2e6 !important;
+    color: #ea580c !important;
+    border: 1px solid rgba(234, 88, 12, 0.2) !important;
+}
+
+.gm-badge--alert i {
+    background: none !important;
+    color: currentColor !important;
+    width: auto !important;
+    height: auto !important;
+}
+
+.gm-badge--status {
+    background: #f8fafc !important;
+    color: #475569 !important;
+    border: 1px solid rgba(15, 23, 42, 0.08) !important;
+}
+
+.gm-pill--green {
+    background: #ecfdf5 !important;
+    color: #047857 !important;
+    border: 1px solid rgba(4, 120, 87, 0.2) !important;
+}
+
+.gm-pill--blue {
+    background: #f0f7ff !important;
+    color: #1d4ed8 !important;
+    border: 1px solid rgba(29, 78, 216, 0.2) !important;
+}
+
+.gm-pill--orange {
+    background: #fff2e6 !important;
+    color: #ea580c !important;
+    border: 1px solid rgba(234, 88, 12, 0.2) !important;
+}
+
+.gm-pill--gray {
+    background: #f8fafc !important;
+    color: #475569 !important;
+    border: 1px solid rgba(15, 23, 42, 0.08) !important;
+}
+
+/* Body content of the card */
+.gm-card-body {
+    padding: 16px 16px 0 !important;
+}
+
+.gm-card-name {
+    font-size: 18px !important;
+    font-weight: 800 !important;
+    color: #2b2740 !important;
+}
+
+.gm-card-sub {
+    color: #8a84a3 !important;
+    font-weight: 700 !important;
+    font-size: 12px !important;
+}
+
+.gm-tutor {
+    margin: 8px 0 !important;
+    font-size: 13.5px !important;
+    color: #4c4763 !important;
+}
+
+.gm-muted {
+    color: #8a84a3 !important;
+    font-weight: 700 !important;
+}
+
+.gm-strong {
+    font-weight: 800 !important;
+    color: #2b2740 !important;
+}
+
+/* Tag pills on body */
+.gm-tag {
+    border-radius: 8px !important;
+    font-weight: 800 !important;
+    font-size: 11px !important;
+    padding: 4px 10px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.03em !important;
+}
+
+.gm-tag--orange {
+    background: #fff2e6 !important;
+    color: #ea580c !important;
+    border-color: rgba(234, 88, 12, 0.15) !important;
+}
+
+.gm-tag--blue {
+    background: #f0f7ff !important;
+    color: #1d4ed8 !important;
+    border-color: rgba(29, 78, 216, 0.15) !important;
+}
+
+.gm-tag--red {
+    background: #fef2f2 !important;
+    color: #dc2626 !important;
+    border-color: rgba(220, 38, 38, 0.15) !important;
+}
+
+/* Dates */
+.gm-date {
+    font-size: 12.5px !important;
+    color: #7b748f !important;
+    font-weight: 600 !important;
+}
+
+.gm-date i {
+    color: #8a84a3 !important;
+}
+
+/* Program layout */
+.gm-program {
+    border: 1px solid rgba(15, 23, 42, 0.06) !important;
+    border-radius: 14px !important;
+    background: #fcfbfe !important;
+    box-shadow: none !important;
+}
+
+.gm-program--empty {
+    background: #faf9fd !important;
+    color: #8a84a3 !important;
+    font-size: 12.5px !important;
+    font-weight: 700 !important;
+}
+
+.gm-program-name {
+    font-weight: 800 !important;
+    font-size: 13.5px !important;
+    color: #2b2740 !important;
+}
+
+.gm-program-pct {
+    color: #7c3aed !important;
+    font-weight: 800 !important;
+    font-size: 16px !important;
+}
+
+.gm-bar {
+    height: 6px !important;
+    background: #f1f5f9 !important;
+    border-radius: 999px !important;
+}
+
+.gm-bar-fill {
+    background: linear-gradient(90deg, #7c3aed 0%, #a855f7 100%) !important;
+    border-radius: 999px !important;
+}
+
+/* Actions Row */
+.gm-actions {
+    margin-top: 16px !important;
+    border-top: 1px dashed rgba(15, 23, 42, 0.08) !important;
+    padding: 16px 16px !important;
+    display: flex !important;
+    gap: 8px !important;
+    margin-left: -16px !important;
+    margin-right: -16px !important;
+}
+
+.gm-action {
+    border-radius: 10px !important;
+    height: 38px !important;
+    font-weight: 800 !important;
+    font-size: 13px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    border: none !important;
+}
+
+.gm-action--full {
+    flex: 1 !important;
+    background: #f1efff !important;
+    color: #6d28d9 !important;
+}
+
+.gm-action--full:hover {
+    background: #7c3aed !important;
+    color: #fff !important;
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2) !important;
+}
+
+.gm-action--full i {
+    color: currentColor !important;
+    margin-right: 6px !important;
+}
+
+/* Edit action icon button */
+.gm-action[aria-label="Editar"] {
+    width: 38px !important;
+    background: #fefbeb !important;
+    color: #d97706 !important;
+}
+
+.gm-action[aria-label="Editar"]:hover {
+    background: #d97706 !important;
+    color: #fff !important;
+    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.2) !important;
+}
+
+.gm-action[aria-label="Editar"] i {
+    color: currentColor !important;
+}
+
+/* Delete action icon button */
+.gm-action[aria-label="Eliminar"] {
+    width: 38px !important;
+    background: #fee2e2 !important;
+    color: #ef4444 !important;
+}
+
+.gm-action[aria-label="Eliminar"]:hover {
+    background: #ef4444 !important;
+    color: #fff !important;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2) !important;
+}
+
+.gm-action[aria-label="Eliminar"] i {
+    color: currentColor !important;
+}
+
+.gm-actions .gm-action:not(:first-child) {
+    border-left: none !important;
+}
+
+/* Modal enhancements */
+.gm-modal-backdrop, .ad-modal-backdrop {
+    background: rgba(15, 23, 42, 0.6) !important;
+    backdrop-filter: blur(4px) !important;
+}
+
+.gm-modal-card, .ad-modal-card {
+    border-radius: 24px !important;
+    border: none !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+    padding: 28px !important;
+    max-width: 600px !important;
+}
+
+.gm-modal-head, .ad-modal-head {
+    border-bottom: 1px solid rgba(15, 23, 42, 0.06) !important;
+    padding-bottom: 16px !important;
+    margin-bottom: 24px !important;
+}
+
+.gm-modal-title, .ad-modal-title {
+    font-family: 'Lilita One', cursive !important;
+    font-size: 26px !important;
+    color: #2b2740 !important;
+}
+
+.gm-modal-close, .ad-modal-close {
+    font-size: 28px !important;
+    color: #8a84a3 !important;
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.2s ease !important;
+    border: none !important;
+    background: none !important;
+}
+
+.gm-modal-close:hover, .ad-modal-close:hover {
+    background: #fee2e2 !important;
+    color: #ef4444 !important;
+}
+
+.gm-field, .ad-field {
+    margin-bottom: 16px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+}
+
+.gm-label, .ad-label {
+    font-size: 12px !important;
+    font-weight: 800 !important;
+    color: #6d6b8b !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+}
+
+.gm-input, .ad-input, .gm-select, .ad-select {
+    border: 1px solid rgba(15, 23, 42, 0.12) !important;
+    border-radius: 12px !important;
+    padding: 11px 14px !important;
+    font-weight: 600 !important;
+    background: #faf9fd !important;
+    color: #2b2740 !important;
+    outline: none !important;
+    font-size: 14px !important;
+    transition: all 0.2s ease !important;
+}
+
+.gm-input:hover, .ad-input:hover, .gm-select:hover, .ad-select:hover {
+    border-color: rgba(124, 58, 237, 0.4) !important;
+    background: #fff !important;
+}
+
+.gm-input:focus, .ad-input:focus, .gm-select:focus, .ad-select:focus {
+    border-color: #7c3aed !important;
+    background: #fff !important;
+    box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.15) !important;
+}
+
+.gm-submit, .ad-submit {
+    background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%) !important;
+    box-shadow: 0 4px 14px rgba(124, 58, 237, 0.3) !important;
+    border-radius: 12px !important;
+    padding: 12px 24px !important;
+    font-weight: 800 !important;
+    font-size: 14px !important;
+    color: #fff !important;
+    border: none !important;
+    cursor: pointer;
+    transition: all 0.25s ease !important;
+    width: 100% !important;
+    margin-top: 12px !important;
+}
+
+.gm-submit:hover, .ad-submit:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4) !important;
+}
