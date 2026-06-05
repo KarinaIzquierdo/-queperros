@@ -19,7 +19,7 @@ class PaymentController extends Controller
     public function createSponsorshipPayment(Request $request, $sponsorDogId)
     {
         $sponsorDog = SponsorDog::findOrFail($sponsorDogId);
-        $amount = (int)($sponsorDog->meta_mensual ?: 50000);
+        $amount = 700000; // Valor único de apadrinamiento mensual solicitado
         $reference = 'SPONSOR-' . $sponsorDogId . '-' . time() . '-' . (Auth::id() ?: 'GUEST');
         
         $baseUrl = 'https://masqueperros.com.co';

@@ -91,6 +91,8 @@ class OwnerServiceController extends Controller
                 'category_color' => $catColor($catName),
                 'name' => $r->nombre,
                 'description' => (string) ($r->descripcion ?? ''),
+                'incluye' => (string) ($r->incluye ?? ''),
+                'ideal_para' => (string) ($r->ideal_para ?? ''),
                 'price' => $r->precio,
                 'duration' => $r->duracion,
             ];

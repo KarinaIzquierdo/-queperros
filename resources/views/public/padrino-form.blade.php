@@ -163,6 +163,22 @@
             <div class="padrino-form-container">
                 <h2 class="padrino-title">¡QUIERO APADRINAR!</h2>
                 
+                @if($errors->any())
+                    <div style="background: #fee2e2; border: 1px solid #ef4444; color: #b91c1c; padding: 1rem; border-radius: 10px; margin-bottom: 1.5rem; font-size: 0.85rem;">
+                        <ul style="margin: 0; padding-left: 1.2rem;">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+                @if(session('error'))
+                    <div style="background: #fee2e2; border: 1px solid #ef4444; color: #b91c1c; padding: 1rem; border-radius: 10px; margin-bottom: 1.5rem; font-size: 0.85rem;">
+                        {{ session('error') }}
+                    </div>
+                @endif
+                
                 <form action="{{ route('public.padrino.process', $dog) }}" method="POST">
                     @csrf
                     
@@ -182,28 +198,26 @@
                     </div>
 
                     <div style="margin-top: 1.5rem;">
-                        <label style="display: block; font-weight: 800; margin-bottom: 0.8rem;">Escoge tu plan de aporte mensual:</label>
-                        <div class="plan-options">
-                            <label class="plan-option" id="label-basico">
-                                <input type="radio" name="plan" value="basico" checked onchange="updateSelection('basico')">
-                                <span class="plan-name">BÁSICO</span>
-                                <span class="plan-price">$30.000</span>
-                            </label>
-                            <label class="plan-option" id="label-cuidador">
-                                <input type="radio" name="plan" value="cuidador" onchange="updateSelection('cuidador')">
-                                <span class="plan-name">CUIDADOR</span>
-                                <span class="plan-price">$50.000</span>
-                            </label>
-                            <label class="plan-option" id="label-protector">
-                                <input type="radio" name="plan" value="protector" onchange="updateSelection('protector')">
-                                <span class="plan-name">PROTECTOR</span>
-                                <span class="plan-price">$100.000</span>
-                            </label>
+                        <label style="display: block; font-weight: 800; margin-bottom: 0.8rem;">Aporte mensual único:</label>
+                        <div class="plan-options" style="grid-template-columns: 1fr;">
+                            <div class="plan-option selected" id="label-unico" style="cursor: default;">
+                                <input type="hidden" name="plan" value="unico">
+                                <span class="plan-name">APADRINAMIENTO MENSUAL</span>
+                                <span class="plan-price">$700.000</span>
+                            </div>
                         </div>
 
                         <div class="plan-description-box">
-                            <h4>¿Qué cubre este plan?</h4>
-                            <p id="plan-desc">Selecciona un plan para ver los beneficios.</p>
+                            <h4>¿Qué cubre tu apoyo?</h4>
+                            <ul style="margin: 0.5rem 0 0 1.2rem; padding: 0; font-size: 0.9rem; color: #64748b; line-height: 1.6;">
+                                <li>Cuidados</li>
+                                <li>Darle la comida</li>
+                                <li>Baño</li>
+                                <li>Cepillado</li>
+                                <li>Paseos ecológicos</li>
+                                <li>Juegos lúdicos</li>
+                                <li>Recreación</li>
+                            </ul>
                         </div>
                     </div>
 
@@ -222,19 +236,7 @@
     </div>
 
     <script>
-        const descriptions = {
-            'basico': 'Cubre alimentación balanceada y snacks saludables por una semana completa para el perrito.',
-            'cuidador': 'Cubre alimentación mensual completa, desparasitación básica y atención preventiva para garantizar su salud.',
-            'protector': 'Cubre alimentación premium, salud completa (vacunas), higiene, juguetes y bienestar integral durante todo el mes.'
-        };
-
-        function updateSelection(plan) {
-            document.querySelectorAll('.plan-option').forEach(opt => opt.classList.remove('selected'));
-            document.getElementById('label-' + plan).classList.add('selected');
-            document.getElementById('plan-desc').textContent = descriptions[plan];
-        }
-        // Init selection
-        updateSelection('basico');
+        // No hay selección dinámica ya que solo hay un plan
     </script>
 </body>
 </html>

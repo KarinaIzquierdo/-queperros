@@ -53,6 +53,8 @@ class AdminServiceController extends Controller
                 'category_color' => $catColor((string) $r->categoria_nombre),
                 'name' => $r->nombre,
                 'description' => $r->descripcion,
+                'incluye' => $r->incluye,
+                'ideal_para' => $r->ideal_para,
                 'price' => (int) $r->precio,
                 'duration' => $r->duracion,
                 'rating' => 0,
@@ -87,6 +89,8 @@ class AdminServiceController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string', 'max:120'],
             'description' => ['nullable', 'string', 'max:1000'],
+            'incluye' => ['nullable', 'string', 'max:1000'],
+            'ideal_para' => ['nullable', 'string', 'max:1000'],
             'price' => ['required', 'numeric', 'min:0'],
             'duration' => ['required', 'integer', 'min:1'],
             'category_id' => ['required', 'integer', 'exists:categorias_servicio,id'],
@@ -97,6 +101,8 @@ class AdminServiceController extends Controller
         $payload = [
             'nombre' => $data['name'],
             'descripcion' => $data['description'] ?? '',
+            'incluye' => $data['incluye'] ?? '',
+            'ideal_para' => $data['ideal_para'] ?? '',
             'precio' => $data['price'],
             'duracion' => $data['duration'],
             'categoria_id' => $data['category_id'],
@@ -124,6 +130,8 @@ class AdminServiceController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string', 'max:120'],
             'description' => ['nullable', 'string', 'max:1000'],
+            'incluye' => ['nullable', 'string', 'max:1000'],
+            'ideal_para' => ['nullable', 'string', 'max:1000'],
             'price' => ['required', 'numeric', 'min:0'],
             'duration' => ['required', 'integer', 'min:1'],
             'category_id' => ['required', 'integer', 'exists:categorias_servicio,id'],
@@ -132,6 +140,8 @@ class AdminServiceController extends Controller
         $servicio->update([
             'nombre' => $data['name'],
             'descripcion' => $data['description'] ?? '',
+            'incluye' => $data['incluye'] ?? '',
+            'ideal_para' => $data['ideal_para'] ?? '',
             'precio' => $data['price'],
             'duracion' => $data['duration'],
             'categoria_id' => $data['category_id'],

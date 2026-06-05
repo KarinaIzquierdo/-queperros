@@ -142,32 +142,37 @@
                                     <p class="sv-desc">{{ $service['description'] }}</p>
 
                                     <div class="sv-expand" hidden>
-                                        <div class="sv-expand-desc">Servicio disenado para todos los perros de todas las edades y razas. Incluye obediencia, autocontrol, socializacion y modificacion de comportamientos.</div>
-
-                                        <div class="sv-expand-block">
-                                            <div class="sv-expand-h">
-                                                <span class="sv-expand-check"><i class="bi bi-check-lg" aria-hidden="true"></i></span>
-                                                <span>Incluye:</span>
+                                        @if(!empty($service['incluye']))
+                                            <div class="sv-expand-block">
+                                                <div class="sv-expand-h">
+                                                    <span class="sv-expand-check"><i class="bi bi-check-lg" aria-hidden="true"></i></span>
+                                                    <span>Incluye:</span>
+                                                </div>
+                                                <ul class="sv-expand-ul">
+                                                    @foreach(explode("\n", str_replace("\r", "", $service['incluye'])) as $item)
+                                                        @if(trim($item))
+                                                            <li>{{ trim($item) }}</li>
+                                                        @endif
+                                                    @endforeach
+                                                </ul>
                                             </div>
-                                            <ul class="sv-expand-ul">
-                                                <li>Trabajo en obediencia y autocontrol</li>
-                                                <li>Socializacion intra e inter especifica</li>
-                                                <li>Manejo de ansiedad</li>
-                                                <li>Modificacion de comportamientos no adecuados</li>
-                                                <li>Deportes caninos: OCI y DISC DOG</li>
-                                            </ul>
-                                        </div>
+                                        @endif
 
-                                        <div class="sv-expand-block">
-                                            <div class="sv-expand-h sv-expand-h--star">
-                                                <span class="sv-expand-star"><i class="bi bi-star" aria-hidden="true"></i></span>
-                                                <span>Ideal para:</span>
+                                        @if(!empty($service['ideal_para']))
+                                            <div class="sv-expand-block">
+                                                <div class="sv-expand-h sv-expand-h--star">
+                                                    <span class="sv-expand-star"><i class="bi bi-star" aria-hidden="true"></i></span>
+                                                    <span>Ideal para:</span>
+                                                </div>
+                                                <ul class="sv-expand-ul sv-expand-ul--star">
+                                                    @foreach(explode("\n", str_replace("\r", "", $service['ideal_para'])) as $item)
+                                                        @if(trim($item))
+                                                            <li>{{ trim($item) }}</li>
+                                                        @endif
+                                                    @endforeach
+                                                </ul>
                                             </div>
-                                            <ul class="sv-expand-ul sv-expand-ul--star">
-                                                <li>Todos los perros</li>
-                                                <li>Familias que buscan mejorar la convivencia</li>
-                                            </ul>
-                                        </div>
+                                        @endif
                                     </div>
                                 </div>
 

@@ -140,13 +140,6 @@
                                             <button type="button" class="mq-ver-mas" data-service-name="Hotel canino" data-service-desc="Servicio de hospedaje para estancias de corta y larga duración. Ofrecemos un entorno seguro, cómodo y supervisado donde los perros reciben rutinas de cuidado, alimentación, ejercicio, descanso y acompañamiento profesional. Nos enfocamos en su bienestar físico, emocional y conductual para que se sientan tranquilos durante la ausencia del tutor. Ofrecemos servicio de recogida para estancias mayores a 8 días en la ciudad de Bogotá.">Ver más</button>
                                         </div>
                                     </li>
-                                    <li class="mq-service-item" style="display: flex; align-items: flex-start; gap: 12px; color: #1B1B18; font-size: 1.1rem; line-height: 1.3; position: relative;">
-                                        <img src="{{ asset('img/huellita.png') }}" alt="" style="width: 20px; margin-top: 4px; flex-shrink: 0;">
-                                        <div style="display: flex; flex-direction: column;">
-                                            <span>Guardería (solo para la calera y zonas aledañas)</span>
-                                            <button type="button" class="mq-ver-mas" data-service-name="Guardería" data-service-desc="Espacio seguro y tranquilo para perros cuyos tutores necesitan dejarlos por algunas horas o durante el día. En nuestra guardería, los perros reciben cuidado, actividades controladas, interacción social adecuada y supervisión constante en un ambiente natural, amplio y pensado para su bienestar.">Ver más</button>
-                                        </div>
-                                    </li>
                                 </ul>
                             </article>
                         </div>

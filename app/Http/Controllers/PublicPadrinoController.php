@@ -30,18 +30,16 @@ class PublicPadrinoController extends Controller
             'nombre' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'telefono' => 'nullable|string|max:20',
-            'plan' => 'required|string|in:basico,cuidador,protector',
+            'plan' => 'required|string',
         ]);
 
-        $amount = match ($validated['plan']) {
-            'cuidador' => 50000,
-            'protector' => 100000,
-            default => 30000,
-        };
+        $amount = 700000; // Valor único de apadrinamiento mensual solicitado
 
         // Crear registro de sponsorship (sin user_id porque es invitado)
         $sponsorship = Sponsorship::create([
             'user_id' => null,
+            'guest_name' => $validated['nombre'],
+            'guest_email' => $validated['email'],
             'sponsor_dog_id' => $dog->id,
             'plan' => $validated['plan'],
             'monto_mensual' => $amount,
@@ -60,9 +58,9 @@ class PublicPadrinoController extends Controller
                 ]
             ],
             'back_urls' => [
-                'success' => route('payment.success', ['type' => 'sponsorship', 'id' => $dog->id]),
-                'failure' => route('payment.failure', ['type' => 'sponsorship', 'id' => $dog->id]),
-                'pending' => route('payment.pending', ['type' => 'sponsorship', 'id' => $dog->id]),
+                'success' => 'https://masqueperros.com.co/payment/success/sponsorship/' . $dog->id,
+                'failure' => 'https://masqueperros.com.co/payment/failure/sponsorship/' . $dog->id,
+                'pending' => 'https://masqueperros.com.co/payment/pending/sponsorship/' . $dog->id,
             ],
             'auto_return' => 'approved',
             'external_reference' => $reference,
@@ -78,6 +76,11 @@ class PublicPadrinoController extends Controller
             'Authorization' => 'Bearer ' . env('MERCADOPAGO_ACCESS_TOKEN'),
             'Content-Type' => 'application/json',
         ])->post('https://api.mercadopago.com/checkout/preferences', $preferenceData);
+
+        \Log::info('MercadoPago Public Preference Response', [
+            'status' => $response->status(),
+            'body' => $response->json()
+        ]);
 
         if ($response->successful()) {
             $preference = $response->json();

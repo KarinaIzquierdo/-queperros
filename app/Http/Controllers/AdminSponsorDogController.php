@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\SponsorDog;
+use App\Models\Sponsorship;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -12,10 +13,16 @@ class AdminSponsorDogController extends Controller
     public function index()
     {
         $dogs = SponsorDog::query()->orderByDesc('id')->get();
+        $sponsorships = Sponsorship::query()
+            ->leftJoin('users', 'sponsorships.user_id', '=', 'users.id')
+            ->select('sponsorships.*', 'users.name as user_name', 'users.email as user_email')
+            ->orderByDesc('sponsorships.created_at')
+            ->get();
 
         return view('admin.padrinos.index', [
             'admin' => Auth::user(),
             'dogs' => $dogs,
+            'sponsorships' => $sponsorships,
         ]);
     }
 

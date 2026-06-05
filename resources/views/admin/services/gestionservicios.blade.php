@@ -160,6 +160,8 @@
                                     data-service-id="{{ $s['id'] ?? '' }}"
                                     data-service-name="{{ $s['name'] ?? '' }}"
                                     data-service-description="{{ $s['description'] ?? '' }}"
+                                    data-service-incluye="{{ $s['incluye'] ?? '' }}"
+                                    data-service-ideal-para="{{ $s['ideal_para'] ?? '' }}"
                                     data-service-price="{{ (int) ($s['price'] ?? 0) }}"
                                     data-service-duration="{{ $s['duration'] ?? '' }}"
                                     data-service-category-id="{{ (int) ($s['category_id'] ?? 0) }}"
@@ -209,6 +211,18 @@
 
                                 <div class="ad2-row-2col">
                                     <label class="ad2-field">
+                                        <span class="ad2-label">Lo que incluye</span>
+                                        <textarea class="ad2-input ad2-textarea" name="incluye" rows="3" placeholder="Ponga cada item en una linea nueva..."></textarea>
+                                    </label>
+
+                                    <label class="ad2-field">
+                                        <span class="ad2-label">Ideal para</span>
+                                        <textarea class="ad2-input ad2-textarea" name="ideal_para" rows="3" placeholder="Ponga cada item en una linea nueva..."></textarea>
+                                    </label>
+                                </div>
+
+                                <div class="ad2-row-2col">
+                                    <label class="ad2-field">
                                         <span class="ad2-label">Precio (COP)</span>
                                         <input class="ad2-input" type="number" name="price" placeholder="50000" min="0" step="1" required />
                                     </label>
@@ -254,6 +268,18 @@
                                     <span class="ad2-label">Descripcion</span>
                                     <textarea class="ad2-input ad2-textarea" name="description" id="gsEditDescription" rows="3" placeholder="Describe el servicio..."></textarea>
                                 </label>
+
+                                <div class="ad2-row-2col">
+                                    <label class="ad2-field">
+                                        <span class="ad2-label">Lo que incluye</span>
+                                        <textarea class="ad2-input ad2-textarea" name="incluye" id="gsEditIncluye" rows="3" placeholder="Ponga cada item en una linea nueva..."></textarea>
+                                    </label>
+
+                                    <label class="ad2-field">
+                                        <span class="ad2-label">Ideal para</span>
+                                        <textarea class="ad2-input ad2-textarea" name="ideal_para" id="gsEditIdealPara" rows="3" placeholder="Ponga cada item en una linea nueva..."></textarea>
+                                    </label>
+                                </div>
 
                                 <div class="ad2-row-2col">
                                     <label class="ad2-field">
@@ -339,6 +365,8 @@
                 const editForm = document.getElementById('gsEditServiceForm');
                 const editName = document.getElementById('gsEditName');
                 const editDescription = document.getElementById('gsEditDescription');
+                const editIncluye = document.getElementById('gsEditIncluye');
+                const editIdealPara = document.getElementById('gsEditIdealPara');
                 const editPrice = document.getElementById('gsEditPrice');
                 const editDuration = document.getElementById('gsEditDuration');
                 const editCategory = document.getElementById('gsEditCategory');
@@ -512,6 +540,8 @@
                         if (editForm) editForm.action = `/admin/services/${id}`;
                         if (editName) editName.value = btn.getAttribute('data-service-name') || '';
                         if (editDescription) editDescription.value = btn.getAttribute('data-service-description') || '';
+                        if (editIncluye) editIncluye.value = btn.getAttribute('data-service-incluye') || '';
+                        if (editIdealPara) editIdealPara.value = btn.getAttribute('data-service-ideal-para') || '';
                         if (editPrice) editPrice.value = btn.getAttribute('data-service-price') || '0';
                         if (editDuration) editDuration.value = btn.getAttribute('data-service-duration') || '';
                         if (editCategory) editCategory.value = btn.getAttribute('data-service-category-id') || '';

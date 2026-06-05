@@ -162,11 +162,11 @@
                                         <span id="file-name-create" class="file-name-text">Sin archivo</span>
                                     </div>
                                 </div>
-                                <div class="ap-field">
+                                <div class="ap-field" style="display: none;">
                                     <label class="ap-label">Meta mensual</label>
                                     <div class="input-with-icon">
                                         <span class="input-icon">$</span>
-                                        <input class="ap-input" name="meta_mensual" type="number" min="0" placeholder="Ej: 300000">
+                                        <input class="ap-input" name="meta_mensual" type="number" value="700000">
                                     </div>
                                 </div>
                                 <input type="hidden" name="estado" value="Disponible">
@@ -188,6 +188,75 @@
                                 </button>
                             </div>
                         </form>
+                    </div>
+
+                    <div class="ap-card">
+                        <div class="ap-card-title">
+                            <i class="bi bi-people-fill"></i> Padrinos Recientes
+                        </div>
+                        <div class="ap-table-wrapper">
+                            <table class="ap-table">
+                                <thead>
+                                    <tr>
+                                        <th>Padrino</th>
+                                        <th>Perrito</th>
+                                        <th>Monto Mensual</th>
+                                        <th>Fecha</th>
+                                        <th>Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse ($sponsorships as $spon)
+                                        <tr>
+                                            <td>
+                                                <div style="font-weight: 800; color: #2b2740;">
+                                                    {{ $spon->guest_name ?: ($spon->user_name ?: 'Padrino') }}
+                                                </div>
+                                                <div style="font-size: 11px; color: #8a84a3;">
+                                                    {{ $spon->guest_email ?: ($spon->user_email ?: 'Sin correo') }}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                @php
+                                                    $dog = $dogs->firstWhere('id', $spon->sponsor_dog_id);
+                                                @endphp
+                                                <div style="display: flex; align-items: center; gap: 8px;">
+                                                    @if($dog)
+                                                        <img class="ap-photo" style="width: 30px; height: 30px; border-radius: 8px;" src="{{ $dog->foto ? asset('storage/' . ltrim($dog->foto, '/')) : asset('img/pet.png') }}" alt="">
+                                                        <span style="font-weight: 700;">{{ $dog->nombre }}</span>
+                                                    @else
+                                                        <span style="color: #8a84a3;">—</span>
+                                                    @endif
+                                                </div>
+                                            </td>
+                                            <td style="font-weight: 800; color: #3b82f6;">
+                                                ${{ number_format($spon->monto_mensual, 0, ',', '.') }}
+                                            </td>
+                                            <td style="font-size: 12px; color: #4c4763;">
+                                                {{ $spon->created_at ? \Carbon\Carbon::parse($spon->created_at)->format('d/m/Y') : '—' }}
+                                            </td>
+                                            <td>
+                                                @if($spon->estado === 'Activo' || $spon->estado === 'pagado')
+                                                    <span class="ap-status">
+                                                        <i class="bi bi-check-circle"></i> {{ ucfirst($spon->estado) }}
+                                                    </span>
+                                                @else
+                                                    <span class="ap-status-no">
+                                                        {{ ucfirst($spon->estado) }}
+                                                    </span>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="5" style="text-align: center; padding: 32px; color: #8a84a3;">
+                                                No hay apadrinamientos registrados todavía.
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
 
                     <div class="ap-card">
@@ -308,11 +377,11 @@
                                     <span id="file-name-edit-{{ $dog->id }}" class="file-name-text">Sin archivo</span>
                                 </div>
                             </div>
-                            <div class="ap-field">
+                            <div class="ap-field" style="display: none;">
                                 <label class="ap-label">Meta mensual</label>
                                 <div class="input-with-icon">
                                     <span class="input-icon">$</span>
-                                    <input class="ap-input" name="meta_mensual" type="number" min="0" value="{{ $dog->meta_mensual }}">
+                                    <input class="ap-input" name="meta_mensual" type="number" value="700000">
                                 </div>
                             </div>
                             <input type="hidden" name="estado" value="Disponible">

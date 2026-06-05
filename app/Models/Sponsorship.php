@@ -8,6 +8,8 @@ class Sponsorship extends Model
 {
     protected $fillable = [
         'user_id',
+        'guest_name',
+        'guest_email',
         'sponsor_dog_id',
         'plan',
         'monto_mensual',

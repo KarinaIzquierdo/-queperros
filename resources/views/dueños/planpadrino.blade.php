@@ -95,20 +95,19 @@
                                             @endif
                                         </div>
                                         <div class="pp-card-actions">
-                                            <form action="{{ route('payment.sponsorship.create', $dog) }}" method="POST">
-                                                @csrf
-                                                <button
-                                                    class="pp-sponsor-btn"
-                                                    type="submit"
-                                                    data-pp-name="{{ $dog->nombre }}"
-                                                    data-pp-meta="{{ $meta }}"
-                                                    data-pp-img="{{ $photo }}"
-                                                    data-pp-story="{{ $dog->historia }}"
-                                                >
-                                                    <i class="bi bi-credit-card" style="margin-right: 8px;"></i>
-                                                    Apadrinar con MercadoPago
-                                                </button>
-                                            </form>
+                                            <button
+                                                class="pp-sponsor-btn"
+                                                type="button"
+                                                data-pp-sponsor
+                                                data-pp-name="{{ $dog->nombre }}"
+                                                data-pp-meta="{{ $meta }}"
+                                                data-pp-img="{{ $photo }}"
+                                                data-pp-story="{{ $dog->historia }}"
+                                                data-pp-action="{{ route('payment.sponsorship.create', $dog) }}"
+                                            >
+                                                <i class="bi bi-heart-fill"></i>
+                                                Apadrinar a {{ $dog->nombre }}
+                                            </button>
                                         </div>
                                     </article>
                                 @empty
@@ -180,53 +179,24 @@
                                 <p class="pp-modal-p" data-pp-modal-story>
                                 </p>
 
-                                <div class="pp-modal-title2">Elige tu plan de apadrinamiento</div>
+                                <div class="pp-modal-title2">Detalles del apadrinamiento</div>
 
-                                <div class="pp-plan-list" role="radiogroup" aria-label="Planes">
-                                    <label class="pp-plan" data-pp-plan>
-                                        <input type="radio" name="ppPlan" value="basico">
-                                        <div>
+                                <div class="pp-plan-list">
+                                    <label class="pp-plan pp-plan--active" style="cursor: default;">
+                                        <input type="radio" name="ppPlan" value="unico" checked style="display: none;">
+                                        <div style="width: 100%;">
                                             <div class="pp-plan-top">
-                                                <div class="pp-plan-name">Basico</div>
-                                                <div class="pp-plan-price">$30.000/mes</div>
+                                                <div class="pp-plan-name">Plan Único de Apadrinamiento</div>
+                                                <div class="pp-plan-price">$700.000/mes</div>
                                             </div>
-                                            <ul class="pp-plan-ul">
-                                                <li><i class="bi bi-check-lg" aria-hidden="true"></i><span>Alimentacion mensual</span></li>
-                                                <li><i class="bi bi-check-lg" aria-hidden="true"></i><span>Foto mensual del perro</span></li>
-                                                <li><i class="bi bi-check-lg" aria-hidden="true"></i><span>Reporte trimestral</span></li>
-                                            </ul>
-                                        </div>
-                                    </label>
-
-                                    <label class="pp-plan" data-pp-plan>
-                                        <input type="radio" name="ppPlan" value="cuidador">
-                                        <div>
-                                            <div class="pp-plan-top">
-                                                <div class="pp-plan-name">Cuidador</div>
-                                                <div class="pp-plan-price">$50.000/mes</div>
-                                            </div>
-                                            <ul class="pp-plan-ul">
-                                                <li><i class="bi bi-check-lg" aria-hidden="true"></i><span>Todo lo del plan Basico</span></li>
-                                                <li><i class="bi bi-check-lg" aria-hidden="true"></i><span>Vacunas incluidas</span></li>
-                                                <li><i class="bi bi-check-lg" aria-hidden="true"></i><span>Visitas mensuales permitidas</span></li>
-                                                <li><i class="bi bi-check-lg" aria-hidden="true"></i><span>Reporte mensual con fotos</span></li>
-                                            </ul>
-                                        </div>
-                                    </label>
-
-                                    <label class="pp-plan" data-pp-plan>
-                                        <input type="radio" name="ppPlan" value="protector">
-                                        <div>
-                                            <div class="pp-plan-top">
-                                                <div class="pp-plan-name">Protector</div>
-                                                <div class="pp-plan-price">$100.000/mes</div>
-                                            </div>
-                                            <ul class="pp-plan-ul">
-                                                <li><i class="bi bi-check-lg" aria-hidden="true"></i><span>Todo lo del plan Cuidador</span></li>
-                                                <li><i class="bi bi-check-lg" aria-hidden="true"></i><span>Cuidados medicos completos</span></li>
-                                                <li><i class="bi bi-check-lg" aria-hidden="true"></i><span>Video mensual</span></li>
-                                                <li><i class="bi bi-check-lg" aria-hidden="true"></i><span>Nombre del padrino en placa</span></li>
-                                                <li><i class="bi bi-check-lg" aria-hidden="true"></i><span>Prioridad en adopcion</span></li>
+                                            <ul class="pp-plan-ul" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                                <li><i class="bi bi-check-lg" aria-hidden="true"></i><span>Cuidados</span></li>
+                                                <li><i class="bi bi-check-lg" aria-hidden="true"></i><span>Darle la comida</span></li>
+                                                <li><i class="bi bi-check-lg" aria-hidden="true"></i><span>Baño</span></li>
+                                                <li><i class="bi bi-check-lg" aria-hidden="true"></i><span>Cepillado</span></li>
+                                                <li><i class="bi bi-check-lg" aria-hidden="true"></i><span>Paseos ecológicos</span></li>
+                                                <li><i class="bi bi-check-lg" aria-hidden="true"></i><span>Juegos lúdicos</span></li>
+                                                <li><i class="bi bi-check-lg" aria-hidden="true"></i><span>Recreación</span></li>
                                             </ul>
                                         </div>
                                     </label>
@@ -322,6 +292,12 @@
                     if (modalName) modalName.textContent = data.name || '';
                     if (modalMeta) modalMeta.textContent = data.meta || '';
                     if (modalStory) modalStory.textContent = data.story || '';
+
+                    // Habilitar botón de confirmar automáticamente ya que solo hay un plan
+                    if (confirmBtn) {
+                        confirmBtn.disabled = false;
+                        confirmBtn.classList.add('pp-confirm--active');
+                    }
 
                     document.body.classList.add('pp-lock');
                     sponsorModal.classList.add('pp-modal--open');
