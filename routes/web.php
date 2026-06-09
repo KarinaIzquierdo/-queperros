@@ -20,6 +20,7 @@ use App\Http\Controllers\TrainerModulesController;
 use App\Http\Controllers\AdminSettingsController;
 use App\Http\Controllers\PaymentController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
 
 Route::get('/', function () {
     try {
@@ -30,10 +31,8 @@ Route::get('/', function () {
             ->limit(3)
             ->get();
     } catch (\Exception $e) {
-        // If database connection fails, return empty collection
         $sponsorDogs = collect();
     }
-
     return view('welcome', ['sponsorDogs' => $sponsorDogs]);
 });
 
@@ -352,27 +351,22 @@ Route::post('/entrenador/perfil', [TrainerModulesController::class, 'updatePerfi
     ->name('entrenador.perfil.update');
 
 // Rutas de pagos con MercadoPago
-// Estas rutas de respuesta deben ser públicas para que MercadoPago pueda redirigir
 Route::get('/payment/success/{type}/{id}', [PaymentController::class, 'success'])
     ->name('payment.success');
-
 Route::get('/payment/failure/{type}/{id}', [PaymentController::class, 'failure'])
     ->name('payment.failure');
-
 Route::get('/payment/pending/{type}/{id}', [PaymentController::class, 'pending'])
     ->name('payment.pending');
 
 // Respuestas de MercadoPago para reservas
 Route::get('/payment/reservation/success/{id}', [PaymentController::class, 'reservationSuccess'])
     ->name('payment.reservation.success');
-
 Route::get('/payment/reservation/failure/{id}', [PaymentController::class, 'reservationFailure'])
     ->name('payment.reservation.failure');
-
 Route::get('/payment/reservation/pending/{id}', [PaymentController::class, 'reservationPending'])
     ->name('payment.reservation.pending');
 
-// Webhook de MercadoPago (sin auth para recibir notificaciones externas)
+// Webhook de MercadoPago
 Route::post('/payment/webhook', [PaymentController::class, 'webhook'])
     ->name('payment.webhook');
 
@@ -383,15 +377,66 @@ Route::post('/apadrinar/{dog}/procesar', [\App\Http\Controllers\PublicPadrinoCon
     ->name('public.padrino.process');
 
 Route::middleware('auth')->group(function () {
-    // Crear pago de apadrinamiento (para usuarios logueados)
     Route::post('/payment/sponsorship/{sponsorDog}', [PaymentController::class, 'createSponsorshipPayment'])
         ->name('payment.sponsorship.create');
-    
-    // Crear pago de servicio
     Route::post('/payment/service/{serviceApproval}', [PaymentController::class, 'createServicePayment'])
         ->name('payment.service.create');
-    
-    // Crear pago de reserva de entrenamiento
     Route::post('/payment/reservation/{reservation}', [PaymentController::class, 'createReservationPayment'])
         ->name('payment.reservation.create');
+});
+
+// --- MANTENIMIENTO Y REPARACIÓN ---
+
+// REPARADOR COMPLETO (Carpetas, Enlace y Caché)
+Route::get('/reparar-todo', function () {
+    try {
+        $resultados = [];
+        // 1. Crear carpetas
+        $directorios = [
+            storage_path('app/public/plan-padrino'),
+            storage_path('app/public/mascotas'),
+            storage_path('app/public/galeria'),
+        ];
+        foreach ($directorios as $dir) {
+            if (!file_exists($dir)) {
+                mkdir($dir, 0775, true);
+                $resultados[] = "Carpeta creada: $dir";
+            }
+        }
+        // 2. Enlace simbólico
+        if (file_exists(public_path('storage'))) {
+            if (is_link(public_path('storage'))) {
+                unlink(public_path('storage'));
+            } else {
+                rename(public_path('storage'), public_path('storage_old_' . time()));
+            }
+        }
+        Artisan::call('storage:link');
+        $resultados[] = "Enlace simbólico recreado ✅";
+        
+        // 3. Limpiar caché
+        Artisan::call('config:clear');
+        Artisan::call('route:clear');
+        Artisan::call('cache:clear');
+        Artisan::call('view:clear');
+        $resultados[] = "Caché de Laravel limpia ✅";
+        
+        return [
+            'status' => 'Proceso terminado',
+            'detalles' => $resultados,
+            'permisos_storage' => substr(sprintf('%o', fileperms(storage_path())), -4)
+        ];
+    } catch (\Exception $e) {
+        return "Error crítico: " . $e->getMessage();
+    }
+});
+
+// INSTALADOR DE BASE DE DATOS (Migraciones)
+Route::get('/instalar-db', function () {
+    try {
+        Artisan::call('migrate', ['--force' => true]);
+        return "Base de datos migrada con éxito.";
+    } catch (\Exception $e) {
+        return "Error: " . $e->getMessage();
+    }
 });
