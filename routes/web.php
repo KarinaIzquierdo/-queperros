@@ -387,34 +387,55 @@ Route::middleware('auth')->group(function () {
 
 // --- MANTENIMIENTO Y REPARACIÓN ---
 
-// REPARADOR COMPLETO (Carpetas, Enlace y Caché)
+// REPARADOR DEFINITIVO PARA HOSTINGER (Carpetas reales en lugar de symlinks)
 Route::get('/reparar-todo', function () {
     try {
         $resultados = [];
-        // 1. Crear carpetas
+        
+        $storagePublicPath = public_path('storage');
+
+        // 1. Eliminar el symlink viejo si existe
+        if (file_exists($storagePublicPath)) {
+            if (is_link($storagePublicPath)) {
+                unlink($storagePublicPath);
+                $resultados[] = "Symlink eliminado ✅";
+            } else {
+                // Si ya es carpeta, no hacemos nada o la respaldamos
+                $resultados[] = "La carpeta 'storage' ya es física ✅";
+            }
+        }
+
+        // 2. Crear la carpeta física 'public/storage' y sus subcarpetas
         $directorios = [
-            storage_path('app/public/plan-padrino'),
-            storage_path('app/public/mascotas'),
-            storage_path('app/public/galeria'),
+            $storagePublicPath,
+            $storagePublicPath . '/plan-padrino',
+            $storagePublicPath . '/mascotas',
+            $storagePublicPath . '/galeria',
+            $storagePublicPath . '/gallery/public',
         ];
+
         foreach ($directorios as $dir) {
             if (!file_exists($dir)) {
                 mkdir($dir, 0775, true);
-                $resultados[] = "Carpeta creada: $dir";
+                $resultados[] = "Carpeta creada físicamente: " . basename($dir);
+            }
+            chmod($dir, 0775);
+        }
+
+        // 3. Intentar mover archivos existentes si los hay (opcional)
+        $oldStorage = storage_path('app/public');
+        if (file_exists($oldStorage)) {
+            // Intentar copiar fotos de perritos
+            if (file_exists($oldStorage . '/plan-padrino')) {
+                shell_exec("cp -R " . $oldStorage . "/plan-padrino/* " . $storagePublicPath . "/plan-padrino/ 2>/dev/null");
+            }
+            // Intentar copiar fotos de galería
+            if (file_exists($oldStorage . '/gallery')) {
+                shell_exec("cp -R " . $oldStorage . "/gallery/* " . $storagePublicPath . "/gallery/ 2>/dev/null");
             }
         }
-        // 2. Enlace simbólico
-        if (file_exists(public_path('storage'))) {
-            if (is_link(public_path('storage'))) {
-                unlink(public_path('storage'));
-            } else {
-                rename(public_path('storage'), public_path('storage_old_' . time()));
-            }
-        }
-        Artisan::call('storage:link');
-        $resultados[] = "Enlace simbólico recreado ✅";
-        
-        // 3. Limpiar caché
+
+        // 4. Limpiar caché para reconocer el nuevo filesystems.php
         Artisan::call('config:clear');
         Artisan::call('route:clear');
         Artisan::call('cache:clear');
@@ -422,9 +443,9 @@ Route::get('/reparar-todo', function () {
         $resultados[] = "Caché de Laravel limpia ✅";
         
         return [
-            'status' => 'Proceso terminado',
-            'detalles' => $resultados,
-            'permisos_storage' => substr(sprintf('%o', fileperms(storage_path())), -4)
+            'status' => 'SISTEMA REPARADO PARA HOSTINGER',
+            'mensaje' => 'Ahora las imágenes se guardarán directamente en public/storage',
+            'detalles' => $resultados
         ];
     } catch (\Exception $e) {
         return "Error crítico: " . $e->getMessage();
