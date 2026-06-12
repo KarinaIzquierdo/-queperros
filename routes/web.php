@@ -425,6 +425,28 @@ Route::get('/reparar-todo', function () {
         Artisan::call('cache:clear');
         Artisan::call('view:clear');
         $resultados[] = "Caché de Laravel limpia ✅";
+
+        // 4. FORZAR COLUMNAS DE PERFIL (Para evitar error de documento, ciudad, etc)
+        if (Schema::hasTable('duenos')) {
+            Schema::table('duenos', function ($table) {
+                if (!Schema::hasColumn('duenos', 'documento')) {
+                    DB::statement('ALTER TABLE duenos ADD COLUMN documento VARCHAR(80) NULL AFTER telefono');
+                    $resultados[] = "Columna 'documento' añadida ✅";
+                }
+                if (!Schema::hasColumn('duenos', 'direccion')) {
+                    DB::statement('ALTER TABLE duenos ADD COLUMN direccion VARCHAR(255) NULL AFTER documento');
+                    $resultados[] = "Columna 'direccion' añadida ✅";
+                }
+                if (!Schema::hasColumn('duenos', 'ciudad')) {
+                    DB::statement('ALTER TABLE duenos ADD COLUMN ciudad VARCHAR(120) NULL AFTER direccion');
+                    $resultados[] = "Columna 'ciudad' añadida ✅";
+                }
+                if (!Schema::hasColumn('duenos', 'fecha_nacimiento')) {
+                    DB::statement('ALTER TABLE duenos ADD COLUMN fecha_nacimiento DATE NULL AFTER ciudad');
+                    $resultados[] = "Columna 'fecha_nacimiento' añadida ✅";
+                }
+            });
+        }
         
         return [
             'status' => 'SISTEMA REPARADO ✅',
