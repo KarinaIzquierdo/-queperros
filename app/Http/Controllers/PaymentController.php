@@ -254,7 +254,26 @@ class PaymentController extends Controller
                 if ($type === 'sponsorship') {
                     if (isset($payment->metadata['sponsorship_id'])) {
                         $sponsorship = \App\Models\Sponsorship::find($payment->metadata['sponsorship_id']);
-                        if ($sponsorship) $sponsorship->update(['estado' => 'Activo']);
+                        if ($sponsorship) {
+                            $sponsorship->update(['estado' => 'Pagada']);
+                            
+                            // Notificar al administrador
+                            $adminId = DB::table('users')->where('rol', 'admin')->first()->id ?? 1;
+                            $dogName = $payment->metadata['sponsor_dog_name'] ?? 'un perrito';
+                            $padrinoName = $payment->metadata['guest_name'] ?? (Auth::user()->name ?? 'Un padrino');
+                            
+                            if (Schema::hasTable('notifications')) {
+                                DB::table('notifications')->insert([
+                                    'id_usuario' => $adminId,
+                                    'tipo' => 'pago_padrino',
+                                    'mensaje' => "¡Pago recibido! {$padrinoName} ha pagado el apadrinamiento de {$dogName}.",
+                                    'url' => '/admin/plan-padrino',
+                                    'leido' => false,
+                                    'created_at' => now(),
+                                    'updated_at' => now(),
+                                ]);
+                            }
+                        }
                     }
 
                     if (Auth::check()) {
@@ -331,7 +350,26 @@ class PaymentController extends Controller
                         } elseif ($payment->payment_type === 'sponsorship') {
                             if (isset($payment->metadata['sponsorship_id'])) {
                                 $sponsorship = \App\Models\Sponsorship::find($payment->metadata['sponsorship_id']);
-                                if ($sponsorship) $sponsorship->update(['estado' => 'Activo']);
+                                if ($sponsorship) {
+                                    $sponsorship->update(['estado' => 'Pagada']);
+                                    
+                                    // Notificar al administrador
+                                    $adminId = DB::table('users')->where('rol', 'admin')->first()->id ?? 1;
+                                    $dogName = $payment->metadata['sponsor_dog_name'] ?? 'un perrito';
+                                    $padrinoName = $payment->metadata['guest_name'] ?? ($payment->user->name ?? 'Un padrino');
+                                    
+                                    if (Schema::hasTable('notifications')) {
+                                        DB::table('notifications')->insert([
+                                            'id_usuario' => $adminId,
+                                            'tipo' => 'pago_padrino',
+                                            'mensaje' => "¡Pago recibido! {$padrinoName} ha pagado el apadrinamiento de {$dogName}.",
+                                            'url' => '/admin/plan-padrino',
+                                            'leido' => false,
+                                            'created_at' => now(),
+                                            'updated_at' => now(),
+                                        ]);
+                                    }
+                                }
                             }
                         }
                     }

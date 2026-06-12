@@ -28,7 +28,15 @@ Artisan::command('notifications:purge', function () {
             ->delete();
     }
 
-    $this->info("¡Depuración completada! Se eliminaron " . ($count1 + $count2) . " notificaciones.");
+    $count3 = 0;
+    if (Schema::hasTable('sponsorships')) {
+        $count3 = DB::table('sponsorships')
+            ->where('estado', 'Pendiente')
+            ->where('created_at', '<', now()->subDays(7))
+            ->delete();
+    }
+
+    $this->info("¡Depuración completada! Se eliminaron " . ($count1 + $count2) . " notificaciones y " . $count3 . " apadrinamientos pendientes.");
 })->purpose('Elimina notificaciones de más de 3 días');
 
 // Tarea para depurar notificaciones (más de 3 días)
@@ -54,3 +62,13 @@ Schedule::call(function () {
             ->delete();
     }
 })->monthly();
+
+// Tarea para depurar apadrinamientos pendientes de más de 7 días
+Schedule::call(function () {
+    if (Schema::hasTable('sponsorships')) {
+        DB::table('sponsorships')
+            ->where('estado', 'Pendiente')
+            ->where('created_at', '<', now()->subDays(7))
+            ->delete();
+    }
+})->daily();
