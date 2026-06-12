@@ -110,14 +110,21 @@
                     <div class="mq-services-grid" style="display: flex; flex-direction: column; align-items: center; gap: 2.5rem;">
                         <!-- Fila Superior -->
                         <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 2.5rem; width: 100%;">
-                            <article class="mq-card-ui" style="background: #DCEBFA; border-radius: 20px; border: 1px solid #B4C7D9; box-shadow: 0 4px 15px rgba(0,0,0,0.08); padding: 2.5rem; width: 380px; height: 260px; display: flex; flex-direction: column; justify-content: flex-start;">
+                            <article class="mq-card-ui" style="background: #DCEBFA; border-radius: 20px; border: 1px solid #B4C7D9; box-shadow: 0 4px 15px rgba(0,0,0,0.08); padding: 2.5rem; width: 380px; min-height: 260px; display: flex; flex-direction: column; justify-content: flex-start;">
                                 <h3 style="font-family: 'Lilita One', cursive; font-size: 1.8rem; color: #1B1B18; text-align: center; margin-bottom: 1.5rem; letter-spacing: 1px; line-height: 1.1;">ENTRENAMIENTO CANINO</h3>
                                 <ul style="list-style: none; padding: 0; margin: 0;">
                                     <li class="mq-service-item" style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 1.2rem; color: #1B1B18; font-size: 1.1rem; line-height: 1.3; position: relative;">
                                         <img src="{{ asset('img/huellita.png') }}" alt="" style="width: 20px; margin-top: 4px; flex-shrink: 0;">
                                         <div style="display: flex; flex-direction: column;">
-                                            <span>Entrenamiento básico integral y deportivo</span>
-                                            <button type="button" class="mq-ver-mas" data-service-name="Entrenamiento básico integral y deportivo" data-service-desc="Servicio diseñado para todos los perros de todas las edades y razas por que un perro entrenado mejora la convivencia y el bienestar de la familia multiespecie o para aquellos perros que necesitan apoyo en el aprendizaje o refuerzo de normas de convivencia. Incluye trabajo en obediencia, autocontrol, socialización, manejo de ansiedad y modificación de comportamientos no adecuados. Nuestro entrenamiento está orientado a la disciplina, el ejercicio mental y el desarrollo de capacidades físicas, estimulando su potencial mediante actividades deportivas y trabajo estructurado.">Ver más</button>
+                                            <span>Entrenamiento básico integral</span>
+                                            <button type="button" class="mq-ver-mas" data-service-name="Entrenamiento básico integral" data-service-desc="Servicio diseñado para todos los perros de todas las edades y razas por que un perro entrenado mejora la convivencia y el bienestar de la familia multiespecie o para aquellos perros que necesitan apoyo en el aprendizaje o refuerzo de normas de convivencia. Incluye trabajo en obediencia, autocontrol, socialización, manejo de ansiedad y modificación de comportamientos no adecuados. Nuestro entrenamiento está orientado a la disciplina, el ejercicio mental y el desarrollo de capacidades físicas, estimulando su potencial mediante trabajo estructurado.">Ver más</button>
+                                        </div>
+                                    </li>
+                                    <li class="mq-service-item" style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 1.2rem; color: #1B1B18; font-size: 1.1rem; line-height: 1.3; position: relative;">
+                                        <img src="{{ asset('img/huellita.png') }}" alt="" style="width: 20px; margin-top: 4px; flex-shrink: 0;">
+                                        <div style="display: flex; flex-direction: column;">
+                                            <span>Entrenamiento deportivo</span>
+                                            <button type="button" class="mq-ver-mas" data-service-name="Entrenamiento deportivo" data-service-desc="Entrenamos en deportes caninos como: • OCI: Obediencia clase internacional. • DISC DOG: Lanzamiento de disco. • PSA: (Protection Sport Association). obediencia y el trabajo de protección del perro en escenarios basados en la vida real.">Ver más</button>
                                         </div>
                                     </li>
                                     <li class="mq-service-item" style="display: flex; align-items: flex-start; gap: 12px; color: #1B1B18; font-size: 1.1rem; line-height: 1.3; position: relative;">
