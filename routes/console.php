@@ -15,52 +15,42 @@ Artisan::command('notifications:purge', function () {
     
     $count1 = 0;
     if (Schema::hasTable('notificaciones')) {
+        // Limpiar notificaciones de más de 3 días (leídas o no)
         $count1 = DB::table('notificaciones')
-            ->whereNotNull('leida_en')
-            ->where('created_at', '<', now()->subDays(10))
+            ->where('created_at', '<', now()->subDays(3))
             ->delete();
     }
 
     $count2 = 0;
     if (Schema::hasTable('notifications')) {
         $count2 = DB::table('notifications')
-            ->where('leido', true)
-            ->where('created_at', '<', now()->subDays(10))
+            ->where('created_at', '<', now()->subDays(3))
             ->delete();
     }
 
-    $this->info("¡Depuración completada! Se eliminaron " . ($count1 + $count2) . " notificaciones antiguas.");
-})->purpose('Elimina notificaciones leídas de más de 10 días');
+    $this->info("¡Depuración completada! Se eliminaron " . ($count1 + $count2) . " notificaciones.");
+})->purpose('Elimina notificaciones de más de 3 días');
 
-// Tarea para depurar notificaciones antiguas (más de 10 días si están leídas)
+// Tarea para depurar notificaciones (más de 3 días)
 Schedule::call(function () {
-    // Depurar tabla 'notificaciones'
     if (Schema::hasTable('notificaciones')) {
         DB::table('notificaciones')
-            ->whereNotNull('leida_en')
-            ->where('created_at', '<', now()->subDays(10))
+            ->where('created_at', '<', now()->subDays(3))
             ->delete();
     }
-
-    // Depurar tabla 'notifications' (la otra versión que tienes)
     if (Schema::hasTable('notifications')) {
         DB::table('notifications')
-            ->where('leido', true)
-            ->where('created_at', '<', now()->subDays(10))
+            ->where('created_at', '<', now()->subDays(3))
             ->delete();
     }
-
-    \Illuminate\Support\Facades\Log::info('Depuración de notificaciones completada.');
 })->daily();
 
-// Tarea para depurar historial de reservas antiguas (Canceladas o Finalizadas de más de 6 meses)
+// Tarea para depurar historial de reservas (Canceladas de más de 30 días)
 Schedule::call(function () {
     if (Schema::hasTable('reservas')) {
         DB::table('reservas')
-            ->whereIn('estado', ['Cancelada', 'Finalizada', 'Rechazada'])
-            ->where('created_at', '<', now()->subMonths(6))
+            ->whereIn('estado', ['Cancelada', 'Rechazada'])
+            ->where('created_at', '<', now()->subDays(30))
             ->delete();
     }
-    
-    \Illuminate\Support\Facades\Log::info('Depuración de historial de reservas completada.');
 })->monthly();
