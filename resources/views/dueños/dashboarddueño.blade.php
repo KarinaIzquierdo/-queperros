@@ -100,17 +100,17 @@
                     </div>
                     <div class="mq-kpi">
                         <div class="mq-kpi-ico"><i class="bi bi-calendar2-check" aria-hidden="true"></i></div>
-                        <div class="mq-kpi-value">0</div>
+                        <div class="mq-kpi-value">{{ $counts['activas'] ?? 0 }}</div>
                         <div class="mq-kpi-label">Reservas Activas</div>
                     </div>
                     <div class="mq-kpi">
                         <div class="mq-kpi-ico"><i class="bi bi-activity" aria-hidden="true"></i></div>
-                        <div class="mq-kpi-value">0</div>
+                        <div class="mq-kpi-value">{{ $counts['reports'] ?? 0 }}</div>
                         <div class="mq-kpi-label">Reportes</div>
                     </div>
                     <div class="mq-kpi">
                         <div class="mq-kpi-ico"><i class="bi bi-bell" aria-hidden="true"></i></div>
-                        <div class="mq-kpi-value">0</div>
+                        <div class="mq-kpi-value">{{ $unreadCount ?? 0 }}</div>
                         <div class="mq-kpi-label">Notificaciones</div>
                     </div>
                 </section>

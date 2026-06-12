@@ -43,7 +43,7 @@
 
                         <div class="ad2-hero-chips" aria-label="Estado del sistema">
                             <span class="ad2-chip ad2-chip--green"><i class="bi bi-graph-up" aria-hidden="true"></i> Sistema activo</span>
-                            <span class="ad2-chip"><i class="bi bi-clock" aria-hidden="true"></i> Última sesión: Hoy 9:30 AM</span>
+                            <span class="ad2-chip"><i class="bi bi-clock" aria-hidden="true"></i> Sesión actual: {{ now()->format('h:i A') }}</span>
                         </div>
                     </div>
 
@@ -53,8 +53,8 @@
                             <div class="ad2-metric-label">CITAS HOY</div>
                         </div>
                         <div class="ad2-metric ad2-metric--gold">
-                            <div class="ad2-metric-value">98%</div>
-                            <div class="ad2-metric-label">UPTIME</div>
+                            <div class="ad2-metric-value">{{ $stats['admins_count'] ?? 0 }}</div>
+                            <div class="ad2-metric-label">ADMINS</div>
                         </div>
                     </div>
                 </section>
@@ -63,13 +63,12 @@
                     <div class="ad2-card">
                         <div class="ad2-card-top">
                             <div class="ad2-card-icon ad2-card-icon--blue"><i class="bi bi-people" aria-hidden="true"></i></div>
-                            <span class="ad2-pill ad2-pill--blue">↗ +2 esta semana</span>
                         </div>
                         <div class="ad2-card-number">{{ $stats['total_users'] }}</div>
                         <div class="ad2-card-label">Total Usuarios</div>
                         <div class="ad2-card-hover">
                             <div class="ad2-card-divider"></div>
-                            <div class="ad2-card-hover-text">3 dueños, 2 veterinarios</div>
+                            <div class="ad2-card-hover-text">Gestiona los usuarios registrados</div>
                             <a href="{{ route('admin.users') }}" class="ad2-card-hover-link">Ver detalle <span aria-hidden="true">→</span></a>
                         </div>
                     </div>
@@ -77,13 +76,12 @@
                     <div class="ad2-card">
                         <div class="ad2-card-top">
                             <div class="ad2-card-icon ad2-card-icon--purple"><i class="bi bi-wrench" aria-hidden="true"></i></div>
-                            <span class="ad2-pill ad2-pill--purple">↗ +1 este mes</span>
                         </div>
                         <div class="ad2-card-number">{{ $stats['active_services'] }}</div>
                         <div class="ad2-card-label">Servicios Activos</div>
                         <div class="ad2-card-hover">
                             <div class="ad2-card-divider"></div>
-                            <div class="ad2-card-hover-text">Consulta, Vacunacion, Guarderia...</div>
+                            <div class="ad2-card-hover-text">Configura los servicios ofrecidos</div>
                             <a href="{{ route('admin.services') }}" class="ad2-card-hover-link">Ver detalle <span aria-hidden="true">→</span></a>
                         </div>
                     </div>
@@ -91,7 +89,6 @@
                     <div class="ad2-card">
                         <div class="ad2-card-top">
                             <div class="ad2-card-icon ad2-card-icon--yellow"><i class="bi bi-shield" aria-hidden="true"></i></div>
-                            <span class="ad2-pill ad2-pill--gray">↔ Sin cambios</span>
                         </div>
                         <div class="ad2-card-number">{{ $stats['defined_roles'] }}</div>
                         <div class="ad2-card-label">Roles Definidos</div>
@@ -104,8 +101,8 @@
                         @endif
                         <div class="ad2-card-hover">
                             <div class="ad2-card-divider"></div>
-                            <div class="ad2-card-hover-text">Admin, Veterinario, Dueño</div>
-                            <a href="#" class="ad2-card-hover-link">Ver detalle <span aria-hidden="true">→</span></a>
+                            <div class="ad2-card-hover-text">Gestiona los niveles de acceso</div>
+                            <a href="{{ route('admin.users') }}" class="ad2-card-hover-link">Ver detalle <span aria-hidden="true">→</span></a>
                         </div>
                     </div>
                 </section>

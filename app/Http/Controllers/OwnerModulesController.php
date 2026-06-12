@@ -57,6 +57,8 @@ class OwnerModulesController extends Controller
 
         foreach ($reservas as $r) {
             $estado = mb_strtolower((string) ($r->estado ?? ''));
+            $isOld = $r->created_at && \Carbon\Carbon::parse($r->created_at)->lt(now()->subDays(7));
+
             if ($estado === 'pendiente' || $estado === 'pendiente de evaluación' || $estado === 'cita de evaluación asignada') {
                 $pendientes->push($r);
             } elseif ($estado === 'confirmada' || $estado === 'cotizado / pendiente de aprobación' || $estado === 'pagado / en curso' || $estado === 'aceptada / esperando pago') {
@@ -64,7 +66,10 @@ class OwnerModulesController extends Controller
             } elseif ($estado === 'finalizada') {
                 $completadas->push($r);
             } elseif ($estado === 'cancelada' || $estado === 'rechazada por el cliente') {
-                $canceladas->push($r);
+                // Solo mostrar en historial si no es muy antigua
+                if (!$isOld) {
+                    $canceladas->push($r);
+                }
             }
         }
 

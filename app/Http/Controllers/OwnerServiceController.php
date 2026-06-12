@@ -115,9 +115,13 @@ class OwnerServiceController extends Controller
         
         \Log::info('myServices called for user ID: ' . $user->id);
 
-        // Obtener solicitudes de aprobación de servicios
+        // Obtener solicitudes de aprobación de servicios (filtrando las irrelevantes)
         $serviceApprovals = ServiceApproval::with(['servicio', 'mascota'])
             ->where('id_usuario', $user->id)
+            ->where(function($q) {
+                $q->whereNotIn('estado', ['rechazado', 'pagado'])
+                  ->orWhere('created_at', '>=', now()->subDays(3));
+            })
             ->orderBy('created_at', 'desc')
             ->get();
 

@@ -41,11 +41,11 @@ Artisan::command('notifications:purge', function () {
         $count4 = DB::table('service_approvals')
             ->where(function($query) {
                 $query->whereIn('estado', ['rechazado', 'pagado'])
-                      ->where('created_at', '<', now()->subDays(15));
+                      ->where('created_at', '<', now()->subDays(3));
             })
             ->orWhere(function($query) {
                 $query->where('estado', 'aprobado')
-                      ->where('created_at', '<', now()->subDays(7));
+                      ->where('created_at', '<', now()->subDays(5));
             })
             ->delete();
     }
@@ -67,15 +67,15 @@ Schedule::call(function () {
     }
 })->daily();
 
-// Tarea para depurar historial de reservas (Canceladas de más de 30 días)
+// Tarea para depurar historial de reservas (Canceladas de más de 7 días)
 Schedule::call(function () {
     if (Schema::hasTable('reservas')) {
         DB::table('reservas')
             ->whereIn('estado', ['Cancelada', 'Rechazada'])
-            ->where('created_at', '<', now()->subDays(30))
+            ->where('created_at', '<', now()->subDays(7))
             ->delete();
     }
-})->monthly();
+})->daily();
 
 // Tarea para depurar apadrinamientos pendientes de más de 7 días
 Schedule::call(function () {
@@ -90,16 +90,16 @@ Schedule::call(function () {
 // Tarea para depurar aprobaciones de servicios antiguas
 Schedule::call(function () {
     if (Schema::hasTable('service_approvals')) {
-        // Borrar rechazados y pagados de más de 15 días
+        // Borrar rechazados y pagados de más de 3 días
         DB::table('service_approvals')
             ->whereIn('estado', ['rechazado', 'pagado'])
-            ->where('created_at', '<', now()->subDays(15))
+            ->where('created_at', '<', now()->subDays(3))
             ->delete();
             
-        // Borrar aprobados no pagados de más de 7 días
+        // Borrar aprobados no pagados de más de 5 días
         DB::table('service_approvals')
             ->where('estado', 'aprobado')
-            ->where('created_at', '<', now()->subDays(7))
+            ->where('created_at', '<', now()->subDays(5))
             ->delete();
     }
 })->daily();
