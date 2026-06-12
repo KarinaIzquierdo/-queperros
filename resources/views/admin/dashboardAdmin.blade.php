@@ -116,15 +116,6 @@
                     <p class="ad2-section-sub">Operaciones frecuentes del sistema</p>
 
                     <div class="ad2-actions">
-                        <button type="button" class="ad2-action ad2-action--purple ad2-action--modal" id="openAdminRegisterUser">
-                            <div class="ad2-action-icon"><i class="bi bi-person-plus" aria-hidden="true"></i></div>
-                            <div>
-                                <p class="ad2-action-title">Registrar Usuarios</p>
-                                <p class="ad2-action-desc">Agregar nuevo usuario al sistema</p>
-                            </div>
-                            <div class="ad2-action-open">Abrir <span aria-hidden="true">→</span></div>
-                        </button>
-
                         <button type="button" class="ad2-action ad2-action--blue" id="openAdminUsersModal">
                             <div class="ad2-action-icon"><i class="bi bi-eye" aria-hidden="true"></i></div>
                             <div>
@@ -260,44 +251,6 @@
                     </section>
                 </div>
             </main>
-                <div class="ad2-modal" id="adminRegisterUserModal" aria-hidden="true">
-                    <div class="ad2-modal-backdrop" data-close="true"></div>
-                    <div class="ad2-modal-card" role="dialog" aria-modal="true" aria-labelledby="ad2ModalTitle">
-                        <div class="ad2-modal-head">
-                            <h2 class="ad2-modal-title" id="ad2ModalTitle">Registrar Nuevo Usuario</h2>
-                            <button type="button" class="ad2-modal-close" id="closeAdminRegisterUser" aria-label="Cerrar">×</button>
-                        </div>
-                        <div class="ad2-modal-body">
-                            <form action="{{ url('/admin/users') }}" method="POST" class="ad2-modal-form">
-                                @csrf
-
-                        <label class="ad2-field">
-                            <span class="ad2-label">Nombre completo</span>
-                            <input class="ad2-input" type="text" name="name" placeholder="Ej: Juan Perez" />
-                        </label>
-
-                        <label class="ad2-field">
-                            <span class="ad2-label">Email</span>
-                            <input class="ad2-input" type="email" name="email" placeholder="usuario@email.com" />
-                        </label>
-
-                        <label class="ad2-field">
-                            <span class="ad2-label">Rol</span>
-                            <select class="ad2-select" name="rol">
-                                <option value="admin">Administrador</option>
-                                <option value="empleado">Entrenador</option>
-                                <option value="dueno">Dueño</option>
-                                <option value="padrino">Padrino</option>
-                                <option value="entrenador">Entrenador</option>
-                            </select>
-                        </label>
-
-                                <button type="submit" class="ad2-submit" formaction="{{ url('/admin/users') }}" formmethod="POST">Registrar Usuario</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
                 <div class="ad2-modal" id="adminCreateServiceModal" aria-hidden="true">
                     <div class="ad2-modal-backdrop" data-close="true"></div>
                     <div class="ad2-modal-card" role="dialog" aria-modal="true" aria-labelledby="ad2CreateServiceTitle">
@@ -462,9 +415,6 @@
 
         <script>
             (function () {
-                const modal = document.getElementById('adminRegisterUserModal');
-                const openBtn = document.getElementById('openAdminRegisterUser');
-                const closeBtn = document.getElementById('closeAdminRegisterUser');
                 const usersModal = document.getElementById('adminUsersModal');
                 const openUsersBtn = document.getElementById('openAdminUsersModal');
                 const closeUsersBtn = document.getElementById('closeAdminUsersModal');
@@ -483,41 +433,6 @@
                 const assignRoleNewRole = document.getElementById('adminAssignRoleNewRole');
                 const submitAssignRoleBtn = document.getElementById('submitAdminAssignRole');
                 const assignRoleCurrentRole = document.getElementById('adminAssignRoleCurrentRole');
-
-                function openModal() {
-                    if (!modal) return;
-                    modal.classList.add('ad2-modal--open');
-                    modal.setAttribute('aria-hidden', 'false');
-                    document.body.style.overflow = 'hidden';
-                }
-
-                function closeModal() {
-                    if (!modal) return;
-                    // Eliminar el foco de cualquier elemento dentro del modal antes de ocultarlo
-                    const focusedElement = modal.querySelector(':focus');
-                    if (focusedElement) {
-                        focusedElement.blur();
-                    }
-                    modal.classList.remove('ad2-modal--open');
-                    modal.setAttribute('aria-hidden', 'true');
-                    document.body.style.overflow = '';
-                }
-
-                openBtn?.addEventListener('click', openModal);
-                closeBtn?.addEventListener('click', closeModal);
-
-                modal?.addEventListener('click', (e) => {
-                    const target = e.target;
-                    if (target && target.dataset && target.dataset.close === 'true') {
-                        closeModal();
-                    }
-                });
-
-                document.addEventListener('keydown', (e) => {
-                    if (e.key === 'Escape' && modal?.classList.contains('ad2-modal--open')) {
-                        closeModal();
-                    }
-                });
 
                 function openUsersModal() {
                     if (!usersModal) return;
