@@ -207,9 +207,21 @@ class OwnerModulesController extends Controller
         $pagadas = $facturas->where('pagada', true);
         $ultimoPago = $pagadas->sortByDesc('id')->first();
 
+        // Filtrar facturas para la vista: mantener todas las pendientes y solo las pagadas de los últimos 3 días
+        $facturasMostradas = $facturas->filter(function($f) {
+            if (!$f->pagada) return true;
+            // Si la reserva no tiene fecha, la mantenemos por seguridad
+            if (!$f->fecha) return true;
+            try {
+                return \Carbon\Carbon::parse($f->fecha)->gte(now()->subDays(3));
+            } catch (\Exception $e) {
+                return true;
+            }
+        });
+
         return view('dueños.pagos', [
             'user' => $user,
-            'facturas' => $facturas,
+            'facturas' => $facturasMostradas,
             'pendienteTotal' => $pendientes->sum('precio'),
             'pendienteCount' => $pendientes->count(),
             'pagadoTotal' => $pagadas->sum('precio'),

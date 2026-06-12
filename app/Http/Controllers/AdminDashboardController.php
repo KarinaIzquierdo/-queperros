@@ -61,9 +61,14 @@ class AdminDashboardController extends Controller
             }
 
             $recentReservations = $query
-                ->where(function($q) {
-                    $q->whereNotIn('r.estado', ['Cancelada', 'Rechazada'])
-                      ->orWhere('r.created_at', '>=', now()->subDays(3));
+                ->where(function($q) use ($hasCreatedAt, $hasFecha) {
+                    $dateCol = $hasCreatedAt ? 'r.created_at' : ($hasFecha ? 'r.fecha' : null);
+                    
+                    $q->whereNotIn('r.estado', ['Cancelada', 'Rechazada']);
+                    
+                    if ($dateCol) {
+                        $q->orWhere($dateCol, '>=', now()->subDays(3));
+                    }
                 })
                 ->orderByDesc("r.$reservaKey")
                 ->limit(5)

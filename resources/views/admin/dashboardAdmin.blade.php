@@ -66,11 +66,11 @@
                         </div>
                         <div class="ad2-card-number">{{ $stats['total_users'] }}</div>
                         <div class="ad2-card-label">Total Usuarios</div>
-                        <div class="ad2-card-hover">
-                            <div class="ad2-card-divider"></div>
-                            <div class="ad2-card-hover-text">Gestiona los usuarios registrados</div>
-                            <a href="{{ route('admin.users') }}" class="ad2-card-hover-link">Ver detalle <span aria-hidden="true">→</span></a>
-                        </div>
+                            <div class="ad2-card-hover">
+                                <div class="ad2-card-divider"></div>
+                                <div class="ad2-card-hover-text">Consulta la lista completa de usuarios</div>
+                                <a href="{{ route('admin.users') }}" class="ad2-card-hover-link">Ver detalle <span aria-hidden="true">→</span></a>
+                            </div>
                     </div>
 
                     <div class="ad2-card">
@@ -79,11 +79,11 @@
                         </div>
                         <div class="ad2-card-number">{{ $stats['active_services'] }}</div>
                         <div class="ad2-card-label">Servicios Activos</div>
-                        <div class="ad2-card-hover">
-                            <div class="ad2-card-divider"></div>
-                            <div class="ad2-card-hover-text">Configura los servicios ofrecidos</div>
-                            <a href="{{ route('admin.services') }}" class="ad2-card-hover-link">Ver detalle <span aria-hidden="true">→</span></a>
-                        </div>
+                            <div class="ad2-card-hover">
+                                <div class="ad2-card-divider"></div>
+                                <div class="ad2-card-hover-text">Gestiona los servicios y categorías</div>
+                                <a href="{{ route('admin.services') }}" class="ad2-card-hover-link">Ver detalle <span aria-hidden="true">→</span></a>
+                            </div>
                     </div>
 
                     <div class="ad2-card">
@@ -101,7 +101,7 @@
                         @endif
                         <div class="ad2-card-hover">
                             <div class="ad2-card-divider"></div>
-                            <div class="ad2-card-hover-text">Gestiona los niveles de acceso</div>
+                            <div class="ad2-card-hover-text">Consulta los roles del sistema</div>
                             <a href="{{ route('admin.users') }}" class="ad2-card-hover-link">Ver detalle <span aria-hidden="true">→</span></a>
                         </div>
                     </div>
@@ -188,7 +188,7 @@
                         </div>
                     @endforelse
 
-                        <a href="#" class="ad2-activity-footer">Ver todo el historial</a>
+                        <a href="{{ route('admin.approvals.index') }}" class="ad2-activity-footer">Ver todo el historial</a>
                     </section>
 
                     <section class="ad2-users" aria-label="Usuarios del sistema">
@@ -281,10 +281,9 @@
                                 <label class="ad2-field">
                                     <span class="ad2-label">Categoría</span>
                                     <select class="ad2-select" name="category">
-                                        <option value="Medicina">Medicina</option>
-                                        <option value="Vacunación">Vacunación</option>
-                                        <option value="Grooming">Grooming</option>
-                                        <option value="Guardería">Guardería</option>
+                                        <option value="Entrenamiento">Entrenamiento</option>
+                                        <option value="Cuidado y Alojamiento">Cuidado y Alojamiento</option>
+                                        <option value="Otras Actividades">Otras Actividades</option>
                                     </select>
                                 </label>
 
