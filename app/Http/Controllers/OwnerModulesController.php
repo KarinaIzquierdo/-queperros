@@ -321,11 +321,7 @@ class OwnerModulesController extends Controller
             $petCount = (int) DB::table('mascotas')->where('id_dueno', (int) $user->id)->count();
         }
 
-        $dueno = null;
-        if (Schema::hasTable('duenos')) {
-            $q = DB::table('duenos')->where('id_dueno', (int) $user->id);
-            $dueno = $q->first();
-        }
+        $dueno = \App\Models\Dueno::where('id_dueno', (int) $user->id)->first();
 
         return view('dueños.perfil', [
             'user' => $user,
@@ -351,52 +347,23 @@ class OwnerModulesController extends Controller
 
         $fullName = trim($validated['nombre'] . ' ' . $validated['apellido']);
 
+        // 1. Actualizar datos del usuario principal
         $user->name = $fullName;
         $user->email = (string) $validated['email'];
         $user->save();
 
-        if (Schema::hasTable('duenos')) {
-            $cols = Schema::getColumnListing('duenos');
-
-            $payload = [];
-            if (in_array('nombre', $cols, true)) {
-                $payload['nombre'] = $fullName;
-            }
-            if (in_array('telefono', $cols, true)) {
-                $payload['telefono'] = $validated['telefono'] ?? null;
-            }
-            if (in_array('direccion', $cols, true)) {
-                $payload['direccion'] = $validated['direccion'] ?? null;
-            }
-            if (in_array('documento', $cols, true)) {
-                $payload['documento'] = $validated['documento'] ?? null;
-            }
-            if (in_array('ciudad', $cols, true)) {
-                $payload['ciudad'] = $validated['ciudad'] ?? null;
-            }
-            if (in_array('fecha_nacimiento', $cols, true)) {
-                $payload['fecha_nacimiento'] = $validated['fecha_nacimiento'] ?? null;
-            }
-
-            if (!empty($payload)) {
-                $exists = DB::table('duenos')->where('id_dueno', (int) $user->id)->exists();
-
-                if ($exists) {
-                    DB::table('duenos')->where('id_dueno', (int) $user->id)->update($payload);
-                } else {
-                    $payload['id_dueno'] = (int) $user->id;
-
-                    if (in_array('created_at', $cols, true)) {
-                        $payload['created_at'] = now();
-                    }
-                    if (in_array('updated_at', $cols, true)) {
-                        $payload['updated_at'] = now();
-                    }
-
-                    DB::table('duenos')->insert($payload);
-                }
-            }
-        }
+        // 2. Actualizar o crear datos extendidos en la tabla 'duenos'
+        \App\Models\Dueno::updateOrCreate(
+            ['id_dueno' => (int) $user->id],
+            [
+                'nombre' => $fullName,
+                'telefono' => $validated['telefono'] ?? null,
+                'direccion' => $validated['direccion'] ?? null,
+                'documento' => $validated['documento'] ?? null,
+                'ciudad' => $validated['ciudad'] ?? null,
+                'fecha_nacimiento' => $validated['fecha_nacimiento'] ?? null,
+            ]
+        );
 
         return redirect()
             ->route('owner.perfil')
