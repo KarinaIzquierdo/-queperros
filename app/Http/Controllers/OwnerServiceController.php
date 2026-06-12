@@ -136,6 +136,10 @@ class OwnerServiceController extends Controller
             $hasServicios = Schema::hasTable('servicios');
             $hasUsers = Schema::hasTable('users');
 
+            $hasCreatedAt = Schema::hasColumn('reservas', 'created_at');
+            $hasFecha = Schema::hasColumn('reservas', 'fecha');
+            $dateCol = $hasCreatedAt ? 'r.created_at' : ($hasFecha ? 'r.fecha' : null);
+
             $query = DB::table('reservas as r')
                 ->join('mascotas as m', "m.$mascotaKey", '=', 'r.id_mascota')
                 ->where('m.id_dueno', $user->id);
@@ -146,6 +150,13 @@ class OwnerServiceController extends Controller
 
             if ($hasUsers && Schema::hasColumn('reservas', 'id_empleado')) {
                 $query->leftJoin('users as t', 't.id', '=', 'r.id_empleado');
+            }
+
+            if ($dateCol) {
+                $query->where(function($q) use ($dateCol) {
+                    $q->whereNotIn('r.estado', ['Finalizada', 'Cancelada', 'Rechazada'])
+                      ->orWhere($dateCol, '>=', now()->subDays(7));
+                });
             }
 
             $trainingReservations = $query

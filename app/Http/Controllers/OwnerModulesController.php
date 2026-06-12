@@ -57,7 +57,10 @@ class OwnerModulesController extends Controller
 
         foreach ($reservas as $r) {
             $estado = mb_strtolower((string) ($r->estado ?? ''));
-            $isOld = $r->created_at && \Carbon\Carbon::parse($r->created_at)->lt(now()->subDays(7));
+            
+            // Usar created_at si existe, si no usar fecha para determinar antigüedad
+            $dateValue = $r->created_at ?? $r->fecha ?? null;
+            $isOld = $dateValue && \Carbon\Carbon::parse($dateValue)->lt(now()->subDays(7));
 
             if ($estado === 'pendiente' || $estado === 'pendiente de evaluación' || $estado === 'cita de evaluación asignada') {
                 $pendientes->push($r);
