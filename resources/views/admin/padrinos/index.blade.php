@@ -236,7 +236,7 @@
                                                 {{ $spon->created_at ? \Carbon\Carbon::parse($spon->created_at)->format('d/m/Y') : '—' }}
                                             </td>
                                             <td>
-                                                @if($spon->estado === 'Activo' || $spon->estado === 'pagado')
+                                                @if($spon->estado === 'Activo' || $spon->estado === 'pagado' || $spon->estado === 'Pagada')
                                                     <span class="ap-status">
                                                         <i class="bi bi-check-circle"></i> {{ ucfirst($spon->estado) }}
                                                     </span>

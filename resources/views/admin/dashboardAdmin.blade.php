@@ -182,7 +182,7 @@
                             <div class="ad2-activity-dot ad2-activity-dot--{{ $dotColor }}"><i class="bi bi-calendar-event" aria-hidden="true"></i></div>
                             <div class="ad2-activity-text">
                                 <div class="ad2-activity-main">
-                                    Reserva #{{ $reservation->id }}: {{ $reservation->pet }} - {{ $reservation->service }} ({{ $reservation->status ?: 'Pendiente' }})
+                                    Reserva #{{ $reservation->id }}: {{ $reservation->pet }} - {{ $reservation->service }} {{ $reservation->status ? '(' . $reservation->status . ')' : '' }}
                                 </div>
                                 <div class="ad2-activity-sub">
                                     <i class="bi bi-clock" aria-hidden="true"></i>

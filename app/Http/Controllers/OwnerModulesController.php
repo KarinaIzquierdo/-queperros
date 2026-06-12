@@ -275,6 +275,7 @@ class OwnerModulesController extends Controller
 
         $sponsorships = \App\Models\Sponsorship::query()
             ->where('user_id', (int) $user->id)
+            ->where('estado', '!=', 'Pendiente')
             ->orderByDesc('id')
             ->get()
             ->keyBy('sponsor_dog_id');

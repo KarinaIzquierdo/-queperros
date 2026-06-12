@@ -16,6 +16,7 @@ class AdminSponsorDogController extends Controller
         $sponsorships = Sponsorship::query()
             ->leftJoin('users', 'sponsorships.user_id', '=', 'users.id')
             ->select('sponsorships.*', 'users.name as user_name', 'users.email as user_email')
+            ->where('sponsorships.estado', '!=', 'Pendiente')
             ->orderByDesc('sponsorships.created_at')
             ->get();
 
