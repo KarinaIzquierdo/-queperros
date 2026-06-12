@@ -361,29 +361,38 @@
                                     <h2 id="dtPetName" class="dt-pet-name"></h2>
                                     <p id="dtPetSub" class="dt-pet-sub"></p>
                                 </div>
-                                <button class="dt-close" type="button" data-gm-close="true">×</button>
+                                <div class="dt-hero-actions">
+                                    <button class="dt-edit-btn" type="button" id="dtEditBtn" title="Editar información">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </button>
+                                    <button class="dt-close" type="button" data-gm-close="true">×</button>
+                                </div>
                             </div>
                         </div>
 
                         <div class="dt-tabs">
                             <button class="dt-tab dt-tab--active" data-target="dtInfo">
-                                <i class="bi bi-activity"></i> Informacion
+                                <i class="bi bi-activity"></i> Información
                             </button>
                             <button class="dt-tab" data-target="dtVacunas">
                                 <i class="bi bi-needle"></i> Vacunas
                             </button>
                             <button class="dt-tab" data-target="dtHistorial">
-                                <i class="bi bi-file-earmark-text"></i> Historial
+                                <i class="bi bi-file-earmark-text"></i> Adicional
                             </button>
                         </div>
 
                         <div class="dt-body">
-                            <!-- Tab Informacion -->
+                            <!-- Tab Información -->
                             <div class="dt-pane dt-pane--active" id="dtInfo">
                                 <div class="dt-info-grid">
                                     <div class="dt-info-card">
-                                        <div class="dt-info-label">Fecha de nacimiento</div>
-                                        <div class="dt-info-value" id="dtBirth"></div>
+                                        <div class="dt-info-label">Raza</div>
+                                        <div class="dt-info-value" id="dtBreed"></div>
+                                    </div>
+                                    <div class="dt-info-card">
+                                        <div class="dt-info-label">Sexo</div>
+                                        <div class="dt-info-value" id="dtGender"></div>
                                     </div>
                                     <div class="dt-info-card">
                                         <div class="dt-info-label">Edad</div>
@@ -391,19 +400,15 @@
                                     </div>
                                     <div class="dt-info-card">
                                         <div class="dt-info-label">Peso</div>
-                                        <div class="dt-info-value" id="dtWeight">32 kg</div>
+                                        <div class="dt-info-value" id="dtWeight"></div>
                                     </div>
                                     <div class="dt-info-card">
-                                        <div class="dt-info-label">Color</div>
-                                        <div class="dt-info-value" id="dtColor">Negro y cafe</div>
+                                        <div class="dt-info-label">Servicio</div>
+                                        <div class="dt-info-value" id="dtService"></div>
                                     </div>
                                     <div class="dt-info-card">
-                                        <div class="dt-info-label">Esterilizado</div>
-                                        <div class="dt-info-value" id="dtSterilized">Si</div>
-                                    </div>
-                                    <div class="dt-info-card">
-                                        <div class="dt-info-label">Microchip</div>
-                                        <div class="dt-info-value" id="dtMicrochip">985141000123456</div>
+                                        <div class="dt-info-label">Estado</div>
+                                        <div class="dt-info-value" id="dtStatus"></div>
                                     </div>
                                 </div>
                                 <div class="dt-next-appt">
@@ -411,8 +416,8 @@
                                         <i class="bi bi-calendar3"></i>
                                     </div>
                                     <div class="dt-appt-info">
-                                        <div class="dt-appt-label">Proxima cita</div>
-                                        <div class="dt-appt-value" id="dtNextAppt"></div>
+                                        <div class="dt-appt-label">Fecha de registro</div>
+                                        <div class="dt-appt-value" id="dtRegDate"></div>
                                     </div>
                                 </div>
                             </div>
@@ -424,13 +429,115 @@
                                 </div>
                             </div>
 
-                            <!-- Tab Historial -->
+                            <!-- Tab Historial / Adicional -->
                             <div class="dt-pane" id="dtHistorial">
-                                <div class="dt-list" id="dtHistorialList">
-                                    <!-- Dinámico -->
+                                <div class="dt-additional-info">
+                                    <div class="dt-info-card dt-info-card--full">
+                                        <div class="dt-info-label">Comportamientos / Info Adicional</div>
+                                        <div class="dt-info-value" id="dtInfoAdicional" style="font-size: 1rem; line-height: 1.5; white-space: pre-wrap;"></div>
+                                    </div>
+                                    <div class="dt-info-card dt-info-card--full" style="margin-top: 1rem;">
+                                        <div class="dt-info-label">Notas del Propietario</div>
+                                        <div class="dt-info-value" id="dtNotas" style="font-size: 1rem; line-height: 1.5;"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Modal Editar Mascota -->
+                <div class="gm-modal" id="opEditPetModal" aria-hidden="true">
+                    <div class="gm-modal-backdrop" data-gm-close="true"></div>
+                    <div class="gm-modal-card" role="dialog" aria-modal="true" aria-label="Editar Mascota">
+                        <div class="gm-modal-head">
+                            <div class="gm-modal-title">Editar Información de Mascota</div>
+                            <button class="gm-modal-close" type="button" aria-label="Cerrar" data-gm-close="true">×</button>
+                        </div>
+
+                        <form class="gm-modal-body" method="POST" action="" enctype="multipart/form-data" id="opEditPetForm">
+                            @csrf
+                            @method('PUT')
+                            <div class="gm-form-section">
+                                <div class="gm-form-section-title">DATOS DEL PERRO</div>
+                                <div class="gm-dog-grid">
+                                    <div class="gm-photo">
+                                        <label class="gm-photo-box" for="opEditPhotoInput">
+                                            <img id="opEditPhotoPreview" class="gm-photo-preview" alt="" />
+                                            <i class="bi bi-camera gm-photo-icon" aria-hidden="true"></i>
+                                        </label>
+                                        <div class="gm-photo-caption">Cambiar Foto</div>
+                                        <input id="opEditPhotoInput" name="foto" type="file" accept="image/*" class="gm-hidden" />
+                                    </div>
+
+                                    <div class="gm-fields">
+                                        <div class="gm-row-2">
+                                            <div class="gm-field">
+                                                <label class="gm-label">Nombre *</label>
+                                                <input class="gm-input" name="nombre" id="edit_nombre" type="text" required />
+                                            </div>
+                                            <div class="gm-field">
+                                                <label class="gm-label">Raza *</label>
+                                                <input class="gm-input" name="raza" id="edit_raza" type="text" required />
+                                            </div>
+                                        </div>
+                                        <div class="gm-row-3">
+                                            <div class="gm-field">
+                                                <label class="gm-label">Edad</label>
+                                                <input class="gm-input" name="edad" id="edit_edad" type="number" min="0" max="50" />
+                                            </div>
+                                            <div class="gm-field">
+                                                <label class="gm-label">Peso (kg)</label>
+                                                <input class="gm-input" name="peso" id="edit_peso" type="number" step="0.1" min="0" />
+                                            </div>
+                                            <div class="gm-field">
+                                                <label class="gm-label">Sexo</label>
+                                                <select class="gm-input" name="sexo" id="edit_sexo">
+                                                    <option value="">Seleccionar</option>
+                                                    <option value="Macho">Macho</option>
+                                                    <option value="Hembra">Hembra</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="gm-form-section-title" style="margin-top: 2rem;">MÁS INFORMACIÓN</div>
+                                <div class="gm-field">
+                                    <label class="gm-label">Información Adicional (Comportamiento, etc)</label>
+                                    <textarea class="gm-textarea" name="info_adicional" id="edit_info_adicional" rows="3"></textarea>
+                                </div>
+                                
+                                <div class="gm-row-2">
+                                    <div class="gm-field">
+                                        <label class="gm-label">Servicio Requerido</label>
+                                        <select class="gm-input" name="servicio_requerido" id="edit_servicio">
+                                            <option value="Hotel Canino">Hotel Canino</option>
+                                            <option value="Entrenamiento">Entrenamiento</option>
+                                            <option value="Formacion Perros de Trabajo">Formación Perros de Trabajo</option>
+                                        </select>
+                                    </div>
+                                    <div class="gm-field">
+                                        <label class="gm-label">Estado Actual</label>
+                                        <select class="gm-input" name="estado_actual" id="edit_estado">
+                                            <option value="En Casa">En Casa</option>
+                                            <option value="En Guarderia">En Guardería</option>
+                                            <option value="Hotel Canino">Hotel Canino</option>
+                                            <option value="En Entrenamiento">En Entrenamiento</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="gm-field">
+                                    <label class="gm-label">Notas Adicionales</label>
+                                    <input class="gm-input" name="notas_adicionales" id="edit_notas" type="text" />
+                                </div>
+                            </div>
+
+                            <div class="gm-modal-foot">
+                                <button class="gm-foot-btn gm-foot-btn--ghost" type="button" data-gm-close="true">Cancelar</button>
+                                <button class="gm-foot-btn gm-foot-btn--primary" type="submit">Guardar Cambios</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
 
@@ -637,6 +744,15 @@
                 // --- Lógica del Modal de Detalles ---
                 const detailModal = document.getElementById('petDetailModal');
                 const detailBtns = document.querySelectorAll('.mq-detail');
+                const dtEditBtn = document.getElementById('dtEditBtn');
+                
+                // Elementos del Modal de Edición
+                const editModal = document.getElementById('opEditPetModal');
+                const editForm = document.getElementById('opEditPetForm');
+                const editPhotoInput = document.getElementById('opEditPhotoInput');
+                const editPhotoPreview = document.getElementById('opEditPhotoPreview');
+
+                let currentPetData = null;
 
                 function closeDetailModal() {
                     if (!detailModal) return;
@@ -647,6 +763,7 @@
 
                 function openDetailModal(pet) {
                     if (!detailModal) return;
+                    currentPetData = pet;
 
                     // Datos Básicos
                     document.getElementById('dtPetName').textContent = pet.nombre;
@@ -660,33 +777,38 @@
                     }
 
                     // Tab Información
-                    document.getElementById('dtBirth').textContent = pet.created_at ? pet.created_at.split('T')[0] : '-';
+                    document.getElementById('dtBreed').textContent = pet.raza || '-';
+                    document.getElementById('dtGender').textContent = pet.sexo || '-';
                     document.getElementById('dtAge').textContent = pet.edad ? `${pet.edad} años` : '-';
                     document.getElementById('dtWeight').textContent = pet.peso ? `${Number(pet.peso).toLocaleString('es-CO')} kg` : '-';
-                    document.getElementById('dtNextAppt').textContent = pet.created_at ? `${pet.created_at.split('T')[0]} - ${pet.servicio_requerido || 'Consulta general'}` : '-';
+                    document.getElementById('dtService').textContent = pet.servicio_requerido || '-';
+                    document.getElementById('dtStatus').textContent = pet.estado_actual || '-';
+                    document.getElementById('dtRegDate').textContent = pet.created_at ? pet.created_at.split('T')[0] : '-';
 
+                    // Tab Vacunas
                     const vacunasList = document.getElementById('dtVacunasList');
-                    vacunasList.innerHTML = `
-                        <div class="dt-list-item">
-                            <div class="dt-item-icon dt-item-icon--vacuna"><i class="bi bi-info-circle"></i></div>
-                            <div class="dt-item-main">
-                                <div class="dt-item-title">Sin vacunas registradas</div>
-                                <div class="dt-item-sub">Cuando registres vacunas, aparecerán aquí.</div>
-                            </div>
-                        </div>
-                    `;
+                    if (pet.vacunas) {
+                        const list = pet.vacunas.split(',').map(v => v.trim()).filter(v => v !== '');
+                        if (list.length > 0) {
+                            vacunasList.innerHTML = list.map(v => `
+                                <div class="dt-list-item">
+                                    <div class="dt-item-icon dt-item-icon--vacuna"><i class="bi bi-check-circle"></i></div>
+                                    <div class="dt-item-main">
+                                        <div class="dt-item-title">${v}</div>
+                                        <div class="dt-item-sub">Aplicada</div>
+                                    </div>
+                                </div>
+                            `).join('');
+                        } else {
+                            vacunasList.innerHTML = '<div class="dt-list-item">Sin vacunas registradas</div>';
+                        }
+                    } else {
+                        vacunasList.innerHTML = '<div class="dt-list-item">Sin vacunas registradas</div>';
+                    }
 
-                    const historialList = document.getElementById('dtHistorialList');
-                    historialList.innerHTML = `
-                        <div class="dt-list-item">
-                            <div class="dt-item-icon dt-item-icon--historial"><i class="bi bi-file-earmark-text"></i></div>
-                            <div class="dt-item-main">
-                                <div class="dt-item-title">Sin historial registrado</div>
-                                <div class="dt-item-sub">Cuando exista historial, aparecerá aquí.</div>
-                                <div class="dt-item-foot"></div>
-                            </div>
-                        </div>
-                    `;
+                    // Tab Adicional
+                    document.getElementById('dtInfoAdicional').textContent = pet.info_adicional || 'Sin información adicional registrada.';
+                    document.getElementById('dtNotas').textContent = pet.notas_adicionales || 'Sin notas adicionales.';
 
                     detailModal.classList.add('gm-modal--open');
                     detailModal.setAttribute('aria-hidden', 'false');
@@ -694,6 +816,58 @@
                     
                     // Reset to first tab
                     document.querySelector('.dt-tab[data-target="dtInfo"]').click();
+                }
+
+                function openEditModal() {
+                    if (!editModal || !currentPetData) return;
+                    
+                    // Cerrar el de detalle primero
+                    closeDetailModal();
+
+                    // Poblar campos
+                    editForm.setAttribute('action', `/dashboard/mis-perros/${currentPetData.id_mascota || currentPetData.id}`);
+                    document.getElementById('edit_nombre').value = currentPetData.nombre;
+                    document.getElementById('edit_raza').value = currentPetData.raza;
+                    document.getElementById('edit_edad').value = currentPetData.edad || '';
+                    document.getElementById('edit_peso').value = currentPetData.peso || '';
+                    document.getElementById('edit_sexo').value = currentPetData.sexo || '';
+                    document.getElementById('edit_info_adicional').value = currentPetData.info_adicional || '';
+                    document.getElementById('edit_servicio').value = currentPetData.servicio_requerido || 'Entrenamiento';
+                    document.getElementById('edit_estado').value = currentPetData.estado_actual || 'En Casa';
+                    document.getElementById('edit_notas').value = currentPetData.notas_adicionales || '';
+
+                    // Foto Preview
+                    if (currentPetData.foto) {
+                        editPhotoPreview.src = `/storage/${currentPetData.foto}`;
+                        editPhotoPreview.classList.add('gm-photo-preview--on');
+                        const icon = editPhotoPreview.previousElementSibling;
+                        if (icon && icon.classList.contains('bi-camera')) icon.style.display = 'none';
+                    } else {
+                        editPhotoPreview.removeAttribute('src');
+                        editPhotoPreview.classList.remove('gm-photo-preview--on');
+                        const icon = editPhotoPreview.previousElementSibling;
+                        if (icon && icon.classList.contains('bi-camera')) icon.style.display = '';
+                    }
+
+                    editModal.classList.add('gm-modal--open');
+                    editModal.setAttribute('aria-hidden', 'false');
+                    document.body.classList.add('gm-lock');
+                }
+
+                if (dtEditBtn) {
+                    dtEditBtn.addEventListener('click', openEditModal);
+                }
+
+                if (editPhotoInput && editPhotoPreview) {
+                    editPhotoInput.addEventListener('change', () => {
+                        const file = editPhotoInput.files && editPhotoInput.files[0];
+                        if (file) {
+                            editPhotoPreview.src = URL.createObjectURL(file);
+                            editPhotoPreview.classList.add('gm-photo-preview--on');
+                            const icon = editPhotoPreview.previousElementSibling;
+                            if (icon && icon.classList.contains('bi-camera')) icon.style.display = 'none';
+                        }
+                    });
                 }
 
                 detailBtns.forEach(btn => {
