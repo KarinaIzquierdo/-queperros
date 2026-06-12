@@ -36,8 +36,22 @@ Artisan::command('notifications:purge', function () {
             ->delete();
     }
 
-    $this->info("¡Depuración completada! Se eliminaron " . ($count1 + $count2) . " notificaciones y " . $count3 . " apadrinamientos pendientes.");
-})->purpose('Elimina notificaciones de más de 3 días');
+    $count4 = 0;
+    if (Schema::hasTable('service_approvals')) {
+        $count4 = DB::table('service_approvals')
+            ->where(function($query) {
+                $query->whereIn('estado', ['rechazado', 'pagado'])
+                      ->where('created_at', '<', now()->subDays(15));
+            })
+            ->orWhere(function($query) {
+                $query->where('estado', 'aprobado')
+                      ->where('created_at', '<', now()->subDays(7));
+            })
+            ->delete();
+    }
+
+    $this->info("¡Depuración completada! Se eliminaron " . ($count1 + $count2) . " notificaciones, " . $count3 . " apadrinamientos y " . $count4 . " aprobaciones antiguas.");
+})->purpose('Elimina notificaciones, apadrinamientos y aprobaciones antiguas');
 
 // Tarea para depurar notificaciones (más de 3 días)
 Schedule::call(function () {
@@ -68,6 +82,23 @@ Schedule::call(function () {
     if (Schema::hasTable('sponsorships')) {
         DB::table('sponsorships')
             ->where('estado', 'Pendiente')
+            ->where('created_at', '<', now()->subDays(7))
+            ->delete();
+    }
+})->daily();
+
+// Tarea para depurar aprobaciones de servicios antiguas
+Schedule::call(function () {
+    if (Schema::hasTable('service_approvals')) {
+        // Borrar rechazados y pagados de más de 15 días
+        DB::table('service_approvals')
+            ->whereIn('estado', ['rechazado', 'pagado'])
+            ->where('created_at', '<', now()->subDays(15))
+            ->delete();
+            
+        // Borrar aprobados no pagados de más de 7 días
+        DB::table('service_approvals')
+            ->where('estado', 'aprobado')
             ->where('created_at', '<', now()->subDays(7))
             ->delete();
     }
