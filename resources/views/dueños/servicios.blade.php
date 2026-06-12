@@ -186,7 +186,10 @@
                     <section class="sv-helpbar" aria-label="Necesitas mas informacion">
                         <div class="sv-helpbar-title">Necesitas mas informacion?</div>
                         <div class="sv-helpbar-items">
-                            <div class="sv-helpbar-item"><i class="bi bi-telephone" aria-hidden="true"></i><span>+57 300 123 4567</span></div>
+                            <a href="https://wa.me/573102392128" target="_blank" class="sv-helpbar-item" style="text-decoration: none; color: inherit;">
+                                <i class="bi bi-telephone" aria-hidden="true"></i>
+                                <span>+57 310 239 2128</span>
+                            </a>
                             <div class="sv-helpbar-item"><i class="bi bi-geo-alt" aria-hidden="true"></i><span>La Calera, Colombia</span></div>
                             <div class="sv-helpbar-item"><i class="bi bi-clock" aria-hidden="true"></i><span>Lun - Sab: 8am - 6pm</span></div>
                         </div>
