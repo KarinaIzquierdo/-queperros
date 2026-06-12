@@ -64,10 +64,22 @@ class AdminDashboardController extends Controller
                 ->where(function($q) use ($hasCreatedAt, $hasFecha) {
                     $dateCol = $hasCreatedAt ? 'r.created_at' : ($hasFecha ? 'r.fecha' : null);
                     
-                    $q->whereNotIn('r.estado', ['Cancelada', 'Rechazada']);
+                    // Mostrar siempre las que están en curso o pendientes de acción
+                    $q->whereIn('r.estado', [
+                        'Confirmada', 
+                        'Pagado / En Curso', 
+                        'Aceptada / Esperando Pago', 
+                        'Pendiente', 
+                        'Pendiente de Evaluación', 
+                        'Cita de evaluación asignada'
+                    ]);
                     
+                    // Mostrar las terminadas o canceladas SOLO si son muy recientes (últimas 24 horas)
                     if ($dateCol) {
-                        $q->orWhere($dateCol, '>=', now()->subDays(3));
+                        $q->orWhere(function($sq) use ($dateCol) {
+                            $sq->whereIn('r.estado', ['Finalizada', 'Cancelada', 'Rechazada', 'Rechazada por el cliente'])
+                               ->where($dateCol, '>=', now()->subDay());
+                        });
                     }
                 })
                 ->orderByDesc("r.$reservaKey")
