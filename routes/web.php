@@ -150,15 +150,15 @@ Route::post('/dashboard/chat-entrenador', [OwnerModulesController::class, 'sendM
     ->middleware('auth')
     ->name('owner.chat.send');
 
-Route::get('/dashboard/notificaciones', [OwnerNotificationController::class, 'index'])
+Route::get('/dashboard/notificaciones', [\App\Http\Controllers\OwnerNotificationController::class, 'index'])
     ->middleware('auth')
     ->name('owner.notificaciones');
 
-Route::post('/dashboard/notificaciones/{id}/mark-read', [OwnerNotificationController::class, 'markAsRead'])
+Route::post('/dashboard/notificaciones/{id}/mark-read', [\App\Http\Controllers\OwnerNotificationController::class, 'markAsRead'])
     ->middleware('auth')
     ->name('owner.notifications.markRead');
 
-Route::post('/dashboard/notificaciones/mark-all-read', [OwnerNotificationController::class, 'markAllAsRead'])
+Route::post('/dashboard/notificaciones/mark-all-read', [\App\Http\Controllers\OwnerNotificationController::class, 'markAllAsRead'])
     ->middleware('auth')
     ->name('owner.notifications.markAllRead');
 
@@ -421,12 +421,21 @@ Route::get('/reparar-todo', function () {
             }
         }
 
-        // 3. Limpiar caché
+        // 3. Limpiar caché (Agresivo)
+        Artisan::call('optimize:clear');
         Artisan::call('config:clear');
         Artisan::call('route:clear');
         Artisan::call('cache:clear');
         Artisan::call('view:clear');
-        $resultados[] = "Caché de Laravel limpia ✅";
+        $resultados[] = "Caché del sistema limpia (Full Optimize Clear) ✅";
+
+        // 5. Verificar controladores clave
+        $controllerPath = app_path('Http/Controllers/OwnerNotificationController.php');
+        if (file_exists($controllerPath)) {
+            $resultados[] = "OwnerNotificationController.php existe en el servidor ✅";
+        } else {
+            $resultados[] = "ERROR: OwnerNotificationController.php NO existe en el servidor ❌";
+        }
 
         // 4. FORZAR COLUMNAS DE PERFIL (Para evitar error de documento, ciudad, etc)
         if (Schema::hasTable('duenos')) {
