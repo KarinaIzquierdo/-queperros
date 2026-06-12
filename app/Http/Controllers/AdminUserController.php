@@ -157,9 +157,10 @@ class AdminUserController extends Controller
         try {
             // Eliminar reservas asociadas a las mascotas del usuario
             if (Schema::hasTable('reservas') && Schema::hasTable('mascotas')) {
+                $mascotaKey = Schema::hasColumn('mascotas', 'id_mascota') ? 'id_mascota' : 'id';
                 $mascotaIds = DB::table('mascotas')
                     ->where('id_dueno', $user->id)
-                    ->pluck('id');
+                    ->pluck($mascotaKey);
 
                 if ($mascotaIds->isNotEmpty()) {
                     DB::table('reservas')

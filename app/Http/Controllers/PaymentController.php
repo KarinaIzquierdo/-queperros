@@ -174,7 +174,8 @@ class PaymentController extends Controller
         $baseUrl = 'https://masqueperros.com.co';
 
         $servicio = DB::table('servicios')->where('id', $reserva->id_actividad)->first();
-        $mascota = DB::table('mascotas')->where('id', $reserva->id_mascota)->first();
+        $mascotaKey = Schema::hasColumn('mascotas', 'id_mascota') ? 'id_mascota' : 'id';
+        $mascota = DB::table('mascotas')->where($mascotaKey, $reserva->id_mascota)->first();
         
         $servicioNombre = $servicio ? $servicio->nombre : 'Servicio';
         $mascotaNombre = $mascota ? $mascota->nombre : 'Mascota';
