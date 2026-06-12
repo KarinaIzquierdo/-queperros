@@ -335,35 +335,54 @@ class OwnerModulesController extends Controller
         $user = Auth::user();
 
         $validated = $request->validate([
-            'nombre' => ['required', 'string', 'max:255'],
-            'apellido' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255'],
+            'nombre' => ['nullable', 'string', 'max:255'],
+            'apellido' => ['nullable', 'string', 'max:255'],
+            'email' => ['nullable', 'email', 'max:255'],
             'telefono' => ['nullable', 'string', 'max:60'],
             'direccion' => ['nullable', 'string', 'max:255'],
             'documento' => ['nullable', 'string', 'max:80'],
             'ciudad' => ['nullable', 'string', 'max:120'],
             'fecha_nacimiento' => ['nullable', 'date'],
+            'avatar' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ]);
 
-        $fullName = trim($validated['nombre'] . ' ' . $validated['apellido']);
+        // Manejar subida de Avatar si existe
+        if ($request->hasFile('avatar')) {
+            // Eliminar viejo si existe
+            if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
+                Storage::disk('public')->delete($user->avatar);
+            }
+            $path = $request->file('avatar')->store('avatars', 'public');
+            $user->avatar = $path;
+            $user->save();
 
-        // 1. Actualizar datos del usuario principal
-        $user->name = $fullName;
-        $user->email = (string) $validated['email'];
-        $user->save();
+            // Si solo se envió el avatar (submit automático), retornar aquí
+            if (!$request->has('nombre')) {
+                return redirect()->route('owner.perfil')->with('success', 'Foto de perfil actualizada correctamente');
+            }
+        }
 
-        // 2. Actualizar o crear datos extendidos en la tabla 'duenos'
-        \App\Models\Dueno::updateOrCreate(
-            ['id_dueno' => (int) $user->id],
-            [
-                'nombre' => $fullName,
-                'telefono' => $validated['telefono'] ?? null,
-                'direccion' => $validated['direccion'] ?? null,
-                'documento' => $validated['documento'] ?? null,
-                'ciudad' => $validated['ciudad'] ?? null,
-                'fecha_nacimiento' => $validated['fecha_nacimiento'] ?? null,
-            ]
-        );
+        if ($request->has('nombre')) {
+            $fullName = trim($validated['nombre'] . ' ' . $validated['apellido']);
+
+            // 1. Actualizar datos del usuario principal
+            $user->name = $fullName;
+            $user->email = (string) ($validated['email'] ?? $user->email);
+            $user->save();
+
+            // 2. Actualizar o crear datos extendidos en la tabla 'duenos'
+            \App\Models\Dueno::updateOrCreate(
+                ['id_dueno' => (int) $user->id],
+                [
+                    'nombre' => $fullName,
+                    'telefono' => $validated['telefono'] ?? null,
+                    'direccion' => $validated['direccion'] ?? null,
+                    'documento' => $validated['documento'] ?? null,
+                    'ciudad' => $validated['ciudad'] ?? null,
+                    'fecha_nacimiento' => $validated['fecha_nacimiento'] ?? null,
+                ]
+            );
+        }
 
         return redirect()
             ->route('owner.perfil')

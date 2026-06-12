@@ -63,12 +63,23 @@
 
                     <div class="pf-grid">
                         <div class="pf-card pf-left">
-                            <div class="pf-avatar-wrap">
-                                <div class="pf-avatar">
-                                    {{ strtoupper(mb_substr($user->name, 0, 1)) }}
-                                    <div class="pf-avatar-badge" aria-hidden="true"><i class="bi bi-camera"></i></div>
+                            <form id="avatarForm" method="POST" action="{{ route('owner.perfil.update') }}" enctype="multipart/form-data">
+                                @csrf
+                                <div class="pf-avatar-wrap">
+                                    <label for="avatarInput" class="pf-avatar-label">
+                                        <div class="pf-avatar">
+                                            @if($user->avatar)
+                                                <img src="{{ asset('storage/' . $user->avatar) }}" alt="Avatar" id="avatarPreview" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                            @else
+                                                <span id="avatarInitial">{{ strtoupper(mb_substr($user->name, 0, 1)) }}</span>
+                                                <img src="" alt="Avatar" id="avatarPreview" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: none;">
+                                            @endif
+                                            <div class="pf-avatar-badge" aria-hidden="true"><i class="bi bi-camera"></i></div>
+                                        </div>
+                                    </label>
+                                    <input type="file" id="avatarInput" name="avatar" accept="image/*" style="display: none;">
                                 </div>
-                            </div>
+                            </form>
 
                             <div class="pf-name">{{ $user->name }}</div>
                             <div class="pf-email">{{ $user->email }}</div>
@@ -200,6 +211,29 @@
 
         <script>
             (() => {
+                const avatarInput = document.getElementById('avatarInput');
+                const avatarPreview = document.getElementById('avatarPreview');
+                const avatarInitial = document.getElementById('avatarInitial');
+                const avatarForm = document.getElementById('avatarForm');
+
+                if (avatarInput) {
+                    avatarInput.addEventListener('change', (e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                            const reader = new FileReader();
+                            reader.onload = (event) => {
+                                avatarPreview.src = event.target.result;
+                                avatarPreview.style.display = 'block';
+                                if (avatarInitial) avatarInitial.style.display = 'none';
+                                
+                                // Opcional: Enviar automáticamente al cambiar
+                                avatarForm.submit();
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    });
+                }
+
                 const eyeBtns = Array.from(document.querySelectorAll('[data-pf-eye]'));
                 eyeBtns.forEach((btn) => {
                     btn.addEventListener('click', () => {
