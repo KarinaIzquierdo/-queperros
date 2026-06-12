@@ -428,24 +428,38 @@ Route::get('/reparar-todo', function () {
 
         // 4. FORZAR COLUMNAS DE PERFIL (Para evitar error de documento, ciudad, etc)
         if (Schema::hasTable('duenos')) {
-            Schema::table('duenos', function ($table) {
-                if (!Schema::hasColumn('duenos', 'documento')) {
-                    DB::statement('ALTER TABLE duenos ADD COLUMN documento VARCHAR(80) NULL AFTER telefono');
-                    $resultados[] = "Columna 'documento' añadida ✅";
+            // Ampliar columnas existentes por si son muy cortas
+            try { DB::statement('ALTER TABLE duenos MODIFY COLUMN nombre VARCHAR(255)'); } catch(\Exception $e){}
+            try { DB::statement('ALTER TABLE duenos MODIFY COLUMN telefono VARCHAR(60)'); } catch(\Exception $e){}
+            try { DB::statement('ALTER TABLE duenos MODIFY COLUMN direccion VARCHAR(255)'); } catch(\Exception $e){}
+
+            // Añadir columnas faltantes una por una
+            $columnasParaAgregar = [
+                'documento' => "ALTER TABLE duenos ADD documento VARCHAR(80) NULL AFTER telefono",
+                'ciudad' => "ALTER TABLE duenos ADD ciudad VARCHAR(120) NULL AFTER direccion",
+                'fecha_nacimiento' => "ALTER TABLE duenos ADD fecha_nacimiento DATE NULL AFTER ciudad"
+            ];
+
+            foreach ($columnasParaAgregar as $col => $sql) {
+                if (!Schema::hasColumn('duenos', $col)) {
+                    try {
+                        DB::statement($sql);
+                        $resultados[] = "Columna '$col' añadida con éxito ✅";
+                    } catch (\Exception $e) {
+                        $resultados[] = "Error al añadir '$col': " . $e->getMessage() . " ❌";
+                    }
+                } else {
+                    $resultados[] = "Columna '$col' ya existe ✅";
                 }
-                if (!Schema::hasColumn('duenos', 'direccion')) {
-                    DB::statement('ALTER TABLE duenos ADD COLUMN direccion VARCHAR(255) NULL AFTER documento');
-                    $resultados[] = "Columna 'direccion' añadida ✅";
-                }
-                if (!Schema::hasColumn('duenos', 'ciudad')) {
-                    DB::statement('ALTER TABLE duenos ADD COLUMN ciudad VARCHAR(120) NULL AFTER direccion');
-                    $resultados[] = "Columna 'ciudad' añadida ✅";
-                }
-                if (!Schema::hasColumn('duenos', 'fecha_nacimiento')) {
-                    DB::statement('ALTER TABLE duenos ADD COLUMN fecha_nacimiento DATE NULL AFTER ciudad');
-                    $resultados[] = "Columna 'fecha_nacimiento' añadida ✅";
-                }
-            });
+            }
+        } else {
+            $resultados[] = "La tabla 'duenos' no existe, intentando crearla... ⚠️";
+            try {
+                Artisan::call('migrate', ['--force' => true]);
+                $resultados[] = "Migraciones ejecutadas ✅";
+            } catch(\Exception $e) {
+                $resultados[] = "Error al migrar: " . $e->getMessage() . " ❌";
+            }
         }
         
         return [
