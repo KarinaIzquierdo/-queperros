@@ -31,7 +31,7 @@
                 <span>Gestión de usuarios</span>
             </span>
             <span class="admin-menu-right">
-                <span class="admin-menu-badge">5</span>
+                <span class="admin-menu-badge">{{ \App\Models\User::count() }}</span>
             </span>
         </a>
         <a href="{{ route('admin.services') }}" class="admin-menu-item {{ request()->routeIs('admin.services') ? 'admin-menu-item--active' : '' }}">
@@ -42,7 +42,7 @@
                 <span>Gestión de servicios</span>
             </span>
             <span class="admin-menu-right">
-                <span class="admin-menu-badge">6</span>
+                <span class="admin-menu-badge">{{ \App\Models\Servicio::count() }}</span>
             </span>
         </a>
         <a href="{{ route('admin.pets') }}" class="admin-menu-item {{ request()->routeIs('admin.pets') ? 'admin-menu-item--active' : '' }}">
@@ -52,7 +52,9 @@
                 </div>
                 <span>Gestión de mascotas</span>
             </span>
-            <span class="admin-menu-right"></span>
+            <span class="admin-menu-right">
+                <span class="admin-menu-badge">{{ \App\Models\Mascota::count() }}</span>
+            </span>
         </a>
         <a href="{{ route('admin.planpadrino') }}" class="admin-menu-item {{ request()->routeIs('admin.planpadrino*') ? 'admin-menu-item--active' : '' }}">
             <span class="admin-menu-left">
