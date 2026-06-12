@@ -173,7 +173,10 @@
                 <section class="mq-helpbar" aria-label="Necesitas ayuda">
                     <div class="mq-helpbar-title">Necesitas ayuda?</div>
                     <div class="mq-helpbar-items">
-                        <div class="mq-helpbar-item"><i class="bi bi-telephone" aria-hidden="true"></i><span>+57 300 123 4567</span></div>
+                        <a href="https://wa.me/573102392128" target="_blank" class="mq-helpbar-item" style="text-decoration: none; color: inherit;">
+                            <i class="bi bi-telephone" aria-hidden="true"></i>
+                            <span>+57 310 239 2128</span>
+                        </a>
                         <div class="mq-helpbar-item"><i class="bi bi-geo-alt" aria-hidden="true"></i><span>La Calera, Colombia</span></div>
                         <div class="mq-helpbar-item"><i class="bi bi-clock" aria-hidden="true"></i><span>Lun - Sab: 8am - 6pm</span></div>
                     </div>
