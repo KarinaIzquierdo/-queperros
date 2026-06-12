@@ -229,7 +229,6 @@
             </section>
 
             <section class="mq-values-wrap" id="valores" aria-label="Valores">
-                <img class="mq-values-badge" src="{{ asset('img/valores.png') }}" alt="Decoración valores" aria-hidden="true">
                 <div class="mq-container">
                     <h2 class="mq-title mq-title--xl mq-title--dark">VALORES</h2>
 
