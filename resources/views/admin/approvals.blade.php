@@ -247,14 +247,21 @@
         
         <script>
         // Guardar las rutas base para no perder el placeholder
+        // Usamos una expresión regular para manejar tanto :id como %3Aid (codificado)
         const approveBaseUrl = "{{ route('admin.approvals.approve', ':id') }}";
         const rejectBaseUrl = "{{ route('admin.approvals.reject', ':id') }}";
         const paymentBaseUrl = "{{ route('admin.approvals.confirmPayment', ':id') }}";
 
+        function updateFormAction(form, baseUrl, id) {
+            // Reemplaza :id o %3Aid por el ID real
+            form.action = baseUrl.replace(/[:%3A]id/i, id);
+        }
+
         function openApproveModal(approvalId) {
+            console.log('Opening approve modal for ID:', approvalId);
             const modal = document.getElementById('approveModal');
             const form = document.getElementById('approveForm');
-            form.action = approveBaseUrl.replace(':id', approvalId);
+            updateFormAction(form, approveBaseUrl, approvalId);
             modal.style.display = 'flex';
         }
 
@@ -263,9 +270,10 @@
         }
 
         function openRejectModal(approvalId) {
+            console.log('Opening reject modal for ID:', approvalId);
             const modal = document.getElementById('rejectModal');
             const form = document.getElementById('rejectForm');
-            form.action = rejectBaseUrl.replace(':id', approvalId);
+            updateFormAction(form, rejectBaseUrl, approvalId);
             modal.style.display = 'flex';
         }
 
@@ -275,9 +283,10 @@
         }
 
         function openPaymentModal(approvalId) {
+            console.log('Opening payment modal for ID:', approvalId);
             const modal = document.getElementById('paymentModal');
             const form = document.getElementById('paymentForm');
-            form.action = paymentBaseUrl.replace(':id', approvalId);
+            updateFormAction(form, paymentBaseUrl, approvalId);
             modal.style.display = 'flex';
         }
 
