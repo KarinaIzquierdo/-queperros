@@ -117,7 +117,6 @@
                     'settingsUrl' => route('admin.settings'),
                     'helpUrl' => route('admin.dashboard'),
                     'notificationsUrl' => route('admin.notificaciones'),
-                    'notifCount' => 0,
                 ])
                 <section class="ap-page">
                     <div class="ap-head">

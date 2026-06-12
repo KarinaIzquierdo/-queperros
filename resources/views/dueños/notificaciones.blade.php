@@ -35,7 +35,6 @@
                     'settingsUrl' => route('owner.perfil'),
                     'helpUrl' => route('owner.chat'),
                     'notificationsUrl' => route('owner.notificaciones'),
-                    'notifCount' => $unreadCount ?? 0,
                 ])
 
                 <div class="mq-dashboard-content">

@@ -32,7 +32,6 @@
                     'settingsUrl' => route('admin.settings'),
                     'helpUrl' => route('admin.dashboard'),
                     'notificationsUrl' => route('admin.notificaciones'),
-                    'notifCount' => 3,
                 ])
 
                 <section class="ad2-hero" aria-label="Bienvenida">

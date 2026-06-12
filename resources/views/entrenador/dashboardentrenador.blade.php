@@ -31,7 +31,6 @@
                     'settingsUrl' => route('entrenador.perfil'),
                     'helpUrl' => route('entrenador.chat'),
                     'notificationsUrl' => route('entrenador.notificaciones'),
-                    'notifCount' => 2,
                 ])
 
                 <section class="et-hero">

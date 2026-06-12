@@ -33,7 +33,6 @@
                     'settingsUrl' => route('owner.perfil'),
                     'helpUrl' => route('owner.chat'),
                     'notificationsUrl' => route('owner.notificaciones'),
-                    'notifCount' => 2,
                 ])
 
                 <div class="mq-dashboard-content">

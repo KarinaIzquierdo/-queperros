@@ -32,7 +32,6 @@
                     'settingsUrl' => route('entrenador.perfil'),
                     'helpUrl' => route('entrenador.chat'),
                     'notificationsUrl' => route('entrenador.notificaciones'),
-                    'notifCount' => 2,
                 ])
 
                 <section class="sg-card" aria-label="Nuevo Registro">

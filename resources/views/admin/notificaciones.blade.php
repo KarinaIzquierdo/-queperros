@@ -28,7 +28,6 @@
                     'settingsUrl' => route('admin.settings'),
                     'helpUrl' => route('admin.dashboard'),
                     'notificationsUrl' => route('admin.notificaciones'),
-                    'notifCount' => $unreadCount ?? 0,
                 ])
 
                 <section class="nt-page">

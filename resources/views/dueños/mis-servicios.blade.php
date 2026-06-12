@@ -31,7 +31,6 @@
                     'settingsUrl' => route('owner.perfil'),
                     'helpUrl' => route('owner.chat'),
                     'notificationsUrl' => route('owner.notificaciones'),
-                    'notifCount' => DB::table('notifications')->where('id_usuario', $user->id)->where('leido', false)->count(),
                 ])
 
                 @if(session('status'))

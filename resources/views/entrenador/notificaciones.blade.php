@@ -32,7 +32,6 @@
                     'settingsUrl' => route('entrenador.perfil'),
                     'helpUrl' => route('entrenador.chat'),
                     'notificationsUrl' => route('entrenador.notificaciones'),
-                    'notifCount' => $unreadCount ?? 0,
                 ])
 
                 <section class="nt-list" aria-label="Notificaciones">

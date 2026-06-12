@@ -32,7 +32,6 @@
                     'settingsUrl' => route('entrenador.perfil'),
                     'helpUrl' => route('entrenador.chat'),
                     'notificationsUrl' => route('entrenador.notificaciones'),
-                    'notifCount' => 2,
                 ])
 
                 <section class="hs-card" aria-label="Servicios Realizados">

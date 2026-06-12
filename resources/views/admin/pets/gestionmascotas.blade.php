@@ -35,7 +35,6 @@
                     'settingsUrl' => route('admin.settings'),
                     'helpUrl' => route('admin.dashboard'),
                     'notificationsUrl' => route('admin.notificaciones'),
-                    'notifCount' => $unreadCount ?? 0,
                 ])
                 <div class="gm-top">
                     <div>

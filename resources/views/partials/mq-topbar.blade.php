@@ -1,16 +1,20 @@
 @php
     use Illuminate\Support\Str;
+    // Priorizar $user, luego Auth::user()
     $mqTopbarUser = $user ?? (\Illuminate\Support\Facades\Auth::user());
-    $mqTopbarName = Str::before($mqTopbarUser->name ?? 'Usuario', ' ');
+    $mqTopbarName = 'Usuario';
+    if ($mqTopbarUser) {
+        $mqTopbarName = Str::before($mqTopbarUser->name ?? $mqTopbarUser->nombre ?? 'Usuario', ' ');
+    }
     $mqTopbarRoleLabel = $roleLabel ?? '';
     $mqTopbarNotifications = collect();
+    $mqTopbarNotifCount = 0;
 
-    $mqTopbarIsAdmin = $mqTopbarUser && ($mqTopbarUser->rol_id == 1 || ($mqTopbarUser->rol ?? '') === 'admin');
-    $mqTopbarIsTrainer = $mqTopbarUser && ($mqTopbarUser->rol_id == 3 || in_array($mqTopbarUser->rol ?? '', ['entrenador', 'empleado', 'trainer']));
-    $mqTopbarIsOwner = $mqTopbarUser && ($mqTopbarUser->rol_id == 2 || ($mqTopbarUser->rol ?? '') === 'dueno');
-
-    // Consultar y combinar notificaciones de ambas tablas ('notificaciones' y 'notifications') si existen
     if ($mqTopbarUser) {
+        $mqTopbarIsAdmin = $mqTopbarUser->rol_id == 1 || ($mqTopbarUser->rol ?? '') === 'admin';
+        $mqTopbarIsTrainer = $mqTopbarUser->rol_id == 3 || in_array($mqTopbarUser->rol ?? '', ['entrenador', 'empleado', 'trainer']);
+        $mqTopbarIsOwner = $mqTopbarUser->rol_id == 2 || ($mqTopbarUser->rol ?? '') === 'dueno' || ($mqTopbarUser->rol ?? '') === 'dueno';
+
         $hasSpanish = \Illuminate\Support\Facades\Schema::hasTable('notificaciones');
         $hasEnglish = \Illuminate\Support\Facades\Schema::hasTable('notifications');
 
@@ -19,6 +23,8 @@
         if ($hasSpanish) {
             $spanishNotifs = \Illuminate\Support\Facades\DB::table('notificaciones')
                 ->where('user_id', (int) $mqTopbarUser->id)
+                ->orderByDesc('created_at')
+                ->limit(20)
                 ->get()
                 ->map(function ($n) {
                     return (object) [
@@ -38,6 +44,8 @@
         if ($hasEnglish) {
             $englishNotifs = \Illuminate\Support\Facades\DB::table('notifications')
                 ->where('id_usuario', (int) $mqTopbarUser->id)
+                ->orderByDesc('created_at')
+                ->limit(20)
                 ->get()
                 ->map(function ($n) {
                     return (object) [
@@ -54,16 +62,14 @@
             $list = $list->concat($englishNotifs);
         }
 
-        // Ordenar todas por fecha de creación descendente
         $sorted = $list->sortByDesc('created_at');
-
-        // Filtrar no leídas para la campana de la barra superior
         $unread = $sorted->filter(fn($n) => !$n->leido);
         $mqTopbarNotifCount = $unread->count();
-
-        // Mostrar las no leídas o, si no hay, las últimas 5 recibidas
         $mqTopbarNotifications = $unread->count() > 0 ? $unread->take(5) : $sorted->take(5);
     } else {
+        $mqTopbarIsAdmin = false;
+        $mqTopbarIsTrainer = false;
+        $mqTopbarIsOwner = false;
         $mqTopbarNotifCount = $notifCount ?? 0;
     }
 
@@ -71,11 +77,17 @@
     $mqTopbarSettingsUrl = $settingsUrl ?? '#';
     $mqTopbarHelpUrl = $helpUrl ?? '#';
     $mqTopbarNotificationsUrl = $notificationsUrl ?? '#';
+    
+    // Determinar URL para marcar todas como leídas
+    $mqMarkAllReadUrl = '#';
+    if ($mqTopbarIsAdmin) $mqMarkAllReadUrl = route('admin.notifications.markAllRead');
+    elseif ($mqTopbarIsTrainer) $mqMarkAllReadUrl = route('entrenador.notifications.markAllRead');
+    elseif ($mqTopbarIsOwner) $mqMarkAllReadUrl = route('owner.notifications.markAllRead');
 @endphp
 
 <header class="mqx-topbar" aria-label="Barra superior">
     <div class="mqx-topbar-left">
-        @if($mqTopbarIsAdmin) {{-- Admin --}}
+        @if($mqTopbarIsAdmin)
             <div class="mqx-sidebar-toggle-wrapper">
                 <input type="checkbox" id="checkbox" class="mqx-sidebar-checkbox" data-mqx-sidebar-toggle="true">
                 <label for="checkbox" class="toggle">
@@ -84,7 +96,7 @@
                     <div class="bars" id="bar3"></div>
                 </label>
             </div>
-        @elseif($mqTopbarIsOwner) {{-- Dueño --}}
+        @elseif($mqTopbarIsOwner)
             <div class="mqx-sidebar-toggle-wrapper">
                 <input type="checkbox" id="checkbox2" class="mqx-sidebar-checkbox" data-mqx-sidebar-toggle="true">
                 <label for="checkbox2" class="toggle toggle2">
@@ -93,7 +105,7 @@
                     <div class="bars" id="bar6"></div>
                 </label>
             </div>
-        @elseif($mqTopbarIsTrainer) {{-- Entrenador --}}
+        @elseif($mqTopbarIsTrainer)
             <div class="mqx-sidebar-toggle-wrapper">
                 <input type="checkbox" id="checkbox3" class="mqx-sidebar-checkbox" data-mqx-sidebar-toggle="true">
                 <label for="checkbox3" class="toggle toggle3">
@@ -115,12 +127,10 @@
                 </label>
             </div>
         @endif
-        <div class="mq-side-brand-mobile" style="display: none; margin-left: 15px;">
-        </div>
     </div>
 
     <div class="mqx-topbar-right">
-        <button class="mqx-topbar-icon" type="button" aria-label="Notificaciones" data-mqx-toggle="notifications" onclick="clearNotifBadge()">
+        <button class="mqx-topbar-icon" type="button" aria-label="Notificaciones" data-mqx-toggle="notifications" onclick="handleNotifClick(this, '{{ $mqMarkAllReadUrl }}')">
             <i class="bi bi-bell" aria-hidden="true"></i>
             @if($mqTopbarNotifCount > 0)
                 <span class="mqx-topbar-dot" aria-hidden="true" id="mqxNotifBadge">{{ $mqTopbarNotifCount }}</span>
@@ -171,14 +181,7 @@
     <div class="mqx-popover mqx-popover--wide" data-mqx-popover="notifications" aria-hidden="true">
         <div class="mqx-popover-head mqx-popover-head--row">
             <div class="mqx-popover-name">Notificaciones</div>
-            @php
-                $markAllReadUrl = $mqTopbarIsAdmin
-                    ? route('admin.notifications.markAllRead')
-                    : ($mqTopbarIsTrainer
-                        ? route('entrenador.notifications.markAllRead')
-                        : route('owner.notifications.markAllRead'));
-            @endphp
-            <button class="mqx-popover-action" type="button" onclick="markAllAsRead('{{ $markAllReadUrl }}')">Marcar todo como leido</button>
+            <button class="mqx-popover-action" type="button" onclick="markAllAsRead('{{ $mqMarkAllReadUrl }}')">Marcar todo como leido</button>
         </div>
 
         <div class="mqx-notif-list">
@@ -194,12 +197,10 @@
                         default => 'bi-bell',
                     };
 
-                    // Determinar la ruta de marcado como leído según el rol
-                    $markReadUrl = $mqTopbarIsAdmin
-                        ? route('admin.notifications.markRead', $notification->id)
-                        : ($mqTopbarIsTrainer
-                            ? route('entrenador.notifications.markRead', $notification->id)
-                            : route('owner.notifications.markRead', $notification->id));
+                    $markReadUrl = '#';
+                    if ($mqTopbarIsAdmin) $markReadUrl = route('admin.notifications.markRead', $notification->id);
+                    elseif ($mqTopbarIsTrainer) $markReadUrl = route('entrenador.notifications.markRead', $notification->id);
+                    elseif ($mqTopbarIsOwner) $markReadUrl = route('owner.notifications.markRead', $notification->id);
                 @endphp
                 <a class="mqx-notif-item" href="{{ $notification->url ?: $mqTopbarNotificationsUrl }}" 
                    onclick="event.preventDefault(); markAsReadAndRedirect('{{ $markReadUrl }}', '{{ $notification->url ?: $mqTopbarNotificationsUrl }}')">
@@ -236,7 +237,29 @@
         }
     }
 
+    function handleNotifClick(btn, markAllUrl) {
+        clearNotifBadge();
+        
+        // El toggle del popover lo maneja mq-topbar.js via data-mqx-toggle
+        // Solo necesitamos disparar el fetch aquí para asegurar que se ejecute
+        // incluso si el evento se detiene en otros niveles.
+        if (markAllUrl && markAllUrl !== '#') {
+            fetch(markAllUrl, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            }).catch(error => console.error('Error auto-marking read:', error));
+        }
+    }
+
     function markAsReadAndRedirect(url, redirectUrl) {
+        if (!url || url === '#') {
+            window.location.href = redirectUrl;
+            return;
+        }
         fetch(url, {
             method: 'POST',
             headers: {
@@ -244,15 +267,13 @@
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             }
-        }).then(response => {
-            window.location.href = redirectUrl;
-        }).catch(error => {
-            console.error('Error marking notification as read:', error);
+        }).finally(() => {
             window.location.href = redirectUrl;
         });
     }
 
     function markAllAsRead(url) {
+        if (!url || url === '#') return;
         fetch(url, {
             method: 'POST',
             headers: {
@@ -276,38 +297,6 @@
                     `;
                 }
             }
-        }).catch(error => {
-            console.error('Error marking all notifications as read:', error);
-        });
+        }).catch(error => console.error('Error marking all read:', error));
     }
-
-    // Auto-marcar como leídas al abrir el menú de notificaciones
-    document.addEventListener('DOMContentLoaded', function() {
-        const notifButton = document.querySelector('button[data-mqx-toggle="notifications"]');
-        if (notifButton) {
-            notifButton.addEventListener('click', function() {
-                @php
-                    $markAllReadUrl = $mqTopbarIsAdmin
-                        ? route('admin.notifications.markAllRead')
-                        : ($mqTopbarIsTrainer
-                            ? route('entrenador.notifications.markAllRead')
-                            : route('owner.notifications.markAllRead'));
-                @endphp
-                fetch('{{ $markAllReadUrl }}', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    }
-                }).then(response => {
-                    if (response.ok) {
-                        clearNotifBadge();
-                    }
-                }).catch(error => {
-                    console.error('Error marking all notifications as read:', error);
-                });
-            });
-        }
-    });
 </script>
