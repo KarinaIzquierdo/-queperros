@@ -175,7 +175,7 @@
                                     <i class="bi bi-x"></i>
                                 </button>
                             </div>
-                            <form method="POST" action="{{ route('admin.approvals.approve', '__approval__') }}" id="approveForm">
+                            <form method="POST" action="{{ route('admin.approvals.approve', ':id') }}" id="approveForm">
                                 @csrf
                                 <div class="modal-body">
                                     <div class="form-group">
@@ -201,7 +201,7 @@
                                     <i class="bi bi-x"></i>
                                 </button>
                             </div>
-                            <form method="POST" action="{{ route('admin.approvals.reject', '__approval__') }}" id="rejectForm">
+                            <form method="POST" action="{{ route('admin.approvals.reject', ':id') }}" id="rejectForm">
                                 @csrf
                                 <div class="modal-body">
                                     <div class="form-group">
@@ -227,7 +227,7 @@
                                     <i class="bi bi-x"></i>
                                 </button>
                             </div>
-                            <form method="POST" action="{{ route('admin.approvals.confirmPayment', '__approval__') }}" id="paymentForm">
+                            <form method="POST" action="{{ route('admin.approvals.confirmPayment', ':id') }}" id="paymentForm">
                                 @csrf
                                 <div class="modal-body">
                                     <p>¿Estás seguro de que deseas confirmar el pago de este servicio?</p>
@@ -246,10 +246,15 @@
 
         
         <script>
+        // Guardar las rutas base para no perder el placeholder
+        const approveBaseUrl = "{{ route('admin.approvals.approve', ':id') }}";
+        const rejectBaseUrl = "{{ route('admin.approvals.reject', ':id') }}";
+        const paymentBaseUrl = "{{ route('admin.approvals.confirmPayment', ':id') }}";
+
         function openApproveModal(approvalId) {
             const modal = document.getElementById('approveModal');
             const form = document.getElementById('approveForm');
-            form.action = form.action.replace('__approval__', approvalId);
+            form.action = approveBaseUrl.replace(':id', approvalId);
             modal.style.display = 'flex';
         }
 
@@ -260,7 +265,7 @@
         function openRejectModal(approvalId) {
             const modal = document.getElementById('rejectModal');
             const form = document.getElementById('rejectForm');
-            form.action = form.action.replace('__approval__', approvalId);
+            form.action = rejectBaseUrl.replace(':id', approvalId);
             modal.style.display = 'flex';
         }
 
@@ -272,7 +277,7 @@
         function openPaymentModal(approvalId) {
             const modal = document.getElementById('paymentModal');
             const form = document.getElementById('paymentForm');
-            form.action = form.action.replace('__approval__', approvalId);
+            form.action = paymentBaseUrl.replace(':id', approvalId);
             modal.style.display = 'flex';
         }
 
