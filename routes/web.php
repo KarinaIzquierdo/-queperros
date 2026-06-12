@@ -10,10 +10,12 @@ use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AdminServiceController;
 use App\Http\Controllers\AdminPetController;
 use App\Http\Controllers\AdminSponsorDogController;
+use App\Http\Controllers\AdminGalleryController;
 use App\Http\Controllers\OwnerPetController;
 use App\Http\Controllers\OwnerServiceController;
 use App\Http\Controllers\OwnerReservaController;
 use App\Http\Controllers\OwnerModulesController;
+use App\Http\Controllers\OwnerNotificationController;
 use App\Http\Controllers\CaregiverDashboardController;
 use App\Http\Controllers\TrainerDashboardController;
 use App\Http\Controllers\TrainerModulesController;
@@ -36,7 +38,7 @@ Route::get('/', function () {
     return view('welcome', ['sponsorDogs' => $sponsorDogs]);
 });
 
-Route::get('/galeria', [\App\Http\Controllers\AdminGalleryController::class, 'publicGallery'])->name('galeria');
+Route::get('/galeria', [AdminGalleryController::class, 'publicGallery'])->name('galeria');
 
 Route::get('/login', [LoginController::class, 'create'])->name('login');
 Route::post('/login', [LoginController::class, 'store']);
