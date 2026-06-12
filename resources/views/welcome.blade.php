@@ -224,14 +224,12 @@
                             <p>Consolidarnos como empresa líder en Colombia en bienestar, formación y crianza canina, reconocida por nuestro profesionalismo, ética y uso innovador de herramientas que facilitan la comunicación y seguimiento del progreso de cada perro, siendo referente en entrenamiento de perros de trabajo y vínculos armónicos familia-mascota.</p>
                         </article>
 
-                        <img class="mq-pet" src="{{ asset('img/pet.png') }}" alt="Perro" />
                     </div>
                 </div>
             </section>
 
             <section class="mq-values-wrap" id="valores" aria-label="Valores">
                 <img class="mq-values-badge" src="{{ asset('img/valores.png') }}" alt="Decoración valores" aria-hidden="true">
-                <img class="mq-values-dog" src="{{ asset('img/LOLITA.png') }}" alt="LOLITA" aria-hidden="true">
                 <div class="mq-container">
                     <h2 class="mq-title mq-title--xl mq-title--dark">VALORES</h2>
 
