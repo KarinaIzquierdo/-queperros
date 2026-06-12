@@ -67,8 +67,14 @@
                                 <div class="service-card service-card--{{ $approval->estado }}">
                                     <div class="service-card-header">
                                         <div class="service-info">
-                                            <h3 class="service-name">{{ $approval->servicio->nombre }}</h3>
-                                            <div class="service-price">${{ number_format($approval->servicio->precio, 0, ',', '.') }}</div>
+                                            <h3 class="service-name">{{ $approval->servicio?->nombre ?? 'Servicio no disponible' }}</h3>
+                                            <div class="service-price">
+                                                @if($approval->servicio)
+                                                    ${{ number_format($approval->servicio->precio, 0, ',', '.') }}
+                                                @else
+                                                    -
+                                                @endif
+                                            </div>
                                         </div>
                                         <div class="service-status">
                                             <span class="status-badge status-badge--{{ $approval->estado }}">
@@ -103,10 +109,15 @@
                                     </div>
                                     
                                     <div class="service-card-footer">
-                                        @if ($approval->estado === 'aprobado')
-                                            <button class="btn btn--primary" onclick="showPaymentModal({{ $approval->id }}, '{{ $approval->servicio->nombre }}', {{ $approval->servicio->precio }})">
+                                        @if ($approval->estado === 'aprobado' && $approval->servicio)
+                                            <button class="btn btn--primary" onclick="showPaymentModal({{ $approval->id }}, '{{ $approval->servicio?->nombre }}', {{ $approval->servicio?->precio }})">
                                                 <i class="bi bi-credit-card"></i> Proceder al Pago
                                             </button>
+                                        @elseif ($approval->estado === 'aprobado' && !$approval->servicio)
+                                            <div class="error-message">
+                                                <i class="bi bi-exclamation-triangle"></i>
+                                                Servicio ya no disponible
+                                            </div>
                                         @elseif ($approval->estado === 'pendiente')
                                             <div class="pending-message">
                                                 <i class="bi bi-clock"></i>
@@ -143,7 +154,7 @@
                                 <div class="service-card service-card--{{ strtolower($reservation->estado) }}">
                                     <div class="service-card-header">
                                         <div class="service-info">
-                                            <h3 class="service-name">{{ $reservation->servicio->nombre ?? 'Entrenamiento' }}</h3>
+                                            <h3 class="service-name">{{ $reservation->servicio?->nombre ?? 'Entrenamiento' }}</h3>
                                             <div class="service-trainer">
                                                 <i class="bi bi-person"></i>
                                                 {{ $reservation->trainer->name ?? 'Entrenador' }}
