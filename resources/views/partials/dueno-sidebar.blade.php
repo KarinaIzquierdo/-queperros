@@ -12,7 +12,7 @@
             <div class="mq-side-brand-text">
                 <div class="mq-side-brand-title">MAS QUE</div>
                 <div class="mq-side-brand-title">PERROS</div>
-                <div class="mq-side-brand-sub">Panel</div>
+                <div class="mq-side-brand-sub">Más Que Perros</div>
             </div>
         </div>
 

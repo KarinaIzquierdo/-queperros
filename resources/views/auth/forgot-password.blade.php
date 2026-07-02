@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Recuperar contraseña | Mas Que Perros</title>
+        <title>Recuperar Acceso | Más Que Perros</title>
         <link rel="icon" type="image/png" href="{{ asset('img/huellita.png') }}">
 
         <link rel="preconnect" href="https://fonts.bunny.net">

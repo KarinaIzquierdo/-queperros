@@ -5,7 +5,7 @@
         </div>
         <div class="admin-brand-text">
             <span class="admin-brand-title">MAS QUE PERROS</span>
-            <span class="admin-brand-subtitle">Panel Administrativo</span>
+            <span class="admin-brand-subtitle">Más Que Perros</span>
         </div>
     </div>
 
