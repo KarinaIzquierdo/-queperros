@@ -75,7 +75,7 @@
                 </li>
 
                 <li class="icon-content">
-                    <a data-social="tiktok" aria-label="TikTok" href="https://vm.tiktok.com/ZSHTxwt6r3TPH-uvJj0/" target="_blank" rel="noopener noreferrer">
+                    <a data-social="tiktok" aria-label="TikTok" href="https://vm.tiktok.com/ZSCHhvmXn/" target="_blank" rel="noopener noreferrer">
                         <div class="filled"></div>
                         <svg viewBox="0 0 24 24" fill="currentColor" height="24" width="24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M15.5 3c.4 3.5 2.6 5.6 6 5.8v3.1c-1.9.1-3.5-.5-5.1-1.6v6.1c0 4.4-4.8 7.2-8.7 5.1-3.6-1.9-3.9-7.2-.6-9.6 1.3-1 2.9-1.3 4.5-1.1v3.2c-.5-.1-1-.1-1.5 0-1.5.4-2.4 2-2 3.5.4 1.6 2.2 2.5 3.7 1.9 1.1-.4 1.8-1.4 1.8-2.6V3h1.9z" />
